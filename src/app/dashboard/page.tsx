@@ -607,8 +607,10 @@ export default function DashboardPage() {
               
               <TabsContent value="day" className="space-y-4">
                 <div className="flex flex-col items-center justify-center py-4">
-                  <span className="text-4xl font-bold text-primary">{stats.day} XP</span>
-                  <span className="text-sm text-muted-foreground">gagnés aujourd'hui</span>
+                  <span className="text-xl font-bold text-primary">
+                    {stats.day > 0 ? "Validé ✅" : "En attente"}
+                  </span>
+                  <span className="text-sm text-muted-foreground">État du jour</span>
                 </div>
                 <div className="text-xs text-center text-muted-foreground">
                   Continue comme ça pour maintenir ta série !
@@ -617,11 +619,11 @@ export default function DashboardPage() {
               
               <TabsContent value="week" className="space-y-4">
                 <div className="flex flex-col items-center justify-center py-4">
-                  <span className="text-4xl font-bold text-primary">{stats.week} XP</span>
-                  <span className="text-sm text-muted-foreground">cette semaine</span>
+                  <span className="text-4xl font-bold text-primary">{Math.min(7, Math.ceil(stats.week / 5))}/7</span>
+                  <span className="text-sm text-muted-foreground">jours validés</span>
                 </div>
                 <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
-                  <div className="h-full bg-purple-500 w-[60%]" />
+                  <div className="h-full bg-purple-500" style={{ width: `${(Math.min(7, Math.ceil(stats.week / 5)) / 7) * 100}%` }} />
                 </div>
                 <div className="text-xs text-center text-muted-foreground">
                   Tu es dans le top 10% de ton escouade.
@@ -630,17 +632,19 @@ export default function DashboardPage() {
               
               <TabsContent value="month" className="space-y-4">
                 <div className="flex flex-col items-center justify-center py-4">
-                  <span className="text-4xl font-bold text-primary">{stats.month} XP</span>
-                  <span className="text-sm text-muted-foreground">ce mois-ci</span>
+                  <span className="text-4xl font-bold text-primary">
+                    {Math.min(100, Math.round((stats.month / 150) * 100))}%
+                  </span>
+                  <span className="text-sm text-muted-foreground">Taux de présence</span>
                 </div>
                 <div className="grid grid-cols-2 gap-4 text-center">
                   <div className="bg-muted/50 p-3 rounded-lg">
-                    <div className="text-xl font-bold">92%</div>
-                    <div className="text-xs text-muted-foreground">Assiduité</div>
+                    <div className="text-xl font-bold text-green-600">A+</div>
+                    <div className="text-xs text-muted-foreground">Note</div>
                   </div>
                   <div className="bg-muted/50 p-3 rounded-lg">
-                    <div className="text-xl font-bold text-green-600">A+</div>
-                    <div className="text-xs text-muted-foreground">Grade</div>
+                    <div className="text-xl font-bold">Soldat</div>
+                    <div className="text-xs text-muted-foreground">Rang</div>
                   </div>
                 </div>
               </TabsContent>
