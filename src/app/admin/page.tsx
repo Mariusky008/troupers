@@ -85,6 +85,33 @@ export default function AdminPage() {
     }
   }
 
+  const handleWarnUser = async (email: string, username: string) => {
+    if (!email) {
+      toast.error("Email utilisateur introuvable")
+      return
+    }
+
+    const toastId = toast.loading("Envoi de l'avertissement...")
+
+    try {
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: email,
+          username: username,
+          reason: "Manque de soutien signalé par votre escouade."
+        })
+      })
+
+      if (!response.ok) throw new Error("Erreur API")
+
+      toast.success("Email d'avertissement envoyé !", { id: toastId })
+    } catch (error) {
+      toast.error("Échec de l'envoi", { id: toastId })
+    }
+  }
+
   if (loading) return <div className="p-8 text-center">Chargement...</div>
 
   if (!isAdmin) {
@@ -232,10 +259,12 @@ export default function AdminPage() {
                             <Button size="sm" variant="outline" onClick={() => handleResolveReport(report.id)}>
                               Marquer comme traité
                             </Button>
-                            <Button size="sm" variant="destructive" asChild>
-                              <a href={`mailto:${report.target?.email || ''}?subject=Avertissement%20Troupers&body=Attention,%20un%20manque%20de%20soutien%20a%20été%20signalé...`}>
-                                Avertir
-                              </a>
+                            <Button 
+                              size="sm" 
+                              variant="destructive" 
+                              onClick={() => handleWarnUser(report.target?.email, report.target_username)}
+                            >
+                              Avertir (Email)
                             </Button>
                           </div>
                         )}
