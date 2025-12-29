@@ -667,13 +667,20 @@ export default function DashboardPage() {
               <div className="rounded-xl border bg-card p-4 shadow-sm flex items-center justify-between">
                 <div>
                    <p className="text-xs text-muted-foreground font-medium uppercase">Ta Fiabilité</p>
-                   <div className="flex items-center gap-2 mt-1">
-                      <span className="text-2xl font-bold">100%</span>
-                      <Shield className="h-5 w-5 text-green-500 fill-green-500" />
-                   </div>
+                   {dayProgress <= 3 ? (
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-lg font-bold text-yellow-600">En Probation</span>
+                        <AlertCircle className="h-5 w-5 text-yellow-500" />
+                      </div>
+                   ) : (
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-2xl font-bold">100%</span>
+                        <Shield className="h-5 w-5 text-green-500 fill-green-500" />
+                      </div>
+                   )}
                 </div>
-                <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
-                   <span className="text-lg">🛡️</span>
+                <div className={`h-10 w-10 rounded-full flex items-center justify-center ${dayProgress <= 3 ? 'bg-yellow-100' : 'bg-green-100'}`}>
+                   <span className="text-lg">{dayProgress <= 3 ? '⚠️' : '🛡️'}</span>
                 </div>
               </div>
 
