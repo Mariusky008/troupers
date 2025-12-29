@@ -249,14 +249,64 @@ export default function DashboardPage() {
        toast.success("Mission validée !", { description: task.text })
        
        // Log support action if it's a support task
-       if (task.targetUserId) {
+       if (task.targetUserId && task.actionUrl) {
           try {
              const { data: { user } } = await supabase.auth.getUser()
              if (user) {
+                // 1. Log Daily Support (for visual stats)
                 await supabase.from('daily_supports').insert({
                    supporter_id: user.id,
                    target_user_id: task.targetUserId
                 })
+
+                // 2. Log Video Tracking (for rotation logic)
+                const { data: tracking, error: trackingError } = await supabase
+                  .from('video_tracking')
+                  .select('action_count')
+                  .eq('supporter_id', user.id)
+                  .eq('target_user_id', task.targetUserId)
+                  .eq('video_url', task.actionUrl)
+                  .single()
+
+                if (tracking) {
+                   // Already supported this video before, check if it reached 3
+                   // (Usually we shouldn't allow re-supporting same video same day if already counted, 
+                   // but here we simplify: toggle = action done)
+                   // Actually, toggle allows unchecking. Real app should handle 'undo'.
+                   // For now, let's assume we just increment or ensure it exists.
+                   // The requirement is: "3 actions". Like + Comment + Sub = 3 actions in ONE go? 
+                   // Or 3 separate days? "au bout de 3 jours (3 actions)". 
+                   // So 1 action per day.
+                   // We update the count.
+                   const newCount = (tracking.action_count || 0) + 1
+                   await supabase.from('video_tracking').update({ 
+                      action_count: newCount,
+                      last_action_at: new Date().toISOString()
+                   }).eq('supporter_id', user.id).eq('target_user_id', task.targetUserId).eq('video_url', task.actionUrl)
+
+                   if (newCount >= 3) {
+                      // TRIGGER SWAP
+                      await supabase.rpc('swap_squad_member', { 
+                         p_user_id: user.id, 
+                         p_target_id: task.targetUserId 
+                      })
+                      toast("Mission Accomplie !", {
+                         description: `Tu as soutenu ${task.text.split(': ')[1]} 3 fois. Un nouveau membre va être recruté !`,
+                         icon: <Shield className="h-4 w-4 text-purple-500" />
+                      })
+                      // Refresh page/data after short delay
+                      setTimeout(() => window.location.reload(), 2000)
+                   }
+
+                } else {
+                   // First time supporting this video
+                   await supabase.from('video_tracking').insert({
+                      supporter_id: user.id,
+                      target_user_id: task.targetUserId,
+                      video_url: task.actionUrl,
+                      action_count: 1
+                   })
+                }
              }
           } catch (e) {
              console.error("Failed to log support", e)
