@@ -265,11 +265,26 @@ export default function DashboardPage() {
     }
   }
 
-  const handleReportMissing = (username: string) => {
-     toast.success("Signalement envoyé", { 
-        description: `${username} a été signalé à l'admin pour manque de soutien.`,
-        icon: <MessageSquareWarning className="h-4 w-4 text-orange-500" />
-     })
+  const handleReportMissing = async (targetUserId: string, username: string) => {
+     try {
+       const { data: { user } } = await supabase.auth.getUser()
+       if (!user) return
+
+       const { error } = await supabase.from('reports').insert({
+         reporter_id: user.id,
+         target_user_id: targetUserId,
+         target_username: username
+       })
+
+       if (error) throw error
+
+       toast.success("Signalement envoyé au QG", { 
+          description: `${username} a été signalé à l'admin pour manque de soutien.`,
+          icon: <MessageSquareWarning className="h-4 w-4 text-orange-500" />
+       })
+     } catch (error) {
+       toast.error("Erreur lors de l'envoi du signalement")
+     }
   }
 
   const allTasksCompleted = tasks.length > 0 && tasks.every(t => t.completed)
@@ -456,8 +471,8 @@ export default function DashboardPage() {
                           <Button 
                             size="sm" 
                             variant="ghost" 
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50 h-8"
-                            onClick={() => handleReportMissing(m.profiles?.username)}
+                            className="text-orange-600 hover:text-orange-700 hover:bg-orange-50 h-8"
+                            onClick={() => handleReportMissing(m.user_id, m.profiles?.username)}
                           >
                             <MessageSquareWarning className="h-4 w-4 mr-2" />
                             Signaler
