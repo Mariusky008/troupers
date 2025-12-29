@@ -29,6 +29,10 @@ export default function Home() {
       <footer className="py-8 text-center text-sm text-muted-foreground border-t">
         <div className="container mx-auto px-4 flex flex-col items-center gap-4">
           <p>© {new Date().getFullYear()} Troupers. Tous droits réservés.</p>
+          <div className="flex gap-4 text-xs">
+            <Link href="/legal" className="hover:underline">Mentions Légales & CGU</Link>
+            <Link href="/legal" className="hover:underline">Confidentialité</Link>
+          </div>
           <Link 
             href="/admin" 
             className="flex items-center gap-2 text-xs opacity-50 hover:opacity-100 transition-opacity"
