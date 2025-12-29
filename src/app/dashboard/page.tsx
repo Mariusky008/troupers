@@ -13,7 +13,6 @@ import { createClient } from "@/lib/supabase/client"
 
 export default function DashboardPage() {
   const [tasks, setTasks] = useState<any[]>([])
-  const [proofUploaded, setProofUploaded] = useState(false)
   const [disciplineScore, setDisciplineScore] = useState(0)
   const [loading, setLoading] = useState(true)
   const [myVideoUrl, setMyVideoUrl] = useState("")
@@ -397,36 +396,7 @@ export default function DashboardPage() {
   }
 
   const allTasksCompleted = tasks.length > 0 && tasks.every(t => t.completed)
-
-  const handleProofUpload = async () => {
-    setProofUploaded(true)
-    // Here we would upload to Supabase Storage
-    
-    // Simulate updating score +5 points for completing daily mission (capped at 100)
-    const newScore = Math.min(100, disciplineScore + 5)
-    setDisciplineScore(newScore)
-    
-    // Optimistic update
-    toast.success("Journée validée ! 🔥", {
-      description: "Discipline augmentée ! À demain.",
-      duration: 5000,
-    })
-
-    // Log validation in DB
-    try {
-       const { data: { user } } = await supabase.auth.getUser()
-       if (user) {
-          await supabase.from('daily_validations').insert({
-             user_id: user.id,
-             score_earned: 5,
-             validation_date: new Date().toISOString().split('T')[0]
-          })
-       }
-    } catch (e) {
-       console.error("Failed to log validation", e)
-    }
-  }
-
+  
   if (loading) {
     return <div className="flex h-screen items-center justify-center">Chargement du QG...</div>
   }
@@ -761,69 +731,6 @@ export default function DashboardPage() {
                   )}
                 </div>
               ))
-              )}
-            </div>
-          </div>
-
-          {/* Proof Upload */}
-          <div className="rounded-xl border bg-card shadow-sm">
-            <div className="border-b p-6">
-              <h2 className="text-lg font-semibold flex items-center gap-2">
-                <Upload className="h-5 w-5 text-primary" />
-                Preuve du jour
-              </h2>
-              <p className="text-sm text-muted-foreground">Capture d'écran ou lien de ta publication.</p>
-            </div>
-            <div className="p-6">
-              {!allTasksCompleted ? (
-                <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center text-muted-foreground">
-                  <AlertCircle className="h-8 w-8 mb-2 opacity-50" />
-                  <p>Complète toutes tes missions avant d'envoyer ta preuve.</p>
-                </div>
-              ) : proofUploaded ? (
-                <div className="flex items-center gap-4 rounded-lg bg-green-500/10 p-4 text-green-700">
-                  <CheckCircle className="h-5 w-5" />
-                  <span className="font-medium">Preuve envoyée et validée ! À demain.</span>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-primary/50 bg-primary/5 p-8 transition-colors hover:bg-primary/10 cursor-pointer relative">
-                    <input 
-                      type="file" 
-                      accept="image/*"
-                      className="absolute inset-0 opacity-0 cursor-pointer"
-                      onChange={async (e) => {
-                        const file = e.target.files?.[0]
-                        if (!file) return
-                        
-                        const toastId = toast.loading("Envoi de la preuve...")
-                        
-                        try {
-                          const { data: { user } } = await supabase.auth.getUser()
-                          if (!user) throw new Error("Non connecté")
-
-                          const filename = `${user.id}/${Date.now()}-${file.name}`
-                          const { error } = await supabase.storage
-                            .from('proofs')
-                            .upload(filename, file)
-                          
-                          if (error) throw error
-
-                          toast.dismiss(toastId)
-                          handleProofUpload()
-                        } catch (error: any) {
-                          toast.error("Erreur d'upload", { description: error.message, id: toastId })
-                        }
-                      }}
-                    />
-                    <Upload className="h-8 w-8 text-primary mb-2" />
-                    <p className="font-medium text-primary">Déposer une capture d'écran</p>
-                    <p className="text-xs text-muted-foreground">ou glisser-déposer</p>
-                  </div>
-                  <Button className="w-full" onClick={handleProofUpload}>
-                    Valider ma journée
-                  </Button>
-                </div>
               )}
             </div>
           </div>
