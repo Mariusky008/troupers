@@ -452,16 +452,16 @@ export default function DashboardPage() {
           </div>
         </div>
         <div className="rounded-xl border bg-card p-6 shadow-sm">
-          <h3 className="text-sm font-medium text-muted-foreground">XP Discipline</h3>
+          <h3 className="text-sm font-medium text-muted-foreground">Ta Fiabilité</h3>
           <div className={`mt-2 text-2xl font-bold flex items-center gap-2`}>
-            {disciplineScore} XP
-            {disciplineScore >= 100 && <Heart className="h-5 w-5 fill-red-500 text-red-500 animate-pulse" />}
+            100%
+            <Shield className="h-5 w-5 fill-green-500 text-green-500" />
           </div>
           <div className="mt-2 h-2 w-full rounded-full bg-secondary">
-             <div className="h-2 rounded-full bg-green-500 transition-all duration-1000" style={{ width: `${Math.min(100, (disciplineScore / 1000) * 100)}%` }} />
+             <div className="h-2 rounded-full bg-green-500" style={{ width: `100%` }} />
           </div>
           <p className="text-xs text-muted-foreground mt-1">
-             {disciplineScore < 100 ? "Complète des missions pour monter en grade !" : "Tu es un soldat d'élite !"}
+             Tu es un partenaire de confiance.
           </p>
         </div>
       </div>
