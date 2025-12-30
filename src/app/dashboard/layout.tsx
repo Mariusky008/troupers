@@ -6,6 +6,8 @@ import { createClient } from "@/lib/supabase/client"
 import { useRouter, usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
+import { assignUserToSquad } from "@/lib/squad-actions"
+import { toast } from "sonner"
 
 export default function DashboardLayout({
   children,
@@ -45,6 +47,29 @@ export default function DashboardLayout({
         username: displayName,
         avatar_url: data?.avatar_url || user.user_metadata?.avatar_url || null
       })
+
+      // Self-healing: Check if user is in a squad
+      try {
+        const { data: squadMembership } = await supabase
+          .from('squad_members')
+          .select('id')
+          .eq('user_id', user.id)
+          .single()
+
+        if (!squadMembership) {
+          console.log("Orphan user detected. Assigning to squad...")
+          const result = await assignUserToSquad(supabase, user.id)
+          if (result.success) {
+             toast.success("Tu as rejoint une escouade !", {
+               description: "Affectation automatique réussie."
+             })
+             // Force refresh to update dashboard if needed
+             window.location.reload() 
+          }
+        }
+      } catch (e) {
+        console.error("Auto-assign error", e)
+      }
     }
     getUser()
   }, [router, pathname]) // Re-fetch on navigation (e.g. after settings update)

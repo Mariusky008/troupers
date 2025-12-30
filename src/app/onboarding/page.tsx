@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
 import { TikTokIcon } from "@/components/icons/tiktok-icon"
+import { assignUserToSquad } from "@/lib/squad-actions"
 
 const steps = [
   {
@@ -69,33 +70,8 @@ export default function OnboardingPage() {
 
         if (profileError) throw profileError
 
-        // 2. Assign to "Escouade Alpha"
-        // Get Squad ID
-        const { data: squads, error: squadError } = await supabase
-          .from('squads')
-          .select('id')
-          .eq('name', 'Escouade Alpha')
-          .single()
-
-        if (squadError) {
-             // If squad doesn't exist, create it (fallback)
-             console.error("Squad error", squadError)
-        }
-
-        if (squads) {
-           const { error: memberError } = await supabase
-             .from('squad_members')
-             .insert({
-               squad_id: squads.id,
-               user_id: user.id
-             })
-             // Ignore duplicate key error if user already joined
-             .select()
-             
-           if (memberError && memberError.code !== '23505') {
-              throw memberError
-           }
-        }
+        // 2. Assign to dynamic Squad (Max 30 members)
+        await assignUserToSquad(supabase, user.id)
 
         toast.success("Profil configuré !", {
           description: "Bienvenue dans ton escouade."
