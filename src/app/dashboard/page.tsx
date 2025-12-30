@@ -604,16 +604,31 @@ export default function DashboardPage() {
                <h1 className="text-3xl font-black text-slate-900 tracking-tight">
                  QG OPÉRATIONNEL
                </h1>
-               <p className="text-slate-500 font-medium">
-                 Bienvenue, Soldat {userProfile?.username || "Inconnu"}.
-               </p>
+               <div className="flex items-center gap-4 mt-2">
+                 <div className="flex items-center gap-2 bg-yellow-100 px-3 py-1 rounded-full border border-yellow-200">
+                    <Zap className="h-4 w-4 text-yellow-600" />
+                    <span className="text-sm font-bold text-yellow-800">{boostCredits} Crédits</span>
+                 </div>
+                 
+                 {dayProgress <= 3 && !allTasksCompleted ? (
+                   <div className="flex items-center gap-2 bg-red-100 px-3 py-1 rounded-full border border-red-200">
+                      <AlertCircle className="h-4 w-4 text-red-600" />
+                      <span className="text-sm font-bold text-red-800">Fiabilité: Probation</span>
+                   </div>
+                 ) : (
+                   <div className="flex items-center gap-2 bg-green-100 px-3 py-1 rounded-full border border-green-200">
+                      <Shield className="h-4 w-4 text-green-600" />
+                      <span className="text-sm font-bold text-green-800">Fiabilité: 100%</span>
+                   </div>
+                 )}
+
+                 <div className="flex items-center gap-2 bg-blue-100 px-3 py-1 rounded-full border border-blue-200">
+                    <span className="text-sm font-bold text-blue-800">Progression: J{dayProgress}/30</span>
+                 </div>
+               </div>
              </div>
            </div>
            <div className="flex items-center gap-3">
-              <div className="bg-white px-4 py-2 rounded-lg border shadow-sm flex items-center gap-2">
-                <Zap className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                <span className="font-bold text-slate-700">{boostCredits} Crédits Boost</span>
-              </div>
               <Button variant="outline" className="gap-2 font-bold border-2">
                 <Shield className="h-4 w-4" />
                 Escouade {mySquadId ? "Alpha" : "..."}
@@ -990,53 +1005,7 @@ export default function DashboardPage() {
            
            {/* STATS CARDS (Vertical Stack) */}
            <div className="grid gap-4">
-              {/* Boost Credits Card */}
-              <div className="rounded-xl border bg-gradient-to-r from-orange-500 to-red-500 p-4 shadow-sm flex items-center justify-between text-white">
-                <div>
-                   <p className="text-xs font-bold uppercase opacity-90">Boost Credits</p>
-                   <div className="flex items-center gap-2 mt-1">
-                      <span className="text-3xl font-black">{boostCredits}</span>
-                      <span className="text-sm opacity-90 font-medium">crédits</span>
-                   </div>
-                </div>
-                <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
-                   <Zap className="h-6 w-6 text-white" />
-                </div>
-              </div>
-
-              <div className="rounded-xl border bg-card p-4 shadow-sm flex items-center justify-between">
-                <div>
-                   <p className="text-xs text-muted-foreground font-medium uppercase">Ta Fiabilité</p>
-                   {dayProgress <= 3 && !allTasksCompleted ? (
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="text-lg font-bold text-yellow-600">En Probation</span>
-                        <AlertCircle className="h-5 w-5 text-yellow-500" />
-                      </div>
-                   ) : (
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="text-2xl font-bold">100%</span>
-                        <Shield className="h-5 w-5 text-green-500 fill-green-500" />
-                      </div>
-                   )}
-                </div>
-                <div className={`h-10 w-10 rounded-full flex items-center justify-center ${dayProgress <= 3 ? 'bg-yellow-100' : 'bg-green-100'}`}>
-                   <span className="text-lg">{dayProgress <= 3 ? '⚠️' : '🛡️'}</span>
-                </div>
-              </div>
-
-              <div className="rounded-xl border bg-card p-4 shadow-sm flex items-center justify-between">
-                <div>
-                   <p className="text-xs text-muted-foreground font-medium uppercase">Progression</p>
-                   <div className="flex items-center gap-2 mt-1">
-                      <span className="text-2xl font-bold">J{dayProgress}</span>
-                      <span className="text-sm text-muted-foreground">/ 30</span>
-                   </div>
-                </div>
-                <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                   <span className="text-lg">📅</span>
-                </div>
-              </div>
-
+              
               {/* SURVEILLANCE SHORTCUT */}
               <Link href="/dashboard/surveillance">
                 <div className="rounded-xl border bg-card p-4 shadow-sm flex items-center justify-between hover:bg-muted/50 transition-colors cursor-pointer group">
