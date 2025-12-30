@@ -12,8 +12,7 @@ export default function SignupForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [loading, setLoading] = useState(false)
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const [eesword, setPassword] = useState("")
   const supabase = createClient()
 
   useEffect(() => {
@@ -48,6 +47,10 @@ export default function SignupForm() {
       options: {
         emailRedirectTo: `${getURL()}auth/callback`,
       },
+        data: {
+          username: firstName, // Save first name as username in metadata
+          full_name: firstName // Standard field often used
+        }
     })
 
     if (error) {
@@ -70,10 +73,16 @@ export default function SignupForm() {
   }
 
   const handleGoogleLogin = async () => {
+    // Note: Google login will get the name from the Google profile automatically
+    // but we can't force it here easily without custom parameters or pre-auth state.
+    // Supabase will automatically use Google's 'name' as full_name.
+    // Our handle_new_user trigger in SQL uses raw_user_meta_data->>'username'.
+    // We might need to adjust the SQL trigger to fallback to full_name if username is missing.
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: `${getURL()}auth/callback`,
+        // We can try to pass query params to force prompt, but metadata is usually from provider
       },
     })
     if (error) {
@@ -127,6 +136,16 @@ export default function SignupForm() {
           </div>
 
           <form onSubmit={handleSignup} className="space-y-4">
+            <div className="space-y-2">
+              <input
+                type="text"
+                placeholder="Ton Prénom"
+                required
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                className="flex h-12 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              />
+            </div>
             <div className="space-y-2">
               <input
                 type="email"
