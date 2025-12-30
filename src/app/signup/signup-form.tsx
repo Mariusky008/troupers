@@ -47,11 +47,11 @@ export default function SignupForm() {
       password,
       options: {
         emailRedirectTo: `${getURL()}auth/callback`,
-      },
         data: {
           username: firstName, // Save first name as username in metadata
           full_name: firstName // Standard field often used
         }
+      }
     })
 
     if (error) {
@@ -187,8 +187,6 @@ export default function SignupForm() {
 
         <p className="text-center text-xs text-muted-foreground">
           En continuant, tu acceptes nos conditions d'utilisation et notre politique de confidentialité.
-          <br/>
-          <span className="text-[10px] text-red-500 font-bold">v1.2 - DEBUG</span>
         </p>
       </div>
     </div>
