@@ -12,7 +12,9 @@ export default function SignupForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [loading, setLoading] = useState(false)
-  const [eesword, setPassword] = useState("")
+  const [firstName, setFirstName] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
   const supabase = createClient()
 
   useEffect(() => {
