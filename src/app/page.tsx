@@ -12,6 +12,7 @@ import { FinalCTA } from "@/components/landing/FinalCTA"
 import Link from "next/link"
 import { Shield } from "lucide-react"
 import Image from "next/image"
+import { Button } from "@/components/ui/button"
 
 export default function Home() {
   return (
@@ -26,6 +27,14 @@ export default function Home() {
              sizes="100vw"
              className="rounded-lg h-10 w-auto" 
            />
+        </div>
+        <div className="flex gap-4">
+          <Button variant="ghost" size="sm" asChild>
+            <Link href="/login">Se connecter</Link>
+          </Button>
+          <Button size="sm" className="hidden sm:inline-flex" asChild>
+            <Link href="/signup">S'inscrire</Link>
+          </Button>
         </div>
       </nav>
       <Hero />

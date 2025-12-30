@@ -5,19 +5,7 @@ import { ArrowRight, CheckCircle } from "lucide-react"
 export function Hero() {
   return (
     <section className="relative flex min-h-[90vh] flex-col items-center justify-center overflow-hidden border-b bg-background px-4 py-24 text-center md:py-32">
-      {/* Top Navigation */}
-      <div className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between p-6 md:px-12">
-        <div className="text-xl font-bold tracking-tighter">Troupers</div>
-        <div className="flex gap-4">
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/login">Se connecter</Link>
-          </Button>
-          <Button size="sm" className="hidden sm:inline-flex" asChild>
-            <Link href="/signup">S'inscrire</Link>
-          </Button>
-        </div>
-      </div>
-
+      
       <div className="container relative z-10 mx-auto max-w-4xl space-y-8">
         <div className="mx-auto w-fit rounded-full border bg-muted/50 px-4 py-1.5 text-sm font-medium text-muted-foreground backdrop-blur-sm">
           🎯 Travail quotidien guidé. Résultats mesurables. Communauté disciplinée.
