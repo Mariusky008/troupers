@@ -9,7 +9,11 @@ export function WelcomePopup() {
   const [isOpen, setIsOpen] = useState(false)
 
   useEffect(() => {
+    // Clear localStorage for debugging if needed
+    // localStorage.removeItem("troupers_welcome_seen_v1")
+    
     const hasSeenWelcome = localStorage.getItem("troupers_welcome_seen_v1")
+    // Force popup on first load if key is missing
     if (!hasSeenWelcome) {
       setIsOpen(true)
     }
