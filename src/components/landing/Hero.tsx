@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { ArrowRight, CheckCircle } from "lucide-react"
+import { GlitchLogo } from "@/components/ui/glitch-logo"
 
 export function Hero() {
   return (
@@ -11,8 +12,17 @@ export function Hero() {
           🎯 Travail quotidien guidé. Résultats mesurables. Communauté disciplinée.
         </div>
         
-        <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl lg:text-7xl">
-          Ton contenu mérite mieux que <span className="text-primary glitch-text" data-text="l’invisibilité">l’invisibilité</span>.
+        <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl lg:text-7xl flex flex-wrap items-center justify-center gap-4">
+          <span>Ton contenu mérite mieux que</span>
+          <span className="inline-flex items-center">
+            <GlitchLogo 
+              src="/logo2.png" 
+              width={120} 
+              height={120} 
+              className="w-24 h-24 md:w-32 md:h-32 rounded-lg" 
+              imageClassName="rounded-lg object-cover"
+            />
+          </span>
         </h1>
         
         <p className="mx-auto max-w-2xl text-lg text-muted-foreground md:text-xl">
