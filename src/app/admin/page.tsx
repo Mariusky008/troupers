@@ -9,6 +9,7 @@ import { Mail, ShieldAlert, AlertTriangle, CheckCircle, XCircle, AlertCircle, Za
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import Image from "next/image"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export default function AdminPage() {
@@ -191,9 +192,12 @@ export default function AdminPage() {
   return (
     <div className="space-y-8 p-8">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Administration Troupers</h1>
-          <p className="text-muted-foreground">Suivi des performances des recrues</p>
+        <div className="flex items-center gap-4">
+          <Image src="/logo.png" alt="Troupers Logo" width={64} height={64} className="rounded-xl shadow-sm" />
+          <div>
+            <h1 className="text-3xl font-bold">Administration Troupers</h1>
+            <p className="text-muted-foreground">Suivi des performances des recrues</p>
+          </div>
         </div>
         <div className="flex items-center gap-4">
           <Button variant="outline" asChild>

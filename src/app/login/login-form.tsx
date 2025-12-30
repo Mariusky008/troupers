@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import Image from "next/image"
 import { ArrowLeft } from "lucide-react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -67,9 +68,14 @@ export default function LoginForm() {
       </Link>
 
       <div className="w-full max-w-md space-y-8 rounded-xl border bg-background p-8 shadow-lg">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold">Connexion</h1>
-          <p className="mt-2 text-muted-foreground">Accède à ton QG Troupers.</p>
+        <div className="text-center space-y-4">
+          <div className="flex justify-center">
+            <Image src="/logo.png" alt="Troupers Logo" width={80} height={80} className="rounded-2xl shadow-sm" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold">Connexion</h1>
+            <p className="mt-2 text-muted-foreground">Accède à ton QG Troupers.</p>
+          </div>
         </div>
 
         <div className="space-y-4">

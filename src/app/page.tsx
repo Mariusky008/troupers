@@ -11,10 +11,17 @@ import { Transparency } from "@/components/landing/Transparency"
 import { FinalCTA } from "@/components/landing/FinalCTA"
 import Link from "next/link"
 import { Shield } from "lucide-react"
+import Image from "next/image"
 
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col">
+      <nav className="absolute top-0 w-full z-50 p-6 flex justify-between items-center container mx-auto">
+        <div className="flex items-center gap-2">
+           <Image src="/logo.png" alt="Troupers Logo" width={40} height={40} className="rounded-lg" />
+           <span className="font-black text-xl tracking-tighter">TROUPERS</span>
+        </div>
+      </nav>
       <Hero />
       <Problem />
       <Truth />

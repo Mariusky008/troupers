@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 
 import Link from "next/link"
+import Image from "next/image"
 
 import { toast } from "sonner"
 import { createClient } from "@/lib/supabase/client"
@@ -740,6 +741,30 @@ export default function DashboardPage() {
           </div>
         </div>
       )}
+
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <Image src="/logo.png" alt="Troupers Logo" width={48} height={48} className="rounded-xl shadow-sm" />
+            <div>
+              <h1 className="text-3xl font-black text-slate-900 tracking-tight">
+                QG OPÉRATIONNEL
+              </h1>
+              <p className="text-slate-500 font-medium">
+                Bienvenue, Soldat {userProfile?.username || "Inconnu"}.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+             <div className="bg-white px-4 py-2 rounded-lg border shadow-sm flex items-center gap-2">
+               <Zap className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+               <span className="font-bold text-slate-700">{boostCredits} Crédits Boost</span>
+             </div>
+             <Button variant="outline" className="gap-2 font-bold border-2">
+               <Shield className="h-4 w-4" />
+               Escouade {mySquadId ? "Alpha" : "..."}
+             </Button>
+          </div>
+        </div>
 
       {/* Broadcast Channel Button for Everyone */}
       {!isAdmin && (
