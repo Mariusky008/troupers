@@ -15,7 +15,20 @@ export async function GET(request: Request) {
 
   if (code) {
     const supabase = await createClient();
-    await supabase.auth.exchangeCodeForSession(code);
+    const { data, error: authError } = await supabase.auth.exchangeCodeForSession(code);
+    
+    if (!authError && data?.user) {
+      // Force sync profile from metadata to ensure "Recrue" is replaced
+      const metadata = data.user.user_metadata;
+      if (metadata?.username || metadata?.full_name) {
+        await supabase.from('profiles').upsert({
+            id: data.user.id,
+            username: metadata.username || metadata.full_name,
+            full_name: metadata.full_name,
+            // Keep existing fields if any
+          }, { onConflict: 'id', ignoreDuplicates: false }); // We want to update
+      }
+    }
   }
 
   return NextResponse.redirect(`${origin}/onboarding`);
