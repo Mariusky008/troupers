@@ -10,6 +10,7 @@ import Link from "next/link"
 
 import { toast } from "sonner"
 import { createClient } from "@/lib/supabase/client"
+import { WelcomePopup } from "@/components/welcome-popup"
 
 export default function DashboardPage() {
   const [tasks, setTasks] = useState<any[]>([])
