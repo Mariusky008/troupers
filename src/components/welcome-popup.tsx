@@ -5,23 +5,27 @@ import { Button } from "@/components/ui/button"
 import { X, Rocket, Target, CheckCircle, Shield, TrendingUp } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 
-export function WelcomePopup() {
+export function WelcomePopup({ userId }: { userId?: string }) {
   const [isOpen, setIsOpen] = useState(false)
 
   useEffect(() => {
     // Clear localStorage for debugging if needed
     // localStorage.removeItem("troupers_welcome_seen_v1")
     
-    const hasSeenWelcome = localStorage.getItem("troupers_welcome_seen_v1")
+    // Use user-specific key to avoid cross-user state on same device
+    const key = userId ? `troupers_welcome_seen_${userId}` : "troupers_welcome_seen_v1"
+    const hasSeenWelcome = localStorage.getItem(key)
+    
     // Force popup on first load if key is missing
     if (!hasSeenWelcome) {
       setIsOpen(true)
     }
-  }, [])
+  }, [userId])
 
   const handleClose = () => {
     setIsOpen(false)
-    localStorage.setItem("troupers_welcome_seen_v1", "true")
+    const key = userId ? `troupers_welcome_seen_${userId}` : "troupers_welcome_seen_v1"
+    localStorage.setItem(key, "true")
   }
 
   const steps = [
