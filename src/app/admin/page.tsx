@@ -48,8 +48,8 @@ export default function AdminPage() {
         .from('profiles')
         .select('*')
         .not('email', 'is', null)
-        .not('username', 'is', null)
-        .neq('username', '') // Ensure username is not empty string
+        .not('email', 'like', '%troupers.dev%') // Filter out fake generated accounts
+        .not('email', 'like', '%fake%') // Extra safety
         .order('discipline_score', { ascending: false })
 
       setUsers(profiles || [])
