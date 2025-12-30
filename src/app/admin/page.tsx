@@ -193,7 +193,7 @@ export default function AdminPage() {
     <div className="space-y-8 p-8">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Image src="/logo.png" alt="Troupers Logo" width={64} height={64} className="rounded-xl shadow-sm" />
+          <Image src="/logo-v2.png" alt="Troupers Logo" width={64} height={64} className="rounded-xl shadow-sm" />
           <div>
             <h1 className="text-3xl font-bold">Administration Troupers</h1>
             <p className="text-muted-foreground">Suivi des performances des recrues</p>
