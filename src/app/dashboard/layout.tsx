@@ -14,7 +14,7 @@ export default function DashboardLayout({
 }) {
   const router = useRouter()
   const pathname = usePathname()
-  const [userProfile, setUserProfile] = useState<{username: string, avatar_url: string | null}>({username: "Membre", avatar_url: null})
+  const [userProfile, setUserProfile] = useState<{username: string, avatar_url: string | null}>({username: "Recrue", avatar_url: null})
   const supabase = createClient()
 
   useEffect(() => {
@@ -25,13 +25,26 @@ export default function DashboardLayout({
         return
       }
 
+      // Try fetching profile first
       const { data } = await supabase.from('profiles').select('username, avatar_url').eq('id', user.id).single()
-      if (data) {
-        setUserProfile({
-          username: data.username || "Membre",
-          avatar_url: data.avatar_url
-        })
+      
+      // Determine display name priority: Profile Username -> Metadata Username -> Email Name -> "Recrue"
+      let displayName = "Recrue"
+      
+      if (data?.username) {
+        displayName = data.username
+      } else if (user.user_metadata?.username) {
+        displayName = user.user_metadata.username
+      } else if (user.user_metadata?.full_name) {
+        displayName = user.user_metadata.full_name
+      } else if (user.email) {
+        displayName = user.email.split('@')[0]
       }
+
+      setUserProfile({
+        username: displayName,
+        avatar_url: data?.avatar_url || user.user_metadata?.avatar_url || null
+      })
     }
     getUser()
   }, [router, pathname]) // Re-fetch on navigation (e.g. after settings update)
