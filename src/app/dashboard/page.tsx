@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { CheckCircle, Upload, Clock, AlertCircle, ExternalLink, Heart, Lock, Shield, Eye, BarChart3, AlertTriangle, MessageSquareWarning, MessageCircle, Send } from "lucide-react"
+import { CheckCircle, Upload, Clock, AlertCircle, ExternalLink, Heart, Lock, Shield, Eye, BarChart3, AlertTriangle, MessageSquareWarning, MessageCircle, Send, Trophy, PartyPopper } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
 import { motion } from "framer-motion"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -663,9 +663,66 @@ export default function DashboardPage() {
               </div>
               
               {allTasksCompleted && tasks.length > 0 && (
-                <div className="bg-green-100 p-4 text-center text-green-800 font-medium border-t border-green-200">
-                  🎉 Bravo ! Toutes les missions sont validées. Repose-toi soldat.
-                </div>
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                  className="bg-gradient-to-r from-green-50 to-emerald-50 p-8 text-center border-t border-green-200 flex flex-col items-center gap-4"
+                >
+                  <motion.div
+                    initial={{ rotate: -10, scale: 0 }}
+                    animate={{ rotate: 10, scale: 1 }}
+                    transition={{ 
+                      type: "spring",
+                      stiffness: 260,
+                      damping: 20,
+                      delay: 0.2,
+                      repeat: Infinity,
+                      repeatType: "reverse",
+                      duration: 1.5
+                    }}
+                  >
+                    <Trophy className="h-16 w-16 text-yellow-500 fill-yellow-500 drop-shadow-md" />
+                  </motion.div>
+                  
+                  <div className="space-y-2">
+                    <motion.h3 
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.4 }}
+                      className="text-2xl font-bold text-green-800"
+                    >
+                      BRAVO SOLDAT ! 🎉
+                    </motion.h3>
+                    <motion.p 
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.6 }}
+                      className="text-green-700 font-medium text-lg"
+                    >
+                      Tu as été au bout de tes missions !!
+                    </motion.p>
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.9 }}
+                      className="text-sm text-green-600/80 italic"
+                    >
+                      Ton escouade te remercie. Repose-toi maintenant.
+                    </motion.p>
+                  </div>
+
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 1, type: "spring" }}
+                    className="flex gap-2"
+                  >
+                     <PartyPopper className="h-6 w-6 text-purple-500" />
+                     <PartyPopper className="h-6 w-6 text-blue-500" />
+                     <PartyPopper className="h-6 w-6 text-orange-500" />
+                  </motion.div>
+                </motion.div>
               )}
            </div>
 
