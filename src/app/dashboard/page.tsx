@@ -582,9 +582,11 @@ export default function DashboardPage() {
                   <Clock className="h-6 w-6 text-indigo-600" />
                   TES MISSIONS DU JOUR
                 </h2>
-                <p className="text-indigo-700/80 mt-1">
-                  Tu as jusqu'à <span className="font-bold">minuit</span> pour valider ces actions.
-                </p>
+                <div className="text-indigo-700/80 mt-2 space-y-1 text-sm">
+                  <p>Tu as jusqu'à <span className="font-bold">minuit</span> pour valider ces actions.</p>
+                  <p className="font-medium">1 : Clique sur la vidéo et accomplis ta mission</p>
+                  <p className="font-medium">2 : Une fois fait, valide ta mission en cliquant sur le rond.</p>
+                </div>
               </div>
               
               <div className="p-6 space-y-4 bg-card relative">
