@@ -17,6 +17,7 @@ export default function AdminPage() {
   const [boostWindows, setBoostWindows] = useState<any[]>([])
   const [boostVideoUrl, setBoostVideoUrl] = useState("")
   const [boostDuration, setBoostDuration] = useState("15") // minutes
+  const [scheduledTime, setScheduledTime] = useState("")
   const [loading, setLoading] = useState(true)
   const [isAdmin, setIsAdmin] = useState(false)
   const supabase = createClient()
@@ -138,7 +139,9 @@ export default function AdminPage() {
       if (!user) return
 
       const durationMinutes = parseInt(boostDuration)
-      const startsAt = new Date()
+      
+      // If scheduled time provided, use it, otherwise use NOW
+      const startsAt = scheduledTime ? new Date(scheduledTime) : new Date()
       const endsAt = new Date(startsAt.getTime() + durationMinutes * 60000)
 
       const { data, error } = await supabase
@@ -156,7 +159,14 @@ export default function AdminPage() {
 
       setBoostWindows([data, ...boostWindows])
       setBoostVideoUrl("")
-      toast.success(`Boost Window lancée pour ${durationMinutes} minutes !`)
+      setScheduledTime("")
+      
+      if (scheduledTime) {
+        toast.success(`Boost programmé pour ${startsAt.toLocaleTimeString()} !`)
+      } else {
+        toast.success(`Boost Window lancée pour ${durationMinutes} minutes !`)
+      }
+      
     } catch (error) {
       console.error(error)
       toast.error("Erreur lors de la création de la Boost Window")
@@ -310,8 +320,19 @@ export default function AdminPage() {
                        <option value="60">1 heure (Exceptionnel)</option>
                      </select>
                    </div>
+                   <div>
+                     <label className="text-sm font-medium">Programmer le démarrage (Optionnel)</label>
+                     <p className="text-xs text-muted-foreground mb-1">Laisser vide pour lancer immédiatement</p>
+                     <input 
+                       type="datetime-local" 
+                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                       value={scheduledTime}
+                       onChange={(e) => setScheduledTime(e.target.value)}
+                     />
+                   </div>
+
                    <Button onClick={handleCreateBoostWindow} className="w-full bg-orange-500 hover:bg-orange-600">
-                     🚀 ACTIVER LE BOOST MAINTENANT
+                     {scheduledTime ? "📅 PROGRAMMER LE BOOST" : "🚀 ACTIVER LE BOOST MAINTENANT"}
                    </Button>
                  </div>
               </div>

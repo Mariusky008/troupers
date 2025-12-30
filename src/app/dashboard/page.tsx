@@ -28,6 +28,7 @@ export default function DashboardPage() {
   
   // Boost Window State
   const [activeBoostWindow, setActiveBoostWindow] = useState<any>(null)
+  const [nextBoostWindow, setNextBoostWindow] = useState<any>(null)
   const [hasParticipatedInBoost, setHasParticipatedInBoost] = useState(false)
   const [boostCredits, setBoostCredits] = useState(0)
   
@@ -81,6 +82,8 @@ export default function DashboardPage() {
 
          // === FEATURE BOOST WINDOW ===
          const nowISO = new Date().toISOString()
+         
+         // 1. Check Active Window
          const { data: activeWindow } = await supabase
            .from('boost_windows')
            .select('*')
@@ -99,6 +102,19 @@ export default function DashboardPage() {
               .single()
             
             if (participation) setHasParticipatedInBoost(true)
+         } else {
+            // 2. If no active window, check NEXT Scheduled Window
+            const { data: nextWindow } = await supabase
+               .from('boost_windows')
+               .select('*')
+               .gt('starts_at', nowISO)
+               .order('starts_at', { ascending: true })
+               .limit(1)
+               .single()
+            
+            if (nextWindow) {
+               setNextBoostWindow(nextWindow)
+            }
          }
 
          // Calculate days since creation for "Progression"
@@ -581,7 +597,7 @@ export default function DashboardPage() {
       <WelcomePopup userId={userProfile?.id} />
       
       {/* === BOOST WINDOW BANNER === */}
-        {activeBoostWindow && (
+        {activeBoostWindow ? (
           <motion.div 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -675,7 +691,35 @@ export default function DashboardPage() {
                </div>
              </div>
           </motion.div>
-        )}
+        ) : nextBoostWindow ? (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full rounded-xl border border-blue-500/30 bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-purple-500/10 p-6 relative overflow-hidden mb-6"
+          >
+             <div className="absolute top-0 right-0 p-4 opacity-10">
+               <Clock className="h-24 w-24 text-blue-500" />
+             </div>
+             
+             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+               <div className="flex items-center gap-4">
+                 <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
+                   <Clock className="h-6 w-6 text-blue-600" />
+                 </div>
+                 <div>
+                   <h3 className="text-xl font-black text-blue-900 uppercase tracking-tight">Prochain Boost Programmé</h3>
+                   <p className="text-sm text-blue-800/80 font-medium">
+                     Prépare-toi soldat ! L'assaut commence à <span className="font-bold text-blue-900 bg-blue-200 px-1 rounded">{new Date(nextBoostWindow.starts_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                   </p>
+                 </div>
+               </div>
+
+               <div className="bg-white/80 backdrop-blur px-4 py-3 rounded-lg border border-blue-100 text-sm font-medium text-blue-800 shadow-sm max-w-md">
+                  💡 Astuce : Cumule des crédits pour que TA vidéo soit la prochaine cible !
+               </div>
+             </div>
+          </motion.div>
+        ) : null}
 
       {/* Header Stats */}
       {isAdmin && (
