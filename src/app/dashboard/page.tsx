@@ -20,6 +20,7 @@ export default function DashboardPage() {
   const [isEditingVideo, setIsEditingVideo] = useState(false)
   const [userProfile, setUserProfile] = useState<any>(null)
   const [squadMembers, setSquadMembers] = useState<any[]>([])
+  const [mySquadId, setMySquadId] = useState<string | null>(null)
   const [dayProgress, setDayProgress] = useState(1)
   const [isFullyOnboarded, setIsFullyOnboarded] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
@@ -29,7 +30,7 @@ export default function DashboardPage() {
   const [missingSupporters, setMissingSupporters] = useState<any[]>([])
   const [missingSupportersYesterday, setMissingSupportersYesterday] = useState<any[]>([])
   const [videoTrackingData, setVideoTrackingData] = useState<any[]>([])
-  // Track which videos have been viewed in the current session
+  // Track which videos have been viewed in the current session (using Target User ID to be unique)
   const [viewedVideos, setViewedVideos] = useState<Set<string>>(new Set())
 
   // Load from session storage on mount
@@ -86,6 +87,7 @@ export default function DashboardPage() {
          if (membership) {
             // === CHAT SETUP ===
             const squadId = membership.squad_id
+            setMySquadId(squadId)
             
             // Load initial messages
             const { data: initialMessages } = await supabase
@@ -197,13 +199,6 @@ export default function DashboardPage() {
                setVideoTrackingData(videoTracking || [])
 
                const newTasks = [
-                 { 
-                   id: 1, 
-                   text: "Publier 1 vidéo TikTok", 
-                   completed: false,
-                   actionLabel: "Ouvrir TikTok Studio",
-                   actionUrl: "https://www.tiktok.com/creator-center/upload"
-                 },
                  ...allMembers.map((m: any, index: number) => {
                    // Determine Action Text based on history
                    const videoUrl = m.profiles?.current_video_url || "https://tiktok.com"
@@ -248,18 +243,12 @@ export default function DashboardPage() {
                      targetUserId: m.user_id
                    }
                  })
-               ]
+               ].filter(t => !t.text.toLowerCase().includes('publier 1 vidéo') && !t.text.toLowerCase().includes('tiktok studio')) // Filter out potential ghost tasks
+               
                setTasks(newTasks)
             } else {
                // Fallback if alone in squad
                setTasks([
-                 { 
-                   id: 1, 
-                   text: "Publier 1 vidéo TikTok", 
-                   completed: false,
-                   actionLabel: "Ouvrir TikTok Studio",
-                   actionUrl: "https://www.tiktok.com/creator-center/upload"
-                 },
                  {
                    id: 99,
                    text: "Inviter des amis dans l'escouade",
@@ -272,15 +261,7 @@ export default function DashboardPage() {
             }
          } else {
             // Not in a squad yet?
-            setTasks([
-                 { 
-                   id: 1, 
-                   text: "Publier 1 vidéo TikTok", 
-                   completed: false,
-                   actionLabel: "Ouvrir TikTok Studio",
-                   actionUrl: "https://www.tiktok.com/creator-center/upload"
-                 }
-            ])
+            setTasks([])
             setIsFullyOnboarded(true)
          }
 
@@ -363,8 +344,12 @@ export default function DashboardPage() {
     }
   }
 
-  const handleViewVideo = (videoUrl: string) => {
-    setViewedVideos(prev => new Set(prev).add(videoUrl))
+  const handleViewVideo = (targetId: string) => {
+    setViewedVideos(prev => {
+      const newSet = new Set(prev).add(targetId)
+      sessionStorage.setItem('viewedVideos', JSON.stringify(Array.from(newSet)))
+      return newSet
+    })
   }
 
   const toggleTask = async (id: number) => {
@@ -373,7 +358,7 @@ export default function DashboardPage() {
     const task = tasks[taskIndex]
     
     // Prevent toggling if video hasn't been viewed (unless it's already completed or not a video task)
-    if (task.actionUrl && !task.completed && !viewedVideos.has(task.actionUrl)) {
+    if (task.actionUrl && !task.completed && !viewedVideos.has(task.targetUserId)) {
        toast.error("Action impossible", { 
          description: "Tu dois d'abord voir la vidéo avant de valider la mission !",
          icon: <Lock className="h-4 w-4 text-orange-500" />
@@ -395,11 +380,53 @@ export default function DashboardPage() {
           try {
              const { data: { user } } = await supabase.auth.getUser()
              if (user) {
+                // 0. Send Chat Notification
+                if (mySquadId) {
+                   // Robust text matching and username retrieval
+                   const targetMember = squadMembers.find(m => m.user_id === task.targetUserId)
+                   const targetName = targetMember?.profiles?.username || "un membre"
+                   
+                   let messageContent = ""
+                   
+                   if (task.text.includes("Liker")) {
+                      messageContent = `J'ai liké la vidéo de ${targetName} ! ❤️`
+                   } else if (task.text.includes("Commenter")) {
+                      messageContent = `J'ai commenté la vidéo de ${targetName} ! 💬`
+                   } else if (task.text.includes("favoris")) {
+                      messageContent = `J'ai ajouté la vidéo de ${targetName} aux favoris ! ⭐`
+                   }
+
+                   if (messageContent) {
+                      const { error: msgError } = await supabase.from('squad_messages').insert({
+                         squad_id: mySquadId,
+                         user_id: user.id,
+                         username: userProfile?.username || "Soldat",
+                         content: messageContent
+                      })
+                      
+                      if (msgError) {
+                         console.error("Erreur notification chat:", msgError)
+                      }
+                   }
+                } else {
+                   // Fallback try fetch if state is empty (rare)
+                   const { data: membership } = await supabase.from('squad_members').select('squad_id').eq('user_id', user.id).single()
+                   if (membership) {
+                       // Retry logic could go here but let's keep it simple
+                       console.log("Squad ID missing from state, fetched:", membership.squad_id)
+                   }
+                }
+
                 // 1. Log Daily Support (for visual stats)
-                await supabase.from('daily_supports').insert({
+                const { error: supportError } = await supabase.from('daily_supports').insert({
                    supporter_id: user.id,
                    target_user_id: task.targetUserId
                 })
+                
+                if (supportError) {
+                  console.error("Support insert error:", supportError)
+                  toast.error("Erreur de sauvegarde de la mission")
+                }
 
                 // 2. Log Video Tracking (for rotation logic)
                 const { data: tracking, error: trackingError } = await supabase
@@ -599,7 +626,7 @@ export default function DashboardPage() {
               </div>
               
               <div className="p-6 space-y-4 bg-card relative">
-                  {!isFullyOnboarded && (
+                  {!isFullyOnboarded ? (
                     <div className="absolute inset-0 z-10 bg-background/80 backdrop-blur-[2px] flex flex-col items-center justify-center text-center p-4">
                       <Lock className="h-12 w-12 text-muted-foreground mb-2" />
                       <h3 className="text-lg font-bold text-foreground">Missions Verrouillées</h3>
@@ -612,7 +639,21 @@ export default function DashboardPage() {
                         </Link>
                       </Button>
                     </div>
-                  )}
+                  ) : !myVideoUrl ? (
+                    <div className="absolute inset-0 z-10 bg-background/80 backdrop-blur-[2px] flex flex-col items-center justify-center text-center p-4">
+                      <AlertCircle className="h-12 w-12 text-orange-500 mb-2" />
+                      <h3 className="text-lg font-bold text-foreground">Missions Verrouillées</h3>
+                      <p className="text-sm text-muted-foreground mb-4 max-w-xs">
+                        Tu dois ajouter le lien de ta vidéo pour accéder aux missions. "Pas de lien = Pas de soutien !"
+                      </p>
+                      <Button onClick={() => {
+                        setIsEditingVideo(true)
+                        window.scrollTo({ top: 0, behavior: 'smooth' })
+                      }}>
+                        Ajouter ma vidéo
+                      </Button>
+                    </div>
+                  ) : null}
                   {tasks.length === 0 ? (
                     <div className="text-center py-12">
                       <p className="text-muted-foreground">Aucune mission pour le moment.</p>
@@ -624,14 +665,14 @@ export default function DashboardPage() {
                         className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border p-4 transition-all hover:shadow-md ${task.completed ? 'bg-green-50 border-green-200' : 'bg-background hover:border-indigo-200'} ${(!isFullyOnboarded || !myVideoUrl) ? 'opacity-50 pointer-events-none' : ''}`}
                       >
                         <div 
-                          className={`flex items-center gap-4 flex-1 ${!task.completed && task.actionUrl && !viewedVideos.has(task.actionUrl) ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'}`}
-                          onClick={() => toggleTask(task.id)}
-                        >
-                          <div
-                            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 transition-all ${task.completed ? 'bg-green-500 border-green-500 text-white shadow-sm' : (!task.completed && task.actionUrl && !viewedVideos.has(task.actionUrl) ? 'border-gray-300 bg-gray-100' : 'border-muted-foreground/30 bg-muted/10')}`}
+                            className={`flex items-center gap-4 flex-1 ${!task.completed && task.actionUrl && !viewedVideos.has(task.targetUserId) ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'}`}
+                            onClick={() => toggleTask(task.id)}
                           >
-                            {task.completed ? <CheckCircle className="h-5 w-5" /> : (!task.completed && task.actionUrl && !viewedVideos.has(task.actionUrl) ? <Lock className="h-4 w-4 text-gray-400" /> : null)}
-                          </div>
+                            <div
+                              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 transition-all ${task.completed ? 'bg-green-500 border-green-500 text-white shadow-sm' : (!task.completed && task.actionUrl && !viewedVideos.has(task.targetUserId) ? 'border-gray-300 bg-gray-100' : 'border-muted-foreground/30 bg-muted/10')}`}
+                            >
+                              {task.completed ? <CheckCircle className="h-5 w-5" /> : (!task.completed && task.actionUrl && !viewedVideos.has(task.targetUserId) ? <Lock className="h-4 w-4 text-gray-400" /> : null)}
+                            </div>
                           <div className="space-y-1">
                              <span className={`font-semibold text-base ${task.completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
                                {task.text}
@@ -642,7 +683,7 @@ export default function DashboardPage() {
                         
                         {task.actionUrl && !task.completed && (
                            <Button 
-                             className={`shrink-0 text-white shadow-sm ${viewedVideos.has(task.actionUrl) ? 'bg-green-600 hover:bg-green-700' : 'bg-indigo-600 hover:bg-indigo-700'}`} 
+                             className={`shrink-0 text-white shadow-sm ${viewedVideos.has(task.targetUserId) ? 'bg-green-600 hover:bg-green-700' : 'bg-indigo-600 hover:bg-indigo-700'}`} 
                              asChild
                            >
                              <a 
@@ -650,9 +691,9 @@ export default function DashboardPage() {
                                target="_blank" 
                                rel="noopener noreferrer" 
                                className="flex items-center gap-2"
-                               onClick={() => handleViewVideo(task.actionUrl)}
+                               onClick={() => handleViewVideo(task.targetUserId)}
                              >
-                               {viewedVideos.has(task.actionUrl) ? "Revoir la vidéo" : task.actionLabel}
+                               {viewedVideos.has(task.targetUserId) ? "Revoir la vidéo" : task.actionLabel}
                                <ExternalLink className="h-4 w-4" />
                              </a>
                            </Button>
@@ -839,7 +880,7 @@ export default function DashboardPage() {
               <div className="rounded-xl border bg-card p-4 shadow-sm flex items-center justify-between">
                 <div>
                    <p className="text-xs text-muted-foreground font-medium uppercase">Ta Fiabilité</p>
-                   {dayProgress <= 3 ? (
+                   {dayProgress <= 3 && !allTasksCompleted ? (
                       <div className="flex items-center gap-2 mt-1">
                         <span className="text-lg font-bold text-yellow-600">En Probation</span>
                         <AlertCircle className="h-5 w-5 text-yellow-500" />
