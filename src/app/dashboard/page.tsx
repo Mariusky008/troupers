@@ -158,6 +158,15 @@ export default function DashboardPage() {
                const missingToday = allMembers.filter((m: any) => !supporterIdsToday.has(m.user_id))
                setMissingSupporters(missingToday)
 
+               // 1b. Fetch Today's supports GIVEN (for My Missions)
+               const { data: supportsGiven } = await supabase
+                 .from('daily_supports')
+                 .select('target_user_id')
+                 .eq('supporter_id', user.id)
+                 .gte('created_at', today)
+               
+               const supportedIdsToday = new Set(supportsGiven?.map((s: any) => s.target_user_id))
+
                // 2. Fetch Yesterday's supports
                const { data: supportsYesterday } = await supabase
                  .from('daily_supports')
@@ -204,7 +213,7 @@ export default function DashboardPage() {
                    
                    let count = record?.action_count || 0
                    // If completed today, show the action that was just done (count - 1)
-                   if (supporterIdsToday.has(m.user_id) && count > 0) {
+                   if (supportedIdsToday.has(m.user_id) && count > 0) {
                       count = count - 1
                    }
                    
@@ -233,7 +242,7 @@ export default function DashboardPage() {
                      id: index + 2,
                      text: actionText,
                      icon: actionIcon,
-                     completed: supporterIdsToday.has(m.user_id),
+                     completed: supportedIdsToday.has(m.user_id),
                      actionLabel: "Voir la vidéo",
                      actionUrl: videoUrl,
                      targetUserId: m.user_id
