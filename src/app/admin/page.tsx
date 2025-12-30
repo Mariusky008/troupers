@@ -9,7 +9,7 @@ import { Mail, ShieldAlert, AlertTriangle, CheckCircle, XCircle, AlertCircle, Za
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import Image from "next/image"
+import { GlitchLogo } from "@/components/ui/glitch-logo"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export default function AdminPage() {
@@ -193,7 +193,7 @@ export default function AdminPage() {
     <div className="space-y-8 p-8">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Image src="/logo-v2.png" alt="Troupers Logo" width={64} height={64} className="rounded-xl shadow-sm" />
+          <GlitchLogo width={64} height={64} className="rounded-xl shadow-sm" imageClassName="rounded-xl" />
           <div>
             <h1 className="text-3xl font-bold">Administration Troupers</h1>
             <p className="text-muted-foreground">Suivi des performances des recrues</p>

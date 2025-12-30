@@ -11,7 +11,7 @@ import { Transparency } from "@/components/landing/Transparency"
 import { FinalCTA } from "@/components/landing/FinalCTA"
 import Link from "next/link"
 import { Shield } from "lucide-react"
-import Image from "next/image"
+import { GlitchLogo } from "@/components/ui/glitch-logo"
 import { Button } from "@/components/ui/button"
 
 export default function Home() {
@@ -19,13 +19,12 @@ export default function Home() {
     <main className="flex min-h-screen flex-col">
       <nav className="absolute top-0 w-full z-50 p-6 flex justify-between items-center container mx-auto">
         <div className="flex items-center gap-2">
-           <Image 
-             src="/logo-v2.png" 
-             alt="Troupers Logo" 
+           <GlitchLogo 
              width={0} 
              height={0} 
              sizes="100vw"
-             className="rounded-lg h-32 w-auto" 
+             imageClassName="h-32 w-auto rounded-lg"
+             className="rounded-lg"
            />
         </div>
         <div className="flex gap-4">
