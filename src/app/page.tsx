@@ -25,7 +25,7 @@ export default function Home() {
              width={0} 
              height={0} 
              sizes="100vw"
-             className="rounded-lg h-10 w-auto" 
+             className="rounded-lg h-20 w-auto" 
            />
         </div>
         <div className="flex gap-4">
