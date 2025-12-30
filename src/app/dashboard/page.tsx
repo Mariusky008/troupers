@@ -599,7 +599,7 @@ export default function DashboardPage() {
 
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
            <div className="flex items-center gap-4">
-             <Image src="/logo.png" alt="Troupers Logo" width={48} height={48} className="rounded-xl shadow-sm" />
+             <Image src="/logo.png" alt="Troupers Logo" width={64} height={64} className="rounded-xl shadow-sm" priority />
              <div>
                <h1 className="text-3xl font-black text-slate-900 tracking-tight">
                  QG OPÉRATIONNEL
