@@ -28,56 +28,64 @@ export function BoostWindowFeature() {
           </p>
         </div>
 
-        {/* 3: Visuel Central (Timeline) */}
-        <div className="mb-20">
-          <div className="relative h-48 md:h-64 flex items-end justify-center max-w-4xl mx-auto">
-            {/* Base line */}
-            <div className="absolute bottom-0 w-full h-px bg-slate-800" />
-            
-            {/* Timeline Labels */}
-            <div className="absolute bottom-[-30px] w-full flex justify-between text-xs text-slate-500 font-mono">
-              <span>17:00</span>
-              <span className="text-yellow-500 font-bold">18:00 (START)</span>
-              <span className="text-yellow-500 font-bold">18:30 (END)</span>
-              <span>19:30</span>
-            </div>
+        {/* 3: Visuel Central (Video UI) */}
+        <div className="mb-20 flex justify-center">
+          <div className="relative w-[300px] h-[530px] bg-black rounded-3xl border-4 border-slate-800 shadow-2xl overflow-hidden group">
+             {/* Screen Content */}
+             <div className="absolute inset-0 bg-slate-900">
+                {/* Video Placeholder */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                   <div className="text-slate-700 font-black text-6xl opacity-20">VIDEO</div>
+                </div>
+                
+                {/* TikTok UI Overlay */}
+                <div className="absolute right-4 bottom-20 flex flex-col gap-6 items-center">
+                   <div className="flex flex-col items-center gap-1">
+                      <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center animate-[pulse_0.2s_ease-in-out_infinite]">
+                         <span className="text-xl">❤️</span>
+                      </div>
+                      <span className="text-xs font-bold animate-[bounce_0.2s_infinite]">12.4K</span>
+                   </div>
+                   <div className="flex flex-col items-center gap-1">
+                      <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center animate-[pulse_0.3s_ease-in-out_infinite]">
+                         <span className="text-xl">💬</span>
+                      </div>
+                      <span className="text-xs font-bold animate-[bounce_0.3s_infinite]">842</span>
+                   </div>
+                   <div className="flex flex-col items-center gap-1">
+                      <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center animate-[pulse_0.4s_ease-in-out_infinite]">
+                         <span className="text-xl">↗️</span>
+                      </div>
+                      <span className="text-xs font-bold animate-[bounce_0.4s_infinite]">315</span>
+                   </div>
+                </div>
 
-            {/* Bars Container */}
-            <div className="flex items-end gap-1 md:gap-2 w-full h-full px-8 pb-px">
-               {/* Before */}
-               {Array.from({ length: 15 }).map((_, i) => (
-                 <div key={`pre-${i}`} className="flex-1 bg-slate-800/80 rounded-t-sm border-t border-slate-700/50" style={{ height: `${Math.random() * 10 + 5}%` }} />
-               ))}
-               
-               {/* THE WINDOW */}
-               <div className="flex-[10] flex items-end gap-1 relative group mx-2">
-                  <div className="absolute -top-16 left-1/2 -translate-x-1/2 flex flex-col items-center z-20">
-                    <div className="bg-yellow-500 text-slate-950 text-sm font-black px-4 py-2 rounded shadow-[0_0_30px_rgba(234,179,8,0.8)] animate-bounce whitespace-nowrap uppercase tracking-wider border-2 border-white">
-                      ⚡️ BOOST WINDOW ⚡️
-                    </div>
-                    <div className="w-0.5 h-8 bg-yellow-500/50" />
-                  </div>
-                  
-                  {/* Highlight Glow */}
-                  <div className="absolute inset-0 bg-yellow-500/20 blur-xl rounded-t-xl" />
-                  
-                  {Array.from({ length: 20 }).map((_, i) => (
-                    <div 
-                      key={`boost-${i}`} 
-                      className="flex-1 bg-gradient-to-t from-yellow-600 via-yellow-300 to-white rounded-t-sm shadow-[0_0_10px_rgba(234,179,8,0.5)] animate-[pulse_0.2s_ease-in-out_infinite]" 
-                      style={{ 
-                        height: `${Math.random() * 50 + 50}%`,
-                        animationDelay: `${i * 0.02}s`
-                      }} 
-                    />
-                  ))}
-               </div>
+                {/* Bottom Info */}
+                <div className="absolute bottom-4 left-4 right-16">
+                   <div className="w-24 h-4 bg-slate-800 rounded mb-2 animate-pulse" />
+                   <div className="w-48 h-3 bg-slate-800/50 rounded animate-pulse" />
+                </div>
 
-               {/* After */}
-               {Array.from({ length: 15 }).map((_, i) => (
-                 <div key={`post-${i}`} className="flex-1 bg-slate-800/80 rounded-t-sm border-t border-slate-700/50" style={{ height: `${Math.random() * 15 + 10}%` }} />
-               ))}
-            </div>
+                {/* EXPLOSION OVERLAY */}
+                <div className="absolute inset-0 bg-gradient-to-t from-yellow-500/20 via-transparent to-transparent animate-pulse pointer-events-none" />
+                
+                {/* NOTIFICATIONS BURST */}
+                <div className="absolute top-1/4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 w-full px-4">
+                   <div className="bg-black/80 backdrop-blur-md text-yellow-400 text-xs font-bold px-3 py-1.5 rounded-full border border-yellow-500/30 shadow-lg animate-[bounce_0.5s_infinite] flex items-center gap-2">
+                      <Zap className="h-3 w-3 fill-yellow-400" />
+                      BOOST WINDOW ACTIVE
+                   </div>
+                   
+                   <div className="flex flex-col-reverse gap-1 h-32 overflow-hidden w-full items-center mask-image-gradient">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                         <div key={i} className="flex items-center gap-2 bg-slate-800/90 text-white text-[10px] px-3 py-1 rounded-full animate-[slideUp_0.5s_ease-out_infinite]" style={{ animationDelay: `${i * 0.1}s` }}>
+                            <span className="w-4 h-4 rounded-full bg-gradient-to-br from-blue-400 to-purple-500" />
+                            <b>User{Math.floor(Math.random() * 99)}</b> a aimé ta vidéo
+                         </div>
+                      ))}
+                   </div>
+                </div>
+             </div>
           </div>
         </div>
 
