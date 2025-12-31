@@ -1,4 +1,5 @@
 import { Hero } from "@/components/landing/Hero"
+import { BoostWindowFeature } from "@/components/landing/BoostWindowFeature"
 import { Problem } from "@/components/landing/Problem"
 import { Truth } from "@/components/landing/Truth"
 import { Solution } from "@/components/landing/Solution"
@@ -38,6 +39,7 @@ export default function Home() {
         </div>
       </nav>
       <Hero />
+      <BoostWindowFeature />
       <Problem />
       <Truth />
       <Solution />
