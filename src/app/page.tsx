@@ -4,6 +4,7 @@ import { Truth } from "@/components/landing/Truth"
 import { Solution } from "@/components/landing/Solution"
 import { HowItWorks } from "@/components/landing/HowItWorks"
 import { AntiFeatures } from "@/components/landing/AntiFeatures"
+import { MarketPosition } from "@/components/landing/MarketPosition"
 import { FreeTrial } from "@/components/landing/FreeTrial"
 import { Pricing } from "@/components/landing/Pricing"
 import { TargetAudience } from "@/components/landing/TargetAudience"
@@ -42,6 +43,7 @@ export default function Home() {
       <Solution />
       <HowItWorks />
       <AntiFeatures />
+      <MarketPosition />
       <FreeTrial />
       <Pricing />
       <TargetAudience />

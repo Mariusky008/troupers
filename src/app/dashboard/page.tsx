@@ -753,7 +753,8 @@ export default function DashboardPage() {
                </div>
 
                <div className="bg-white/80 backdrop-blur px-4 py-3 rounded-lg border border-blue-100 text-sm font-medium text-blue-800 shadow-sm max-w-md">
-                  💡 En participant au prochain Boost Window tu gagnes des points qui te permettront de devenir la prochaine cible (la cible est la vidéo qui sera likée, partagée, commentée par tous les membres TROUPERS)
+                  💡 Participer au prochain Boost pour gagner des points et devenir la prochaine cible. <br/>
+                  "la cible" : c'est la vidéo qui est likée, partagée, commentée par tous les membres TROUPERS pendant 15 minutes &#128561;
                </div>
              </div>
           </motion.div>
