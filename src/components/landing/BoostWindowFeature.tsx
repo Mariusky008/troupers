@@ -29,60 +29,76 @@ export function BoostWindowFeature() {
         </div>
 
         {/* 3: Visuel Central (Video UI) */}
-        <div className="mb-20 flex justify-center">
-          <div className="relative w-[300px] h-[530px] bg-black rounded-3xl border-4 border-slate-800 shadow-2xl overflow-hidden group">
-             {/* Screen Content */}
-             <div className="absolute inset-0 bg-slate-900">
-                {/* Video Placeholder */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                   <div className="text-slate-700 font-black text-6xl opacity-20">VIDEO</div>
-                </div>
-                
-                {/* TikTok UI Overlay */}
-                <div className="absolute right-4 bottom-20 flex flex-col gap-6 items-center">
-                   <div className="flex flex-col items-center gap-1">
-                      <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center animate-[pulse_0.2s_ease-in-out_infinite]">
-                         <span className="text-xl">❤️</span>
-                      </div>
-                      <span className="text-xs font-bold animate-[bounce_0.2s_infinite]">12.4K</span>
-                   </div>
-                   <div className="flex flex-col items-center gap-1">
-                      <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center animate-[pulse_0.3s_ease-in-out_infinite]">
-                         <span className="text-xl">💬</span>
-                      </div>
-                      <span className="text-xs font-bold animate-[bounce_0.3s_infinite]">842</span>
-                   </div>
-                   <div className="flex flex-col items-center gap-1">
-                      <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center animate-[pulse_0.4s_ease-in-out_infinite]">
-                         <span className="text-xl">↗️</span>
-                      </div>
-                      <span className="text-xs font-bold animate-[bounce_0.4s_infinite]">315</span>
-                   </div>
-                </div>
+        <div className="mb-20 flex justify-center relative h-[600px] items-center">
+          
+          {/* External Signal - Outside Phone */}
+          <div className="absolute top-0 z-20 flex flex-col items-center animate-bounce">
+             <div className="bg-yellow-500 text-slate-950 font-black text-lg px-6 py-2 uppercase rounded-full border-4 border-slate-900 shadow-[0_0_40px_rgba(234,179,8,0.6)] flex items-center gap-2">
+               ⚡️ Boost Window Active ⚡️
+             </div>
+             {/* Energy Beam */}
+             <div className="w-1 h-16 bg-gradient-to-b from-yellow-500 to-transparent" />
+          </div>
 
-                {/* Bottom Info */}
-                <div className="absolute bottom-4 left-4 right-16">
-                   <div className="w-24 h-4 bg-slate-800 rounded mb-2 animate-pulse" />
-                   <div className="w-48 h-3 bg-slate-800/50 rounded animate-pulse" />
-                </div>
-
-                {/* EXPLOSION OVERLAY */}
-                <div className="absolute inset-0 bg-gradient-to-t from-yellow-500/20 via-transparent to-transparent animate-pulse pointer-events-none" />
-                
-                {/* NOTIFICATIONS BURST */}
-                <div className="absolute top-1/4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 w-full px-4">
-                   <div className="bg-black/80 backdrop-blur-md text-yellow-400 text-xs font-bold px-3 py-1.5 rounded-full border border-yellow-500/30 shadow-lg animate-[bounce_0.5s_infinite] flex items-center gap-2">
-                      <Zap className="h-3 w-3 fill-yellow-400" />
-                      BOOST WINDOW ACTIVE
+          {/* The Phone */}
+          <div className="relative w-[280px] h-[500px] bg-slate-950 rounded-[2.5rem] border-8 border-slate-900 shadow-2xl overflow-hidden mt-8 ring-1 ring-white/10 group">
+             {/* Screen */}
+             <div className="absolute inset-0 bg-gray-900 flex flex-col">
+                {/* Video simulation */}
+                <div className="flex-1 relative overflow-hidden">
+                   {/* Abstract Video Content */}
+                   <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-slate-900">
+                      <div className="absolute inset-0 flex items-center justify-center">
+                         <div className="w-20 h-20 rounded-full bg-white/5 animate-ping" />
+                      </div>
                    </div>
                    
-                   <div className="flex flex-col-reverse gap-1 h-32 overflow-hidden w-full items-center mask-image-gradient">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                         <div key={i} className="flex items-center gap-2 bg-slate-800/90 text-white text-[10px] px-3 py-1 rounded-full animate-[slideUp_0.5s_ease-out_infinite]" style={{ animationDelay: `${i * 0.1}s` }}>
-                            <span className="w-4 h-4 rounded-full bg-gradient-to-br from-blue-400 to-purple-500" />
-                            <b>User{Math.floor(Math.random() * 99)}</b> a aimé ta vidéo
+                   {/* TikTok UI Overlay */}
+                   <div className="absolute right-2 bottom-16 flex flex-col gap-6 items-center p-2 z-10">
+                      <div className="flex flex-col items-center gap-1">
+                         <div className="w-10 h-10 rounded-full bg-slate-800/80 backdrop-blur-sm flex items-center justify-center">
+                            <span className="text-xl animate-[pulse_0.15s_ease-in-out_infinite]">❤️</span>
                          </div>
-                      ))}
+                         <span className="text-white font-bold text-xs shadow-black drop-shadow-md">12.5k</span>
+                      </div>
+                      <div className="flex flex-col items-center gap-1">
+                         <div className="w-10 h-10 rounded-full bg-slate-800/80 backdrop-blur-sm flex items-center justify-center">
+                            <span className="text-xl animate-[pulse_0.2s_ease-in-out_infinite]">💬</span>
+                         </div>
+                         <span className="text-white font-bold text-xs shadow-black drop-shadow-md">842</span>
+                      </div>
+                      <div className="flex flex-col items-center gap-1">
+                         <div className="w-10 h-10 rounded-full bg-slate-800/80 backdrop-blur-sm flex items-center justify-center">
+                            <span className="text-xl animate-[pulse_0.3s_ease-in-out_infinite]">↗️</span>
+                         </div>
+                         <span className="text-white font-bold text-xs shadow-black drop-shadow-md">315</span>
+                      </div>
+                   </div>
+
+                   {/* Bottom Info */}
+                   <div className="absolute bottom-4 left-4 right-16 z-10">
+                      <div className="w-24 h-4 bg-slate-800/50 backdrop-blur-sm rounded mb-2" />
+                      <div className="w-48 h-3 bg-slate-800/30 backdrop-blur-sm rounded" />
+                   </div>
+
+                   {/* Incoming Engagement Animation */}
+                   <div className="absolute inset-0 pointer-events-none">
+                      {/* Notifications sliding down */}
+                      <div className="absolute top-12 left-2 right-2 flex flex-col gap-2 items-center">
+                         {Array.from({ length: 4 }).map((_, i) => (
+                            <div 
+                              key={i} 
+                              className="w-full bg-white/10 backdrop-blur-md border border-white/10 p-2 rounded-lg flex items-center gap-2 animate-[slideDown_0.5s_ease-out_infinite]"
+                              style={{ animationDelay: `${i * 0.15}s`, animationFillMode: 'both' }}
+                            >
+                               <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-pink-500" />
+                               <div className="flex-1">
+                                  <div className="h-2 w-20 bg-white/20 rounded mb-1" />
+                                  <div className="h-1.5 w-32 bg-white/10 rounded" />
+                               </div>
+                            </div>
+                         ))}
+                      </div>
                    </div>
                 </div>
              </div>
