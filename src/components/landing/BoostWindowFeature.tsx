@@ -1,8 +1,60 @@
-import { Zap, Clock, TrendingUp, Check, Users, Activity } from "lucide-react"
+"use client"
+
+import { Zap, Clock, TrendingUp, Check, Users, Activity, Heart, MessageCircle, Share2, Music2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { useEffect, useState } from "react"
+import Image from "next/image"
 
 export function BoostWindowFeature() {
+  const [likes, setLikes] = useState(142)
+  const [comments, setComments] = useState(12)
+  const [shares, setShares] = useState(4)
+  const [isBoosting, setIsBoosting] = useState(false)
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout
+    let boostTimeout: NodeJS.Timeout
+    
+    // Reset cycle
+    const startCycle = () => {
+      setLikes(142)
+      setComments(12)
+      setShares(4)
+      setIsBoosting(false)
+
+      // Phase 1: Slow organic growth (0-3s)
+      interval = setInterval(() => {
+        setLikes(prev => prev + 1)
+        if (Math.random() > 0.7) setComments(prev => prev + 1)
+      }, 800)
+
+      // Phase 2: BOOST START (at 3s)
+      boostTimeout = setTimeout(() => {
+        clearInterval(interval)
+        setIsBoosting(true)
+        
+        // Rapid growth
+        interval = setInterval(() => {
+          setLikes(prev => prev + Math.floor(Math.random() * 15) + 5)
+          setComments(prev => prev + Math.floor(Math.random() * 5) + 1)
+          setShares(prev => prev + Math.floor(Math.random() * 3))
+        }, 100)
+      }, 3000)
+    }
+
+    startCycle()
+    
+    // Restart every 8 seconds
+    const cycleInterval = setInterval(startCycle, 8000)
+
+    return () => {
+      clearInterval(interval)
+      clearTimeout(boostTimeout)
+      clearInterval(cycleInterval)
+    }
+  }, [])
+
   return (
     <section className="py-24 md:py-32 bg-slate-950 text-white relative overflow-hidden">
       {/* Background Pulse Effect */}
@@ -28,78 +80,138 @@ export function BoostWindowFeature() {
           </p>
         </div>
 
-        {/* 3: Visuel Central (Video UI) */}
+        {/* 3: Visuel Central (Phone UI) */}
         <div className="mb-20 flex justify-center relative h-[600px] items-center">
           
           {/* External Signal - Outside Phone */}
-          <div className="absolute top-0 z-20 flex flex-col items-center animate-bounce">
-             <div className="bg-yellow-500 text-slate-950 font-black text-lg px-6 py-2 uppercase rounded-full border-4 border-slate-900 shadow-[0_0_40px_rgba(234,179,8,0.6)] flex items-center gap-2">
+          <div className={`absolute top-0 z-20 flex flex-col items-center transition-all duration-500 ${isBoosting ? 'opacity-100 translate-y-0 scale-110' : 'opacity-0 -translate-y-10 scale-90'}`}>
+             <div className="bg-yellow-500 text-slate-950 font-black text-lg px-6 py-2 uppercase rounded-full border-4 border-slate-900 shadow-[0_0_50px_rgba(234,179,8,0.8)] flex items-center gap-2 animate-bounce">
                ⚡️ Boost Window Active ⚡️
              </div>
              {/* Energy Beam */}
-             <div className="w-1 h-16 bg-gradient-to-b from-yellow-500 to-transparent" />
+             <div className="w-2 h-20 bg-gradient-to-b from-yellow-500 to-transparent shadow-[0_0_20px_rgba(234,179,8,1)]" />
           </div>
 
           {/* The Phone */}
-          <div className="relative w-[280px] h-[500px] bg-slate-950 rounded-[2.5rem] border-8 border-slate-900 shadow-2xl overflow-hidden mt-8 ring-1 ring-white/10 group">
+          <div className={`relative w-[300px] h-[580px] bg-black rounded-[3rem] border-8 border-slate-900 shadow-2xl overflow-hidden mt-8 ring-1 ring-white/10 group transition-all duration-300 ${isBoosting ? 'shadow-[0_0_60px_rgba(234,179,8,0.3)] scale-105' : ''}`}>
+             
+             {/* Dynamic Notch */}
+             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-7 bg-black rounded-b-2xl z-50" />
+
              {/* Screen */}
              <div className="absolute inset-0 bg-gray-900 flex flex-col">
+                
                 {/* Video simulation */}
                 <div className="flex-1 relative overflow-hidden">
-                   {/* Abstract Video Content */}
-                   <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-slate-900">
-                      <div className="absolute inset-0 flex items-center justify-center">
-                         <div className="w-20 h-20 rounded-full bg-white/5 animate-ping" />
-                      </div>
+                   
+                   {/* Realistic Video Placeholder */}
+                   <div className="absolute inset-0 bg-slate-800">
+                      <Image 
+                        src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1000&auto=format&fit=crop" 
+                        alt="TikTok Video Content"
+                        fill
+                        className="object-cover opacity-80"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />
                    </div>
                    
                    {/* TikTok UI Overlay */}
-                   <div className="absolute right-2 bottom-16 flex flex-col gap-6 items-center p-2 z-10">
-                      <div className="flex flex-col items-center gap-1">
-                         <div className="w-10 h-10 rounded-full bg-slate-800/80 backdrop-blur-sm flex items-center justify-center">
-                            <span className="text-xl animate-[pulse_0.15s_ease-in-out_infinite]">❤️</span>
-                         </div>
-                         <span className="text-white font-bold text-xs shadow-black drop-shadow-md">12.5k</span>
+                   <div className="absolute inset-0 p-4 pt-12 flex flex-col justify-between z-10">
+                      
+                      {/* Top Bar */}
+                      <div className="flex justify-center gap-4 text-sm font-bold text-white/50">
+                        <span>Suivis</span>
+                        <span className="text-white border-b-2 border-white pb-1">Pour toi</span>
                       </div>
-                      <div className="flex flex-col items-center gap-1">
-                         <div className="w-10 h-10 rounded-full bg-slate-800/80 backdrop-blur-sm flex items-center justify-center">
-                            <span className="text-xl animate-[pulse_0.2s_ease-in-out_infinite]">💬</span>
-                         </div>
-                         <span className="text-white font-bold text-xs shadow-black drop-shadow-md">842</span>
-                      </div>
-                      <div className="flex flex-col items-center gap-1">
-                         <div className="w-10 h-10 rounded-full bg-slate-800/80 backdrop-blur-sm flex items-center justify-center">
-                            <span className="text-xl animate-[pulse_0.3s_ease-in-out_infinite]">↗️</span>
-                         </div>
-                         <span className="text-white font-bold text-xs shadow-black drop-shadow-md">315</span>
-                      </div>
-                   </div>
 
-                   {/* Bottom Info */}
-                   <div className="absolute bottom-4 left-4 right-16 z-10">
-                      <div className="w-24 h-4 bg-slate-800/50 backdrop-blur-sm rounded mb-2" />
-                      <div className="w-48 h-3 bg-slate-800/30 backdrop-blur-sm rounded" />
-                   </div>
-
-                   {/* Incoming Engagement Animation */}
-                   <div className="absolute inset-0 pointer-events-none">
-                      {/* Notifications sliding down */}
-                      <div className="absolute top-12 left-2 right-2 flex flex-col gap-2 items-center">
-                         {Array.from({ length: 4 }).map((_, i) => (
-                            <div 
-                              key={i} 
-                              className="w-full bg-white/10 backdrop-blur-md border border-white/10 p-2 rounded-lg flex items-center gap-2 animate-[slideDown_0.5s_ease-out_infinite]"
-                              style={{ animationDelay: `${i * 0.15}s`, animationFillMode: 'both' }}
-                            >
-                               <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-pink-500" />
-                               <div className="flex-1">
-                                  <div className="h-2 w-20 bg-white/20 rounded mb-1" />
-                                  <div className="h-1.5 w-32 bg-white/10 rounded" />
-                               </div>
+                      {/* Right Side Actions */}
+                      <div className="absolute right-2 bottom-20 flex flex-col gap-6 items-center">
+                         
+                         {/* Profile */}
+                         <div className="relative">
+                            <div className="w-12 h-12 rounded-full border-2 border-white overflow-hidden bg-slate-700">
+                               <Image 
+                                 src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=60" 
+                                 alt="User" 
+                                 width={48} 
+                                 height={48} 
+                               />
                             </div>
-                         ))}
+                            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-red-500 rounded-full p-0.5">
+                               <div className="w-3 h-3 bg-red-500 rounded-full flex items-center justify-center text-[8px] font-bold text-white">+</div>
+                            </div>
+                         </div>
+
+                         {/* Likes */}
+                         <div className="flex flex-col items-center gap-1">
+                            <div className={`transition-all duration-100 ${isBoosting ? 'scale-125 text-red-500' : 'text-white'}`}>
+                               <Heart className={`w-8 h-8 fill-current ${isBoosting ? 'animate-pulse' : ''}`} />
+                            </div>
+                            <span className="text-white font-bold text-xs shadow-black drop-shadow-md">
+                              {likes.toLocaleString()}
+                            </span>
+                         </div>
+
+                         {/* Comments */}
+                         <div className="flex flex-col items-center gap-1">
+                            <div className="text-white">
+                               <MessageCircle className="w-8 h-8 fill-white" />
+                            </div>
+                            <span className="text-white font-bold text-xs shadow-black drop-shadow-md">
+                              {comments.toLocaleString()}
+                            </span>
+                         </div>
+
+                         {/* Shares */}
+                         <div className="flex flex-col items-center gap-1">
+                            <div className="text-white">
+                               <Share2 className="w-8 h-8 fill-white" />
+                            </div>
+                            <span className="text-white font-bold text-xs shadow-black drop-shadow-md">
+                              {shares.toLocaleString()}
+                            </span>
+                         </div>
                       </div>
+
+                      {/* Bottom Info */}
+                      <div className="mt-auto pr-16 pb-4 space-y-2">
+                         <div className="font-bold text-white shadow-black drop-shadow-md">@troupers_official</div>
+                         <div className="text-sm text-white/90 leading-tight shadow-black drop-shadow-md">
+                            POV: Quand tu actives ta première Boost Window 🚀 <span className="text-yellow-400 font-bold">#growth #troupers</span>
+                         </div>
+                         <div className="flex items-center gap-2 text-white text-xs mt-2 animate-pulse">
+                            <Music2 className="w-3 h-3" />
+                            <span>Son original - Troupers</span>
+                         </div>
+                      </div>
+
                    </div>
+
+                   {/* Incoming Engagement Animation (Only during Boost) */}
+                   {isBoosting && (
+                      <div className="absolute inset-0 pointer-events-none z-20">
+                         <div className="absolute inset-0 bg-yellow-500/10 mix-blend-overlay animate-pulse" />
+                         
+                         {/* Notifications Burst */}
+                         <div className="absolute top-20 left-4 right-16 flex flex-col gap-2">
+                            {Array.from({ length: 5 }).map((_, i) => (
+                               <div 
+                                 key={i} 
+                                 className="bg-black/60 backdrop-blur-md border border-white/10 p-2 rounded-lg flex items-center gap-3 animate-[slideRight_0.4s_ease-out_forwards]"
+                                 style={{ animationDelay: `${i * 0.1}s` }}
+                               >
+                                  <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${['from-blue-400 to-blue-600', 'from-purple-400 to-pink-600', 'from-green-400 to-emerald-600'][i % 3]} flex items-center justify-center text-xs font-bold`}>
+                                     {['JD', 'AL', 'KP'][i % 3]}
+                                  </div>
+                                  <div className="text-xs text-white">
+                                     <span className="font-bold">User_{Math.floor(Math.random() * 999)}</span> <br/>
+                                     a aimé votre vidéo
+                                  </div>
+                               </div>
+                            ))}
+                         </div>
+                      </div>
+                   )}
                 </div>
              </div>
           </div>
