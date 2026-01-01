@@ -1,9 +1,10 @@
 import { Hero } from "@/components/landing/Hero"
+import { HowItWorks } from "@/components/landing/HowItWorks"
 import { BoostWindowFeature } from "@/components/landing/BoostWindowFeature"
+import { AlgorithmExplainer } from "@/components/landing/AlgorithmExplainer"
 import { Problem } from "@/components/landing/Problem"
 import { Truth } from "@/components/landing/Truth"
 import { Solution } from "@/components/landing/Solution"
-import { HowItWorks } from "@/components/landing/HowItWorks"
 import { AntiFeatures } from "@/components/landing/AntiFeatures"
 import { MarketPosition } from "@/components/landing/MarketPosition"
 import { FreeTrial } from "@/components/landing/FreeTrial"
@@ -41,6 +42,7 @@ export default function Home() {
       <Hero />
       <HowItWorks />
       <BoostWindowFeature />
+      <AlgorithmExplainer />
       <Problem />
       <Truth />
       <Solution />
