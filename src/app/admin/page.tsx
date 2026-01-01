@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/client"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Mail, ShieldAlert, AlertTriangle, CheckCircle, XCircle, AlertCircle, Zap, TrendingUp, Music } from "lucide-react"
+import { Mail, ShieldAlert, AlertTriangle, CheckCircle, XCircle, AlertCircle, Zap, TrendingUp, Music, Users, Shuffle } from "lucide-react"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
@@ -27,6 +27,8 @@ export default function AdminPage() {
   const [isAdmin, setIsAdmin] = useState(false)
   const supabase = createClient()
   const router = useRouter()
+
+  const [buddyPairs, setBuddyPairs] = useState<any[]>([])
 
   useEffect(() => {
     const checkAdmin = async () => {
@@ -91,8 +93,65 @@ export default function AdminPage() {
       
       setTrends(trendsData || [])
 
+      // Fetch Buddy Pairs
+      const { data: buddyData } = await supabase
+        .from('buddy_pairs')
+        .select(`
+          *,
+          user1:user1_id(username, email),
+          user2:user2_id(username, email)
+        `)
+        .order('created_at', { ascending: false })
+      
+      setBuddyPairs(buddyData || [])
+
     } catch (error) {
       toast.error("Erreur lors du chargement des données")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleGenerateBuddies = async () => {
+    try {
+      setLoading(true)
+      
+      // 1. Get all eligible users (those with profiles)
+      const { data: allUsers } = await supabase
+        .from('profiles')
+        .select('id')
+        .not('username', 'is', null)
+      
+      if (!allUsers || allUsers.length < 2) {
+        toast.error("Pas assez d'utilisateurs pour créer des binômes")
+        return
+      }
+
+      // 2. Shuffle users
+      const shuffled = [...allUsers].sort(() => 0.5 - Math.random())
+      
+      // 3. Create pairs
+      const newPairs = []
+      for (let i = 0; i < shuffled.length; i += 2) {
+        if (i + 1 < shuffled.length) {
+          newPairs.push({
+            user1_id: shuffled[i].id,
+            user2_id: shuffled[i+1].id,
+            week_start_date: new Date().toISOString()
+          })
+        }
+      }
+
+      // 4. Insert into DB
+      const { error } = await supabase.from('buddy_pairs').insert(newPairs)
+      
+      if (error) throw error
+
+      toast.success(`${newPairs.length} binômes générés avec succès !`)
+      fetchData() // Refresh list
+    } catch (error) {
+      console.error(error)
+      toast.error("Erreur lors de la génération des binômes")
     } finally {
       setLoading(false)
     }
@@ -271,6 +330,10 @@ export default function AdminPage() {
               <TrendingUp className="h-4 w-4" />
               Radar Tactique
             </TabsTrigger>
+            <TabsTrigger value="buddies" className="flex items-center gap-2">
+              <Users className="h-4 w-4" />
+              Parrainage
+            </TabsTrigger>
             <TabsTrigger value="reports" className="flex items-center gap-2">
               Signalements
               {reports.filter(r => r.status !== 'resolved').length > 0 && (
@@ -429,6 +492,52 @@ export default function AdminPage() {
                         </TableRow>
                       )
                     })}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="buddies">
+            <div className="space-y-8">
+              <div className="rounded-lg border bg-gradient-to-r from-purple-500/10 to-pink-500/10 p-6">
+                 <h2 className="text-xl font-bold flex items-center gap-2 mb-4">
+                   <Users className="h-6 w-6 text-purple-500" />
+                   Gérer les Binômes (Parrainage)
+                 </h2>
+                 <p className="text-sm text-muted-foreground mb-4">
+                   Générez des paires aléatoires de recrues pour favoriser l'entraide et la cohésion.
+                 </p>
+                 <Button onClick={handleGenerateBuddies} disabled={loading} className="bg-purple-500 hover:bg-purple-600">
+                   <Shuffle className="mr-2 h-4 w-4" />
+                   Générer les Binômes de la Semaine
+                 </Button>
+              </div>
+
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Semaine du</TableHead>
+                      <TableHead>Binôme 1</TableHead>
+                      <TableHead>Binôme 2</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {buddyPairs.map((pair) => (
+                      <TableRow key={pair.id}>
+                        <TableCell>{new Date(pair.week_start_date).toLocaleDateString()}</TableCell>
+                        <TableCell className="font-medium">{pair.user1?.username || "Inconnu"}</TableCell>
+                        <TableCell className="font-medium">{pair.user2?.username || "Inconnu"}</TableCell>
+                      </TableRow>
+                    ))}
+                    {buddyPairs.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={3} className="text-center py-6 text-muted-foreground">
+                          Aucun binôme généré pour le moment.
+                        </TableCell>
+                      </TableRow>
+                    )}
                   </TableBody>
                 </Table>
               </div>

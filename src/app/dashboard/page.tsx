@@ -1,11 +1,12 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { CheckCircle, Upload, Clock, AlertCircle, ExternalLink, Heart, Lock, Shield, Eye, BarChart3, AlertTriangle, MessageSquareWarning, MessageCircle, Send, Trophy, PartyPopper, Zap, Play, Gift, TrendingUp, Music } from "lucide-react"
+import { CheckCircle, Upload, Clock, AlertCircle, ExternalLink, Heart, Lock, Shield, Eye, BarChart3, AlertTriangle, MessageSquareWarning, MessageCircle, Send, Trophy, PartyPopper, Zap, Play, Gift, TrendingUp, Music, Users, Info } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
 import { motion } from "framer-motion"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 import Link from "next/link"
 
@@ -34,6 +35,8 @@ export default function DashboardPage() {
   const [hasParticipatedInBoost, setHasParticipatedInBoost] = useState(false)
   const [boostCredits, setBoostCredits] = useState(0)
   const [dailyTrend, setDailyTrend] = useState<any>(null)
+  const [myBuddy, setMyBuddy] = useState<any>(null)
+  const [buddyScore, setBuddyScore] = useState(100)
   
   const [supportsReceived, setSupportsReceived] = useState<any[]>([])
   const [supportsReceivedYesterday, setSupportsReceivedYesterday] = useState<any[]>([])
@@ -93,6 +96,44 @@ export default function DashboardPage() {
             .single()
          
          if (trend) setDailyTrend(trend)
+
+         // 1c. Fetch Buddy
+         const { data: buddyPair } = await supabase
+            .from('buddy_pairs')
+            .select(`
+               *,
+               user1:user1_id(id, username, current_video_url, main_platform),
+               user2:user2_id(id, username, current_video_url, main_platform)
+            `)
+            .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single()
+         
+         if (buddyPair) {
+            const isUser1 = buddyPair.user1_id === user.id
+            const partner = isUser1 ? buddyPair.user2 : buddyPair.user1
+            // Check if partner has profile data (it's a join, so it might be in an array or object depending on query but here single object)
+            // Actually supabase join returns object if single relation.
+            // We need to fetch profile details if not fully returned or rely on what we got.
+            // Let's fetch profile separately to be safe or ensure select is correct.
+            // The select above gets user info from auth.users? No, from relationships.
+            // Wait, user1_id refs auth.users. But we need profiles.
+            // The relation to profiles is usually on id.
+            // Let's retry fetching buddy profile manually to be safe.
+            const partnerId = isUser1 ? buddyPair.user2_id : buddyPair.user1_id
+            
+            const { data: partnerProfile } = await supabase
+               .from('profiles')
+               .select('*')
+               .eq('id', partnerId)
+               .single()
+            
+            if (partnerProfile) {
+               setMyBuddy(partnerProfile)
+               setBuddyScore(buddyPair.shared_score)
+            }
+         }
 
          // === FEATURE BOOST WINDOW ===
          const nowISO = new Date().toISOString()
@@ -627,6 +668,67 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8">
       <WelcomePopup userId={userProfile?.id} />
+
+      {/* === BUDDY WIDGET (PARRAINAGE) === */}
+      {myBuddy && (
+        <motion.div 
+           initial={{ y: -20, opacity: 0 }}
+           animate={{ y: 0, opacity: 1 }}
+           className="w-full rounded-xl border border-purple-500/30 bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-indigo-500/10 p-4 mb-6 relative overflow-hidden"
+        >
+           <div className="absolute top-0 right-0 p-4 opacity-5">
+              <Users className="h-32 w-32 text-purple-500" />
+           </div>
+
+           <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                 <div className="relative">
+                    <div className="h-14 w-14 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 p-0.5">
+                       <div className="h-full w-full rounded-full bg-background flex items-center justify-center text-lg font-bold uppercase overflow-hidden">
+                          {myBuddy.username?.charAt(0) || "?"}
+                       </div>
+                    </div>
+                    <div className="absolute -bottom-1 -right-1 bg-green-500 h-4 w-4 rounded-full border-2 border-background" />
+                 </div>
+                 <div>
+                    <div className="flex items-center gap-2">
+                       <h3 className="font-bold text-lg">{myBuddy.username}</h3>
+                       <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 border border-purple-200">
+                          Ton Binôme
+                       </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Protège ses arrières, il protège les tiennes.</p>
+                 </div>
+              </div>
+
+              <div className="flex items-center gap-6">
+                 <div className="flex flex-col items-center">
+                    <div className="flex items-center gap-1.5">
+                       <Shield className="h-5 w-5 text-indigo-500" />
+                       <span className="text-2xl font-black text-indigo-700">{buddyScore}</span>
+                       <TooltipProvider>
+                          <Tooltip>
+                             <TooltipTrigger>
+                                <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                             </TooltipTrigger>
+                             <TooltipContent className="max-w-xs">
+                                <p>C'est votre score commun !</p>
+                                <p className="text-xs mt-1 text-muted-foreground">Si ton binôme ne valide pas ses missions, VOUS perdez tous les deux des points. Motive-le !</p>
+                             </TooltipContent>
+                          </Tooltip>
+                       </TooltipProvider>
+                    </div>
+                    <span className="text-[10px] font-bold uppercase text-indigo-400">Score d'Escouade</span>
+                 </div>
+
+                 <Button className="bg-purple-600 hover:bg-purple-700 text-white gap-2" onClick={() => window.open(myBuddy.main_platform || myBuddy.current_video_url, '_blank')}>
+                    <ExternalLink className="h-4 w-4" />
+                    Voir son Profil
+                 </Button>
+              </div>
+           </div>
+        </motion.div>
+      )}
 
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
            <div className="flex items-center gap-4">
