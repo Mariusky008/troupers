@@ -68,18 +68,23 @@ export function AlgorithmExplainer() {
            <div className="relative z-10 bg-background p-6 rounded-2xl border shadow-sm hover:shadow-md transition-shadow">
               <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center text-xl font-bold mb-4 border-4 border-background mx-auto">1</div>
               <h3 className="text-xl font-bold text-center mb-2">Le Test Initial</h3>
-              <p className="text-sm text-center text-muted-foreground mb-4">Les premières minutes</p>
+              <p className="text-sm text-center text-muted-foreground mb-4">Les premières minutes Tik Tok observe :</p>
               <div className="space-y-3 text-sm bg-muted/30 p-4 rounded-xl">
                  <p className="flex items-center gap-2">
                     <Eye className="w-4 h-4 text-primary" />
-                    Temps de visionnage
+                    Le temps de visionnage
                  </p>
                  <p className="flex items-center gap-2">
                     <Activity className="w-4 h-4 text-primary" />
-                    Vélocité d'engagement
+                    Le nombre de likes, commentaires, favoris
+
+                 </p>
+                  <p className="flex items-center gap-2">
+                    <Activity className="w-4 h-4 text-primary" />
+                    la vitesse à laquelle ces interactions arrivent
                  </p>
                  <p className="font-medium text-xs text-primary mt-2">
-                    👉 Si rapide : Passe au niveau 2
+                    👉 Si l’engagement est rapide et concentré : Passe au niveau 2
                  </p>
               </div>
            </div>
@@ -91,18 +96,18 @@ export function AlgorithmExplainer() {
               </div>
               <div className="w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xl font-bold mb-4 border-4 border-background mx-auto">2</div>
               <h3 className="text-xl font-bold text-center mb-2">L’Amplification</h3>
-              <p className="text-sm text-center text-muted-foreground mb-4">Diffusion élargie</p>
+              <p className="text-sm text-center text-muted-foreground mb-4">Si les signaux sont bons, TikTok élargit la diffusion</p>
               <div className="space-y-3 text-sm bg-primary/5 p-4 rounded-xl">
                  <p className="flex items-center gap-2">
                     <UserPlus className="w-4 h-4 text-primary" />
-                    Profils similaires
+                    A des profils similaires
                  </p>
                  <p className="flex items-center gap-2">
                     <Zap className="w-4 h-4 text-primary" />
                     Page "For You"
                  </p>
                  <p className="font-medium text-xs text-primary mt-2">
-                    👉 La rapidité est la clé absolue
+                  La vidéo est alors retestée en continu.
                  </p>
               </div>
            </div>
@@ -115,14 +120,19 @@ export function AlgorithmExplainer() {
               <div className="space-y-3 text-sm bg-muted/30 p-4 rounded-xl">
                  <p className="flex items-center gap-2">
                     <TrendingUp className="w-4 h-4 text-green-500" />
-                    Plusieurs jours de vie
+                   Quand une vidéo :
+
                  </p>
                  <p className="flex items-center gap-2">
                     <UserPlus className="w-4 h-4 text-green-500" />
-                    Abonnements massifs
+                    •⁠  ⁠est bien regardée <br/>
+•⁠  ⁠génère de vrais commentaires <br/>
+•⁠  ⁠apporte des abonnements <br/>
+
                  </p>
                  <p className="font-medium text-xs text-muted-foreground mt-2">
-                    Résultat d'un bon démarrage
+                    👉 TikTok la laisse tourner *plusieurs heures, parfois plusieurs jours.
+
                  </p>
               </div>
            </div>
@@ -142,17 +152,17 @@ export function AlgorithmExplainer() {
                  </div>
                  <h3 className="text-3xl font-bold">
                     L’impact Troupers sur un <br/>
-                    <span className="text-blue-400">petit compte (600 abonnés)</span>
+                    <span className="text-blue-400">petit compte (1000 abonnés)</span>
                  </h3>
                  <p className="text-slate-400 leading-relaxed">
-                    Sans Troupers, la vidéo reste bloquée au stade 1 (300 vues). <br/>
+                    Sans Troupers, la vidéo reste bloquée au stade 1 (400 vues). <br/>
                     Avec 100 interactions Troupers rapides, elle force le passage au stade 2 (Amplification).
                  </p>
                  
                  <div className="grid grid-cols-2 gap-4 pt-4">
                     <div className="p-4 rounded-xl bg-white/5 border border-white/10">
                        <p className="text-xs text-slate-500 uppercase font-bold mb-1">Avant</p>
-                       <p className="text-2xl font-bold text-slate-400">300 - 800</p>
+                       <p className="text-2xl font-bold text-slate-400">400 - 800</p>
                        <p className="text-xs text-slate-500">Vues habituelles</p>
                     </div>
                     <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20">

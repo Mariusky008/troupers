@@ -14,7 +14,9 @@ export function HowItWorks() {
             Un échange de puissance simple et équitable.
           </h2>
           <p className="text-lg text-muted-foreground">
-            Le principe est mathématique : tu donnes de la force à 30 créateurs, et 30 créateurs te rendent cette force instantanément sur TA vidéo.
+          Chaque jour, tu réalises des actions (likes, commentaires, abonnements) sur le contenu de 50 autres créateurs.
+En échange, ces mêmes 50 créateurs effectuent exactement les mêmes actions sur ta vidéo.
+Résultat : ton contenu reçoit rapidement de l’engagement réel, humain et coordonné, ce qui envoie un signal fort aux plateformes et augmente mécaniquement ta visibilité.
           </p>
         </div>
 
@@ -102,7 +104,7 @@ export function HowItWorks() {
               <ul className="space-y-3 text-sm font-medium">
                 <li className="flex items-start gap-3">
                    <div className="h-5 w-5 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center shrink-0 mt-0.5">🚀</div>
-                   <span>30 interactions réelles et qualifiées en quelques heures.</span>
+                   <span>50 interactions réelles et qualifiées en quelques heures.</span>
                 </li>
                 <li className="flex items-start gap-3">
                    <Award className="h-5 w-5 text-yellow-600 shrink-0" />

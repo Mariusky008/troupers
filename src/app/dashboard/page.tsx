@@ -19,6 +19,8 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const [myVideoUrl, setMyVideoUrl] = useState("")
   const [isEditingVideo, setIsEditingVideo] = useState(false)
+  const [myProfileUrl, setMyProfileUrl] = useState("")
+  const [isEditingProfile, setIsEditingProfile] = useState(false)
   const [userProfile, setUserProfile] = useState<any>(null)
   const [squadMembers, setSquadMembers] = useState<any[]>([])
   const [mySquadId, setMySquadId] = useState<string | null>(null)
@@ -77,6 +79,7 @@ export default function DashboardPage() {
            setUserProfile(profile)
            setDisciplineScore(profile.discipline_score || 0)
            setMyVideoUrl(profile.current_video_url || "")
+           setMyProfileUrl(profile.main_platform || "")
            setBoostCredits(profile.boost_credits || 0)
          }
 
@@ -384,6 +387,24 @@ export default function DashboardPage() {
       
       setIsEditingVideo(false)
       toast.success("Vidéo mise à jour", { description: "Ton escouade va pouvoir la soutenir !" })
+    } catch (error) {
+      toast.error("Erreur de mise à jour")
+    }
+  }
+
+  const handleUpdateProfile = async () => {
+    if (!myProfileUrl) return
+    
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      const { error } = await supabase.from('profiles').update({ main_platform: myProfileUrl }).eq('id', user.id)
+      
+      if (error) throw error
+      
+      setIsEditingProfile(false)
+      toast.success("Profil mis à jour", { description: "Ton escouade peut maintenant t'ajouter !" })
     } catch (error) {
       toast.error("Erreur de mise à jour")
     }
@@ -827,6 +848,62 @@ export default function DashboardPage() {
                       </span>
                     )}
                     <Button variant="outline" size="sm" onClick={() => setIsEditingVideo(true)}>
+                      Modifier
+                    </Button>
+                 </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* HERO SECTION: MY PROFILE */}
+      <div className="rounded-xl border bg-gradient-to-r from-orange-500/10 via-red-500/10 to-yellow-500/10 p-1">
+        <div className="bg-card rounded-lg p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="space-y-2 text-center md:text-left">
+            <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-600 to-red-600">
+              👤 Ton Compte à Promouvoir
+            </h2>
+            <p className="text-muted-foreground max-w-lg">
+              Le lien de ton profil principal (TikTok, Instagram...) pour que ton escouade puisse s'abonner à toi. <br/>
+              <span className="font-medium text-foreground">Indispensable pour recevoir des abonnements !</span>
+            </p>
+          </div>
+          
+          <div className="w-full md:w-auto min-w-[300px]">
+            {isEditingProfile ? (
+              <div className="flex flex-col gap-3 p-4 bg-background border rounded-lg shadow-sm">
+                <label className="text-xs font-semibold uppercase text-muted-foreground">Lien de ton profil</label>
+                <div className="flex gap-2">
+                  <input 
+                    type="url" 
+                    placeholder="https://tiktok.com/@..."
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-orange-500"
+                    value={myProfileUrl}
+                    onChange={(e) => setMyProfileUrl(e.target.value)}
+                    autoFocus
+                  />
+                  <Button onClick={handleUpdateProfile} className="bg-orange-600 hover:bg-orange-700">Sauvegarder</Button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3 p-4 bg-background border rounded-lg shadow-sm">
+                 <label className="text-xs font-semibold uppercase text-muted-foreground">Profil Actif</label>
+                 <div className="flex items-center justify-between gap-4">
+                    {myProfileUrl ? (
+                      <div className="flex items-center gap-2 overflow-hidden">
+                        <CheckCircle className="h-4 w-4 text-green-500 shrink-0" />
+                        <a href={myProfileUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline truncate max-w-[200px]">
+                          {myProfileUrl}
+                        </a>
+                      </div>
+                    ) : (
+                      <span className="text-sm text-muted-foreground italic flex items-center gap-2">
+                        <AlertCircle className="h-4 w-4 text-red-500" />
+                        Aucun profil défini !
+                      </span>
+                    )}
+                    <Button variant="outline" size="sm" onClick={() => setIsEditingProfile(true)}>
                       Modifier
                     </Button>
                  </div>
