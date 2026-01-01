@@ -719,7 +719,7 @@ export default function DashboardPage() {
         <div className="w-full rounded-xl border border-dashed border-muted p-4 mb-6 text-center">
            <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
              <Users className="h-4 w-4" />
-             Pas de binôme assigné cette semaine. Repose-toi soldat.
+             Tu n'as pas de binôme assigné cette semaine. 
            </p>
         </div>
       )}
