@@ -657,7 +657,7 @@ export default function DashboardPage() {
       <WelcomePopup userId={userProfile?.id} />
 
       {/* === BUDDY WIDGET (PARRAINAGE) === */}
-      {myBuddy && (
+      {myBuddy ? (
         <motion.div 
            initial={{ y: -20, opacity: 0 }}
            animate={{ y: 0, opacity: 1 }}
@@ -715,6 +715,13 @@ export default function DashboardPage() {
               </div>
            </div>
         </motion.div>
+      ) : (
+        <div className="w-full rounded-xl border border-dashed border-muted p-4 mb-6 text-center">
+           <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
+             <Users className="h-4 w-4" />
+             Pas de binôme assigné cette semaine. Repose-toi soldat.
+           </p>
+        </div>
       )}
 
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
