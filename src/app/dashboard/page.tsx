@@ -100,11 +100,7 @@ export default function DashboardPage() {
          // 1c. Fetch Buddy
          const { data: buddyPair } = await supabase
             .from('buddy_pairs')
-            .select(`
-               *,
-               user1:user1_id(id, username, current_video_url, main_platform),
-               user2:user2_id(id, username, current_video_url, main_platform)
-            `)
+            .select('*')
             .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`)
             .order('created_at', { ascending: false })
             .limit(1)
@@ -112,15 +108,6 @@ export default function DashboardPage() {
          
          if (buddyPair) {
             const isUser1 = buddyPair.user1_id === user.id
-            const partner = isUser1 ? buddyPair.user2 : buddyPair.user1
-            // Check if partner has profile data (it's a join, so it might be in an array or object depending on query but here single object)
-            // Actually supabase join returns object if single relation.
-            // We need to fetch profile details if not fully returned or rely on what we got.
-            // Let's fetch profile separately to be safe or ensure select is correct.
-            // The select above gets user info from auth.users? No, from relationships.
-            // Wait, user1_id refs auth.users. But we need profiles.
-            // The relation to profiles is usually on id.
-            // Let's retry fetching buddy profile manually to be safe.
             const partnerId = isUser1 ? buddyPair.user2_id : buddyPair.user1_id
             
             const { data: partnerProfile } = await supabase

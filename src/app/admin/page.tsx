@@ -96,14 +96,25 @@ export default function AdminPage() {
       // Fetch Buddy Pairs
       const { data: buddyData } = await supabase
         .from('buddy_pairs')
-        .select(`
-          *,
-          user1:user1_id(username, email),
-          user2:user2_id(username, email)
-        `)
+        .select('*')
         .order('created_at', { ascending: false })
       
-      setBuddyPairs(buddyData || [])
+      // Manually fetch user profiles for the pairs because deep joining auth.users is problematic
+      const pairsWithProfiles = []
+      if (buddyData) {
+        for (const pair of buddyData) {
+          const { data: u1 } = await supabase.from('profiles').select('username, email').eq('id', pair.user1_id).single()
+          const { data: u2 } = await supabase.from('profiles').select('username, email').eq('id', pair.user2_id).single()
+          
+          pairsWithProfiles.push({
+            ...pair,
+            user1: u1,
+            user2: u2
+          })
+        }
+      }
+      
+      setBuddyPairs(pairsWithProfiles || [])
 
     } catch (error) {
       toast.error("Erreur lors du chargement des données")
