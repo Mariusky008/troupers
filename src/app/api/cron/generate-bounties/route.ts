@@ -54,6 +54,15 @@ export async function GET(request: Request) {
 
     // 3. For each member, check if they SUPPORTED their squad mates today
     // We need to group by squad to know who they were supposed to support
+    
+    // FETCH OFF DAYS FOR TODAY
+    const { data: offDays } = await supabaseAdmin
+        .from('user_off_days')
+        .select('user_id')
+        .eq('off_date', today)
+    
+    const usersOffToday = new Set(offDays?.map((d: any) => d.user_id) || [])
+
     const membersBySquad = allMembers.reduce((acc: any, member: any) => {
         if (!acc[member.squad_id]) acc[member.squad_id] = []
         acc[member.squad_id].push(member)
@@ -80,6 +89,12 @@ export async function GET(request: Request) {
 
         // Check each member
         for (const defector of squadMembers) {
+            // SKIP IF USER IS OFF TODAY
+            if (usersOffToday.has(defector.user_id)) {
+                console.log(`User ${defector.profiles?.username} is OFF today. Skipping penalty.`)
+                continue
+            }
+
             // Who they should have supported: everyone else in the squad
             const targetsToSupport = squadMembers.filter((m: any) => m.user_id !== defector.user_id)
             
