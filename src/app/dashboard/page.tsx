@@ -175,9 +175,10 @@ export default function DashboardPage() {
             
             const { data: members } = await supabase
               .from('squad_members')
-              .select('user_id, profiles(id, username, current_video_url)')
+              .select('user_id, created_at, profiles(id, username, current_video_url)')
               .eq('squad_id', membership.squad_id)
               .neq('user_id', user.id) // Exclude self
+              .order('created_at', { ascending: true })
               
             // Check subscriptions status
             const { data: subscriptions } = await supabase
@@ -273,7 +274,12 @@ export default function DashboardPage() {
                       count = count - 1
                    }
                    
-                   const actionStep = count % 3
+                   // Calculate deterministic rotation based on date and index
+                   // This ensures 33% distribution across the squad daily regardless of individual history
+                   const todayDate = new Date()
+                   const dayOfYear = Math.floor((todayDate.getTime() - new Date(todayDate.getFullYear(), 0, 0).getTime()) / 1000 / 60 / 60 / 24)
+                   const actionStep = (index + dayOfYear) % 3
+
                    let actionText = ""
                    let actionIcon = "❤️"
                    
