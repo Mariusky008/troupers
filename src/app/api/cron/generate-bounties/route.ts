@@ -89,10 +89,9 @@ export async function GET(request: Request) {
 
         // Check each member
         for (const defector of squadMembers) {
-            // SKIP IF USER IS OFF TODAY
-            if (usersOffToday.has(defector.user_id)) {
-                console.log(`User ${defector.profiles?.username} is OFF today. Skipping penalty.`)
-                continue
+            const isOff = usersOffToday.has(defector.user_id)
+            if (isOff) {
+                console.log(`User ${defector.profiles?.username} is OFF today. Skipping penalty (Strikes), but creating Bounties to ensure coverage.`)
             }
 
             // Who they should have supported: everyone else in the squad
@@ -134,8 +133,10 @@ export async function GET(request: Request) {
                     if (bounty) {
                         bountiesCreated.push(bounty)
                         
-                        // Increment Defector Strikes
-                        await supabaseAdmin.rpc('increment_strikes', { p_user_id: defector.user_id })
+                        // Increment Defector Strikes ONLY IF NOT OFF
+                        if (!isOff) {
+                            await supabaseAdmin.rpc('increment_strikes', { p_user_id: defector.user_id })
+                        }
                     }
                 }
             }
