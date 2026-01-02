@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
-import { TrendingUp, Music, Lightbulb, PenTool, Sparkles, Copy, Check, FileText, CheckSquare, RefreshCw } from "lucide-react"
+import { TrendingUp, Music, Lightbulb, PenTool, Sparkles, Copy, Check, FileText, CheckSquare, RefreshCw, Heart, UserPlus, Share2, Bookmark, BarChart3, Edit3, Trophy } from "lucide-react"
 import { motion } from "framer-motion"
 import { toast } from "sonner"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -11,12 +11,31 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 
 export default function MyPostsPage() {
   const [dailyTrend, setDailyTrend] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [copiedHook, setCopiedHook] = useState<string | null>(null)
   
+  // Stats State
+  const [myStats, setMyStats] = useState({
+    total_likes: 0,
+    total_followers_gained: 0,
+    total_shares: 0,
+    total_saves: 0
+  })
+  const [isStatsOpen, setIsStatsOpen] = useState(false)
+  const [statsForm, setStatsForm] = useState(myStats)
+
   // Script Builder State
   const [scriptType, setScriptStyle] = useState("educatif")
   const [scriptData, setScriptData] = useState({ hook: "", body: "", cta: "" })
@@ -66,6 +85,32 @@ export default function MyPostsPage() {
   useEffect(() => {
     const fetchData = async () => {
        try {
+         const { data: { user } } = await supabase.auth.getUser()
+         
+         if (user) {
+            // Fetch User Stats
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('total_likes, total_followers_gained, total_shares, total_saves')
+              .eq('id', user.id)
+              .single()
+            
+            if (profile) {
+              setMyStats({
+                total_likes: profile.total_likes || 0,
+                total_followers_gained: profile.total_followers_gained || 0,
+                total_shares: profile.total_shares || 0,
+                total_saves: profile.total_saves || 0
+              })
+              setStatsForm({
+                total_likes: profile.total_likes || 0,
+                total_followers_gained: profile.total_followers_gained || 0,
+                total_shares: profile.total_shares || 0,
+                total_saves: profile.total_saves || 0
+              })
+            }
+         }
+
          // Fetch Daily Trend
          const { data: trend } = await supabase
             .from('daily_trends')
@@ -102,6 +147,28 @@ export default function MyPostsPage() {
     toast.success("Script complet copié !")
   }
 
+  const updateStats = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      const { error } = await supabase.from('profiles').update({
+        total_likes: parseInt(statsForm.total_likes as any),
+        total_followers_gained: parseInt(statsForm.total_followers_gained as any),
+        total_shares: parseInt(statsForm.total_shares as any),
+        total_saves: parseInt(statsForm.total_saves as any)
+      }).eq('id', user.id)
+
+      if (error) throw error
+
+      setMyStats(statsForm)
+      setIsStatsOpen(false)
+      toast.success("Tableau de chasse mis à jour !", { icon: <Trophy className="h-4 w-4 text-yellow-500" /> })
+    } catch (error) {
+      toast.error("Erreur lors de la mise à jour")
+    }
+  }
+
   if (loading) return <div className="p-8 text-center">Chargement du Labo Créatif...</div>
 
   return (
@@ -114,6 +181,87 @@ export default function MyPostsPage() {
         <p className="text-muted-foreground mt-2">
           Ton atelier de création. Analyse les tendances, prépare tes scripts et domine l'algo.
         </p>
+      </div>
+
+      {/* === TABLEAU DE CHASSE (STATS) === */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
+             <div className="absolute top-0 right-0 p-3 opacity-10">
+                <UserPlus className="h-16 w-16 text-blue-600" />
+             </div>
+             <div className="relative z-10">
+                <p className="text-xs font-bold uppercase text-slate-500 mb-1">Abonnés Gagnés</p>
+                <p className="text-3xl font-black text-slate-900">{myStats.total_followers_gained}</p>
+             </div>
+          </div>
+          
+          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
+             <div className="absolute top-0 right-0 p-3 opacity-10">
+                <Heart className="h-16 w-16 text-red-600" />
+             </div>
+             <div className="relative z-10">
+                <p className="text-xs font-bold uppercase text-slate-500 mb-1">Likes Reçus</p>
+                <p className="text-3xl font-black text-slate-900">{myStats.total_likes}</p>
+             </div>
+          </div>
+
+          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
+             <div className="absolute top-0 right-0 p-3 opacity-10">
+                <Share2 className="h-16 w-16 text-green-600" />
+             </div>
+             <div className="relative z-10">
+                <p className="text-xs font-bold uppercase text-slate-500 mb-1">Partages</p>
+                <p className="text-3xl font-black text-slate-900">{myStats.total_shares}</p>
+             </div>
+          </div>
+
+          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
+             <div className="absolute top-0 right-0 p-3 opacity-10">
+                <Bookmark className="h-16 w-16 text-yellow-600" />
+             </div>
+             <div className="relative z-10 flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-bold uppercase text-slate-500 mb-1">Favoris</p>
+                  <p className="text-3xl font-black text-slate-900">{myStats.total_saves}</p>
+                </div>
+                <Dialog open={isStatsOpen} onOpenChange={setIsStatsOpen}>
+                  <DialogTrigger asChild>
+                    <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-slate-600">
+                       <Edit3 className="h-4 w-4" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>Mettre à jour mon Tableau de Chasse</DialogTitle>
+                      <DialogDescription>
+                        Rentre tes stats cumulées depuis le début de l'aventure Troupers. Sois honnête soldat !
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="followers" className="text-right">Abonnés</Label>
+                        <Input id="followers" type="number" value={statsForm.total_followers_gained} onChange={(e) => setStatsForm({...statsForm, total_followers_gained: parseInt(e.target.value)})} className="col-span-3" />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="likes" className="text-right">Likes</Label>
+                        <Input id="likes" type="number" value={statsForm.total_likes} onChange={(e) => setStatsForm({...statsForm, total_likes: parseInt(e.target.value)})} className="col-span-3" />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="shares" className="text-right">Partages</Label>
+                        <Input id="shares" type="number" value={statsForm.total_shares} onChange={(e) => setStatsForm({...statsForm, total_shares: parseInt(e.target.value)})} className="col-span-3" />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="saves" className="text-right">Favoris</Label>
+                        <Input id="saves" type="number" value={statsForm.total_saves} onChange={(e) => setStatsForm({...statsForm, total_saves: parseInt(e.target.value)})} className="col-span-3" />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button onClick={updateStats}>Sauvegarder les stats</Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+             </div>
+          </div>
       </div>
 
       {/* === TOP SECTION: RADAR TACTIQUE === */}
