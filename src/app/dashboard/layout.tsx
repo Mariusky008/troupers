@@ -9,6 +9,8 @@ import { cn } from "@/lib/utils"
 import { assignUserToSquad } from "@/lib/squad-actions"
 import { toast } from "sonner"
 
+import { SquadChatWidget } from "@/components/dashboard/squad-chat-widget"
+
 export default function DashboardLayout({
   children,
 }: {
@@ -146,6 +148,7 @@ export default function DashboardLayout({
           {children}
         </main>
       </div>
+      <SquadChatWidget />
     </div>
   )
 }

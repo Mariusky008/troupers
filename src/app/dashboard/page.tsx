@@ -1,8 +1,8 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { CheckCircle, Upload, Clock, AlertCircle, ExternalLink, Heart, Lock, Shield, Eye, BarChart3, AlertTriangle, MessageSquareWarning, MessageCircle, Send, Trophy, PartyPopper, Zap, Play, Gift, TrendingUp, Music, Users, Info } from "lucide-react"
-import { useState, useEffect, useRef } from "react"
+import { CheckCircle, Upload, Clock, AlertCircle, ExternalLink, Heart, Lock, Shield, Eye, BarChart3, AlertTriangle, MessageSquareWarning, MessageCircle, Trophy, PartyPopper, Zap, Play, Gift, TrendingUp, Music, Users, Info } from "lucide-react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog"
@@ -59,11 +59,6 @@ export default function DashboardPage() {
     week: 0,
     month: 0
   })
-
-  // Chat States
-  const [chatMessages, setChatMessages] = useState<any[]>([])
-  const [newMessage, setNewMessage] = useState("")
-  const chatEndRef = useRef<HTMLDivElement>(null)
 
   const supabase = createClient()
 
@@ -172,33 +167,10 @@ export default function DashboardPage() {
          const { data: membership } = await supabase.from('squad_members').select('squad_id').eq('user_id', user.id).single()
          
          if (membership) {
-            // === CHAT SETUP ===
+            // === CHAT SETUP REMOVED (Moved to global widget) ===
             const squadId = membership.squad_id
             setMySquadId(squadId)
             
-            // Load initial messages
-            const { data: initialMessages } = await supabase
-              .from('squad_messages')
-              .select('*')
-              .eq('squad_id', squadId)
-              .order('created_at', { ascending: true })
-              .limit(50)
-            
-            setChatMessages(initialMessages || [])
-
-            // Subscribe to new messages
-            const channel = supabase
-              .channel('squad-chat')
-              .on('postgres_changes', { 
-                event: 'INSERT', 
-                schema: 'public', 
-                table: 'squad_messages',
-                filter: `squad_id=eq.${squadId}`
-              }, (payload: any) => {
-                setChatMessages((prev) => [...prev, payload.new])
-              })
-              .subscribe()
-
             const { data: members } = await supabase
               .from('squad_members')
               .select('user_id, profiles(id, username, current_video_url)')
@@ -384,34 +356,6 @@ export default function DashboardPage() {
     }
     fetchData()
   }, [])
-
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [chatMessages])
-
-  const handleSendMessage = async () => {
-    if (!newMessage.trim()) return
-    
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
-
-      // Get squad id
-      const { data: membership } = await supabase.from('squad_members').select('squad_id').eq('user_id', user.id).single()
-      if (!membership) return
-
-      await supabase.from('squad_messages').insert({
-        squad_id: membership.squad_id,
-        user_id: user.id,
-        username: userProfile?.username || "Soldat",
-        content: newMessage.trim()
-      })
-
-      setNewMessage("")
-    } catch (e) {
-      toast.error("Erreur d'envoi")
-    }
-  }
 
   const handleUpdateVideo = async () => {
     if (!myVideoUrl) return
@@ -1208,58 +1152,8 @@ export default function DashboardPage() {
               </Link>
            </div>
 
-           {/* CHAT */}
-           <div className="rounded-xl border bg-card shadow-sm h-[500px] flex flex-col">
-            <div className="border-b p-6">
-              <h2 className="text-lg font-semibold flex items-center gap-2">
-                <MessageCircle className="h-5 w-5 text-indigo-500" />
-                Taverne
-              </h2>
-              <p className="text-sm text-muted-foreground">Motive tes troupes !</p>
-            </div>
-            
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
-              {chatMessages.length === 0 ? (
-                <div className="text-center text-muted-foreground py-10 text-sm">
-                  C'est calme ici... Lance la discussion !
-                </div>
-              ) : (
-                chatMessages.map((msg) => (
-                  <div key={msg.id} className={`flex flex-col ${msg.user_id === userProfile?.id ? 'items-end' : 'items-start'}`}>
-                    <div className={`max-w-[80%] rounded-lg p-3 ${msg.user_id === userProfile?.id ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
-                      <p className="text-xs font-bold mb-1 opacity-70">{msg.username}</p>
-                      <p className="text-sm">{msg.content}</p>
-                    </div>
-                    <span className="text-[10px] text-muted-foreground mt-1">
-                      {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  </div>
-                ))
-              )}
-              <div ref={chatEndRef} />
-            </div>
-
-            <div className="p-4 border-t bg-background">
-              <form 
-                onSubmit={(e) => {
-                  e.preventDefault()
-                  handleSendMessage()
-                }}
-                className="flex gap-2"
-              >
-                <input
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                  placeholder="Écris un message..."
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                />
-                <Button type="submit" size="icon">
-                  <Send className="h-4 w-4" />
-                </Button>
-              </form>
-            </div>
-           </div>
-
+           {/* CHAT - REMOVED (Moved to global widget) */}
+           
            {/* Broadcast Channel Button for Everyone */}
            {!isAdmin && (
             <div className="bg-green-50 border border-green-200 rounded-xl p-4">
