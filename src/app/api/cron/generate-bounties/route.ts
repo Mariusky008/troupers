@@ -108,12 +108,19 @@ export async function GET(request: Request) {
                 if (!victim.profiles?.current_video_url) continue
 
                 // Check if bounty already exists for this pair today to avoid duplicates
+                // IMPORTANT FIX: We check if ANY open bounty exists for this victim in this squad, 
+                // regardless of who caused it? No, we need to track specific failure.
+                // But wait, if 3 people failed to support Victim A, do we create 3 bounties for Victim A?
+                // YES, because Victim A missed 3 likes. So we need 3 mercs to fill the gap.
+                // So checking unique (defector, target) is correct.
+                
                 const { data: existing } = await supabaseAdmin
                     .from('bounties')
                     .select('id')
                     .eq('defector_user_id', defector.user_id)
                     .eq('target_user_id', victim.user_id)
                     .eq('status', 'open')
+                    .gte('created_at', today) // Add date check to be safe
                     .single()
 
                 if (!existing) {
