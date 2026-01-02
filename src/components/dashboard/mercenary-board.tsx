@@ -302,6 +302,11 @@ export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => vo
                 <Button variant="ghost" size="sm" onClick={simulateProtocol} className="mt-4 opacity-0 hover:opacity-100 text-[10px] text-slate-300 transition-opacity absolute bottom-2 right-2">
                    (Dev: Test)
                 </Button>
+
+                {/* DEBUG INFO ALWAYS VISIBLE */}
+                <div className="mt-4 p-2 bg-slate-100 rounded text-[10px] text-slate-500 font-mono w-full break-all">
+                    DEBUG: {debugInfo}
+                </div>
              </div>
           </div>
           
