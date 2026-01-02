@@ -696,11 +696,14 @@ export default function DashboardPage() {
                        <TooltipProvider>
                           <Tooltip>
                              <TooltipTrigger>
-                                <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                                <Info className="h-5 w-5 text-indigo-400 cursor-help hover:text-indigo-600 transition-colors" />
                              </TooltipTrigger>
-                             <TooltipContent className="max-w-xs">
-                                <p>C'est votre score commun !</p>
-                                <p className="text-xs mt-1 text-muted-foreground">Si ton binôme ne valide pas ses missions, VOUS perdez tous les deux des points. Motive-le !</p>
+                             <TooltipContent className="max-w-xs bg-indigo-950 border-indigo-500/50 text-white p-4 shadow-xl">
+                                <p className="font-bold text-indigo-200 mb-2">C'est votre score commun !</p>
+                                <p className="text-sm mb-2">Si ton binôme ne valide pas ses missions, VOUS perdez tous les deux des points. Motive-le !</p>
+                                <p className="text-xs italic text-indigo-300 border-t border-indigo-800 pt-2 mt-2">
+                                   Ces points vous serviront dans un avenir proche ;)
+                                </p>
                              </TooltipContent>
                           </Tooltip>
                        </TooltipProvider>
