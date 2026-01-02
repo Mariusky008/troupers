@@ -17,6 +17,7 @@ export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => vo
   const [selectedBounty, setSelectedBounty] = useState<any>(null)
   const [user, setUser] = useState<any>(null)
   const [showVictoryModal, setShowVictoryModal] = useState(false)
+  const [strikeAlert, setStrikeAlert] = useState<any>(null)
   
   const supabase = createClient()
 
@@ -53,11 +54,34 @@ export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => vo
     }
   }
 
+  const checkMyStrikes = async (userId: string) => {
+      // Check if I have caused any bounties TODAY (meaning I got a strike today)
+      const today = new Date().toISOString().split('T')[0]
+      const { data: myFaults } = await supabase
+        .from('bounties')
+        .select('id')
+        .eq('defector_user_id', userId)
+        .gte('created_at', today)
+        .limit(1)
+      
+      if (myFaults && myFaults.length > 0) {
+          // Check if user has already acknowledged this alert (using localStorage to avoid spamming every refresh)
+          const ackKey = `strike_ack_${today}_${userId}`
+          if (!localStorage.getItem(ackKey)) {
+             setStrikeAlert(true)
+             localStorage.setItem(ackKey, 'true')
+          }
+      }
+  }
+
   useEffect(() => {
     const init = async () => {
         const { data: { user } } = await supabase.auth.getUser()
         setUser(user)
-        fetchBounties()
+        if (user) {
+            fetchBounties()
+            checkMyStrikes(user.id)
+        }
 
         // Realtime subscription
         const channel = supabase
@@ -456,6 +480,53 @@ export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => vo
                       className="w-full mt-8 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-black text-xl h-14 shadow-lg uppercase tracking-widest"
                    >
                       Continuer le Combat
+                   </Button>
+                </div>
+             </div>
+          </div>
+       )}
+
+       {/* STRIKE ALERT MODAL */}
+       {strikeAlert && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4 animate-in zoom-in-95 duration-300">
+             <div className="relative w-full max-w-md rounded-xl bg-slate-900 border border-red-500/50 p-8 text-center shadow-2xl">
+                
+                <div className="flex flex-col items-center gap-6">
+                   <div className="relative">
+                      <div className="absolute inset-0 bg-red-500 blur-xl opacity-20 animate-pulse" />
+                      <AlertTriangle className="h-20 w-20 text-red-500" />
+                   </div>
+
+                   <div className="space-y-4">
+                      <h2 className="text-3xl font-black uppercase text-white tracking-tighter">
+                         MANQUEMENT AU DEVOIR
+                      </h2>
+                      <p className="text-slate-300 font-medium leading-relaxed">
+                         Soldat, tu n'as pas rempli tes missions hier. <br/>
+                         Le Protocole Mercenaire a été activé.
+                      </p>
+                      
+                      <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 space-y-2">
+                         <div className="flex items-center justify-between text-red-200">
+                            <span>Avertissement (Strike)</span>
+                            <span className="font-bold text-red-500">+1</span>
+                         </div>
+                         <div className="flex items-center justify-between text-red-200">
+                            <span>Discipline</span>
+                            <span className="font-bold text-red-500">-10 pts</span>
+                         </div>
+                      </div>
+                      
+                      <p className="text-xs text-slate-500 italic">
+                         Tes camarades ont reçu une prime pour faire ton travail à ta place. Ressaisis-toi.
+                      </p>
+                   </div>
+
+                   <Button 
+                      onClick={() => setStrikeAlert(false)}
+                      className="w-full bg-red-600 hover:bg-red-700 text-white font-bold h-12 uppercase tracking-widest"
+                   >
+                      COMPRIS, JE ME REPRENDS
                    </Button>
                 </div>
              </div>
