@@ -1067,6 +1067,22 @@ export default function DashboardPage() {
                         </div>
                         
                         {task.actionUrl && !task.completed && (
+                           task.id === 99 ? (
+                             <Button 
+                               className="shrink-0 text-white shadow-sm bg-indigo-600 hover:bg-indigo-700"
+                               onClick={() => {
+                                  // Copy current domain URL
+                                  const url = window.location.origin
+                                  navigator.clipboard.writeText(url)
+                                  toast.success("Lien copié !", { description: "Partage-le pour recruter des soldats." })
+                               }}
+                             >
+                               <div className="flex items-center gap-2">
+                                 {task.actionLabel}
+                                 <ExternalLink className="h-4 w-4" />
+                               </div>
+                             </Button>
+                           ) : (
                            <Button 
                              className={`shrink-0 text-white shadow-sm ${viewedVideos.has(task.targetUserId) ? 'bg-green-600 hover:bg-green-700' : 'bg-indigo-600 hover:bg-indigo-700'}`} 
                              asChild
@@ -1082,6 +1098,7 @@ export default function DashboardPage() {
                                <ExternalLink className="h-4 w-4" />
                              </a>
                            </Button>
+                           )
                         )}
                       </div>
                     ))
