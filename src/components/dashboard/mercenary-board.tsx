@@ -84,19 +84,19 @@ export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => vo
 
     // Handle simulation completion locally
     if (selectedBounty.id.toString().startsWith('simulated-')) {
-        setTimeout(() => {
-            setBounties(prev => prev.filter(b => b.id !== selectedBounty.id))
-            
-            // Force modal open state
-            setShowVictoryModal(true)
-            
-            // Trigger confetti with a small delay to ensure DOM is ready
-            setTimeout(() => triggerConfetti(), 100)
-            
-            if (onCreditsEarned) onCreditsEarned() // Trigger parent animation
-            setSelectedBounty(null)
-            setProcessing(false)
-        }, 1000)
+        setProcessing(false) // Stop loading immediately
+        setSelectedBounty(null) // Close mission dialog
+        
+        // Remove the bounty from list
+        setBounties(prev => prev.filter(b => b.id !== selectedBounty.id))
+        
+        // Show victory modal immediately
+        setShowVictoryModal(true)
+        
+        // Trigger confetti
+        setTimeout(() => triggerConfetti(), 100)
+        
+        if (onCreditsEarned) onCreditsEarned()
         return
     }
 
