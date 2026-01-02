@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
-import { TrendingUp, Music, Lightbulb, PenTool, Sparkles, Copy, Check, FileText, CheckSquare, RefreshCw, Heart, UserPlus, Share2, Bookmark, BarChart3, Edit3, Trophy } from "lucide-react"
+import { TrendingUp, Music, Lightbulb, PenTool, Sparkles, Copy, FileText, CheckSquare, RefreshCw, Heart, UserPlus, MessageCircle, Bookmark, Edit3, Trophy } from "lucide-react"
 import { motion } from "framer-motion"
 import { toast } from "sonner"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -30,7 +30,7 @@ export default function MyPostsPage() {
   const [myStats, setMyStats] = useState({
     total_likes: 0,
     total_followers_gained: 0,
-    total_shares: 0,
+    total_comments: 0,
     total_saves: 0
   })
   const [isStatsOpen, setIsStatsOpen] = useState(false)
@@ -91,7 +91,7 @@ export default function MyPostsPage() {
             // Fetch User Stats
             const { data: profile } = await supabase
               .from('profiles')
-              .select('total_likes, total_followers_gained, total_shares, total_saves')
+              .select('total_likes, total_followers_gained, total_comments, total_saves')
               .eq('id', user.id)
               .single()
             
@@ -99,13 +99,13 @@ export default function MyPostsPage() {
               setMyStats({
                 total_likes: profile.total_likes || 0,
                 total_followers_gained: profile.total_followers_gained || 0,
-                total_shares: profile.total_shares || 0,
+                total_comments: profile.total_comments || 0,
                 total_saves: profile.total_saves || 0
               })
               setStatsForm({
                 total_likes: profile.total_likes || 0,
                 total_followers_gained: profile.total_followers_gained || 0,
-                total_shares: profile.total_shares || 0,
+                total_comments: profile.total_comments || 0,
                 total_saves: profile.total_saves || 0
               })
             }
@@ -155,7 +155,7 @@ export default function MyPostsPage() {
       const { error } = await supabase.from('profiles').update({
         total_likes: parseInt(statsForm.total_likes as any),
         total_followers_gained: parseInt(statsForm.total_followers_gained as any),
-        total_shares: parseInt(statsForm.total_shares as any),
+        total_comments: parseInt(statsForm.total_comments as any),
         total_saves: parseInt(statsForm.total_saves as any)
       }).eq('id', user.id)
 
@@ -207,11 +207,11 @@ export default function MyPostsPage() {
 
           <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
              <div className="absolute top-0 right-0 p-3 opacity-10">
-                <Share2 className="h-16 w-16 text-green-600" />
+                <MessageCircle className="h-16 w-16 text-green-600" />
              </div>
              <div className="relative z-10">
-                <p className="text-xs font-bold uppercase text-slate-500 mb-1">Partages</p>
-                <p className="text-3xl font-black text-slate-900">{myStats.total_shares}</p>
+                <p className="text-xs font-bold uppercase text-slate-500 mb-1">Commentaires</p>
+                <p className="text-3xl font-black text-slate-900">{myStats.total_comments}</p>
              </div>
           </div>
 
@@ -247,8 +247,8 @@ export default function MyPostsPage() {
                         <Input id="likes" type="number" value={statsForm.total_likes} onChange={(e) => setStatsForm({...statsForm, total_likes: parseInt(e.target.value)})} className="col-span-3" />
                       </div>
                       <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="shares" className="text-right">Partages</Label>
-                        <Input id="shares" type="number" value={statsForm.total_shares} onChange={(e) => setStatsForm({...statsForm, total_shares: parseInt(e.target.value)})} className="col-span-3" />
+                        <Label htmlFor="comments" className="text-right">Commentaires</Label>
+                        <Input id="comments" type="number" value={statsForm.total_comments} onChange={(e) => setStatsForm({...statsForm, total_comments: parseInt(e.target.value)})} className="col-span-3" />
                       </div>
                       <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="saves" className="text-right">Favoris</Label>
