@@ -656,12 +656,50 @@ export default function DashboardPage() {
     <div className="space-y-8">
       <WelcomePopup userId={userProfile?.id} />
 
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+           <div className="flex items-center gap-4">
+             <div>
+               <h1 className="text-3xl font-black text-slate-900 tracking-tight">
+                 QG OPÉRATIONNEL
+               </h1>
+               <div className="flex items-center gap-4 mt-2">
+                 <div className="flex items-center gap-2 bg-yellow-100 px-3 py-1 rounded-full border border-yellow-200">
+                    <Zap className="h-4 w-4 text-yellow-600" />
+                    <span className="text-sm font-bold text-yellow-800">{boostCredits} Crédits</span>
+                 </div>
+                 
+                 {dayProgress <= 3 && !allTasksCompleted ? (
+                   <div className="flex items-center gap-2 bg-red-100 px-3 py-1 rounded-full border border-red-200">
+                      <AlertCircle className="h-4 w-4 text-red-600" />
+                      <span className="text-sm font-bold text-red-800">Fiabilité: Probation</span>
+                   </div>
+                 ) : (
+                   <div className="flex items-center gap-2 bg-green-100 px-3 py-1 rounded-full border border-green-200">
+                      <Shield className="h-4 w-4 text-green-600" />
+                      <span className="text-sm font-bold text-green-800">Fiabilité: 100%</span>
+                   </div>
+                 )}
+
+                 <div className="flex items-center gap-2 bg-blue-100 px-3 py-1 rounded-full border border-blue-200">
+                    <span className="text-sm font-bold text-blue-800">Progression: J{dayProgress}/30</span>
+                 </div>
+               </div>
+             </div>
+           </div>
+           <div className="flex items-center gap-3">
+              <Button variant="outline" className="gap-2 font-bold border-2">
+                <Shield className="h-4 w-4" />
+                Escouade {mySquadId ? "Alpha" : "..."}
+              </Button>
+           </div>
+      </div>
+
       {/* === BUDDY WIDGET (PARRAINAGE) === */}
       {myBuddy ? (
         <motion.div 
            initial={{ y: -20, opacity: 0 }}
            animate={{ y: 0, opacity: 1 }}
-           className="w-full rounded-xl border border-purple-500/30 bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-indigo-500/10 p-4 mb-6 relative overflow-hidden"
+           className="w-full rounded-xl border border-purple-500/30 bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-indigo-500/10 p-4 mb-6 relative overflow-hidden mt-6"
         >
            <div className="absolute top-0 right-0 p-4 opacity-5">
               <Users className="h-32 w-32 text-purple-500" />
@@ -719,51 +757,13 @@ export default function DashboardPage() {
            </div>
         </motion.div>
       ) : (
-        <div className="w-full rounded-xl border border-dashed border-muted p-4 mb-6 text-center">
+        <div className="w-full rounded-xl border border-dashed border-muted p-4 mb-6 text-center mt-6">
            <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
              <Users className="h-4 w-4" />
              Tu n'as pas de binôme assigné cette semaine. 
            </p>
         </div>
       )}
-
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-           <div className="flex items-center gap-4">
-             <div>
-               <h1 className="text-3xl font-black text-slate-900 tracking-tight">
-                 QG OPÉRATIONNEL
-               </h1>
-               <div className="flex items-center gap-4 mt-2">
-                 <div className="flex items-center gap-2 bg-yellow-100 px-3 py-1 rounded-full border border-yellow-200">
-                    <Zap className="h-4 w-4 text-yellow-600" />
-                    <span className="text-sm font-bold text-yellow-800">{boostCredits} Crédits</span>
-                 </div>
-                 
-                 {dayProgress <= 3 && !allTasksCompleted ? (
-                   <div className="flex items-center gap-2 bg-red-100 px-3 py-1 rounded-full border border-red-200">
-                      <AlertCircle className="h-4 w-4 text-red-600" />
-                      <span className="text-sm font-bold text-red-800">Fiabilité: Probation</span>
-                   </div>
-                 ) : (
-                   <div className="flex items-center gap-2 bg-green-100 px-3 py-1 rounded-full border border-green-200">
-                      <Shield className="h-4 w-4 text-green-600" />
-                      <span className="text-sm font-bold text-green-800">Fiabilité: 100%</span>
-                   </div>
-                 )}
-
-                 <div className="flex items-center gap-2 bg-blue-100 px-3 py-1 rounded-full border border-blue-200">
-                    <span className="text-sm font-bold text-blue-800">Progression: J{dayProgress}/30</span>
-                 </div>
-               </div>
-             </div>
-           </div>
-           <div className="flex items-center gap-3">
-              <Button variant="outline" className="gap-2 font-bold border-2">
-                <Shield className="h-4 w-4" />
-                Escouade {mySquadId ? "Alpha" : "..."}
-              </Button>
-           </div>
-      </div>
       
       {/* === BOOST WINDOW BANNER === */}
         {activeBoostWindow ? (
