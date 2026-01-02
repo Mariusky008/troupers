@@ -690,7 +690,7 @@ export default function DashboardPage() {
                 <h3 className="text-lg font-bold text-red-900">DISCIPLINE CRITIQUE ({disciplineScore} pts)</h3>
                 <p className="text-sm text-red-700 max-w-md">
                    Tu as abandonné ton escouade trop souvent. <br/>
-                   Tes missions sont suspendues tant que tu n'as pas racheté ta conduite en accomplissant des missions mercenaires.
+                   Tes missions sont suspendues : tu dois attendre que tes camarades te sauvent (missions mercenaires) ou que le lendemain arrive pour te racheter.
                 </p>
                 <Button variant="destructive" className="w-full sm:w-auto opacity-50 cursor-not-allowed" title="Tes missions sont masquées pour toi">
                    ACCÈS MERCENAIRE RESTREINT
