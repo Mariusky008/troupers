@@ -609,166 +609,107 @@ export default function DashboardPage() {
   const allTasksCompleted = tasks.length > 0 && tasks.every(t => t.completed)
   
   if (loading) {
-    return <div className="flex h-screen items-center justify-center">Chargement du QG...</div>
+    return (
+      <div className="flex h-screen items-center justify-center flex-col gap-4">
+        <div className="h-12 w-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+        <p className="text-muted-foreground font-medium animate-pulse">Connexion au QG...</p>
+      </div>
+    )
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 max-w-7xl mx-auto pb-12">
       <WelcomePopup userId={userProfile?.id} />
 
-      {/* MERCENARY PROTOCOL ALERT ZONE */}
-      <MercenaryBoard onCreditsEarned={handleCreditsEarned} />
-
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-           <div className="flex items-center gap-4">
-             <div>
-               <h1 className="text-3xl font-black text-slate-900 tracking-tight">
-                 QG OPÉRATIONNEL
-               </h1>
-               <div className="flex items-center gap-4 mt-2">
-                 <motion.div 
-                    animate={animateCredits ? { scale: [1, 1.3, 1], borderColor: ["#fef08a", "#eab308", "#fef08a"] } : {}}
-                    transition={{ duration: 0.5, type: "spring", stiffness: 300 }}
-                    className="flex items-center gap-2 bg-yellow-100 px-3 py-1 rounded-full border border-yellow-200 shadow-sm relative overflow-hidden"
-                 >
-                    {animateCredits && <motion.div className="absolute inset-0 bg-yellow-300 opacity-50" initial={{ x: '-100%' }} animate={{ x: '100%' }} transition={{ duration: 0.5 }} />}
-                    <Zap className={`h-4 w-4 text-yellow-600 ${animateCredits ? 'fill-yellow-600' : ''}`} />
-                    <span className="text-sm font-bold text-yellow-800">{boostCredits} Crédits</span>
-                 </motion.div>
-                 
-                 {dayProgress <= 3 && !allTasksCompleted ? (
-                   <div className="flex items-center gap-2 bg-red-100 px-3 py-1 rounded-full border border-red-200">
-                      <AlertCircle className="h-4 w-4 text-red-600" />
-                      <span className="text-sm font-bold text-red-800">Fiabilité: Probation</span>
-                   </div>
-                 ) : (
-                   <div className="flex items-center gap-2 bg-green-100 px-3 py-1 rounded-full border border-green-200">
-                      <Shield className="h-4 w-4 text-green-600" />
-                      <span className="text-sm font-bold text-green-800">Fiabilité: 100%</span>
-                   </div>
-                 )}
-
-                 <div className="flex items-center gap-2 bg-blue-100 px-3 py-1 rounded-full border border-blue-200">
-                    <span className="text-sm font-bold text-blue-800">Progression: J{dayProgress}/30</span>
-                 </div>
-               </div>
+      {/* HEADER SECTION */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b pb-6">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 text-muted-foreground text-sm font-medium uppercase tracking-wider">
+             <Shield className="h-4 w-4" />
+             QG Opérationnel • {new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
+          </div>
+          <h1 className="text-4xl font-black text-slate-900 tracking-tight">
+            Bonjour, {userProfile?.username || "Soldat"}
+          </h1>
+          <div className="flex flex-wrap items-center gap-3 pt-1">
+             <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-lg border border-slate-200 text-sm font-semibold text-slate-700">
+                <Trophy className="h-4 w-4 text-slate-500" />
+                <span>Niveau {Math.floor(dayProgress / 7) + 1}</span>
              </div>
-           </div>
-           <div className="flex items-center gap-3">
-              <Button variant="outline" className="gap-2 font-bold border-2">
-                <Shield className="h-4 w-4" />
-                Escouade {mySquadId ? "Alpha" : "..."}
-              </Button>
-           </div>
+             {dayProgress <= 3 && !allTasksCompleted ? (
+               <div className="flex items-center gap-2 px-3 py-1.5 bg-red-50 rounded-lg border border-red-100 text-sm font-semibold text-red-700">
+                  <AlertCircle className="h-4 w-4" />
+                  <span>Probation</span>
+               </div>
+             ) : (
+               <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 rounded-lg border border-emerald-100 text-sm font-semibold text-emerald-700">
+                  <Shield className="h-4 w-4" />
+                  <span>Fiabilité 100%</span>
+               </div>
+             )}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+           <motion.div 
+              animate={animateCredits ? { scale: [1, 1.1, 1] } : {}}
+              className="flex flex-col items-end px-4 py-2 bg-yellow-50 rounded-xl border border-yellow-100"
+           >
+              <span className="text-xs font-bold text-yellow-600 uppercase">Crédits Boost</span>
+              <div className="flex items-center gap-1">
+                 <Zap className="h-5 w-5 text-yellow-500 fill-yellow-500" />
+                 <span className="text-2xl font-black text-slate-900">{boostCredits}</span>
+              </div>
+           </motion.div>
+        </div>
       </div>
 
-      {/* === BUDDY WIDGET (PARRAINAGE) === */}
-      {myBuddy ? (
-        <motion.div 
-           initial={{ y: -20, opacity: 0 }}
-           animate={{ y: 0, opacity: 1 }}
-           className="w-full rounded-xl border border-purple-500/30 bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-indigo-500/10 p-4 mb-6 relative overflow-hidden mt-6"
-        >
-           <div className="absolute top-0 right-0 p-4 opacity-5">
-              <Users className="h-32 w-32 text-purple-500" />
-           </div>
-
-           <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
-                 <div className="relative">
-                    <div className="h-14 w-14 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 p-0.5">
-                       <div className="h-full w-full rounded-full bg-background flex items-center justify-center text-lg font-bold uppercase overflow-hidden">
-                          {myBuddy.username?.charAt(0) || "?"}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        {/* === LEFT COLUMN (MAIN CONTENT) === */}
+        <div className="lg:col-span-8 space-y-8">
+           
+           {/* ALERTS / NOTIFICATIONS */}
+           <MercenaryBoard onCreditsEarned={handleCreditsEarned} />
+           
+           {/* BOOST BANNER */}
+           {activeBoostWindow ? (
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-700 text-white shadow-xl"
+              >
+                 <div className="absolute top-0 right-0 p-8 opacity-10">
+                   <Zap className="h-40 w-40 rotate-12" />
+                 </div>
+                 <div className="relative z-10 p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div className="space-y-2 text-center md:text-left">
+                       <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-xs font-bold uppercase tracking-wide border border-white/10">
+                          <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-yellow-500"></span>
+                          </span>
+                          Boost En Cours
                        </div>
+                       <h3 className="text-2xl font-black tracking-tight">Cible Prioritaire Identifiée</h3>
+                       <p className="text-indigo-100 max-w-md">
+                          Une opportunité de gain de crédits est disponible. Soutenez la cible pour gagner +1 Crédit.
+                       </p>
                     </div>
-                    <div className="absolute -bottom-1 -right-1 bg-green-500 h-4 w-4 rounded-full border-2 border-background" />
-                 </div>
-                 <div>
-                    <div className="flex items-center gap-2">
-                       <h3 className="font-bold text-lg">{myBuddy.username}</h3>
-                       <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 border border-purple-200">
-                          Ton Binôme
-                       </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">Protège ses arrières, il protège les tiennes.</p>
-                 </div>
-              </div>
-
-              <div className="flex items-center gap-6">
-                 <div className="flex flex-col items-center">
-                    <div className="flex items-center gap-1.5">
-                       <Shield className="h-5 w-5 text-indigo-500" />
-                       <span className="text-2xl font-black text-indigo-700">{buddyScore}</span>
-                       <TooltipProvider>
-                          <Tooltip>
-                             <TooltipTrigger>
-                                <Info className="h-5 w-5 text-indigo-400 cursor-help hover:text-indigo-600 transition-colors" />
-                             </TooltipTrigger>
-                             <TooltipContent className="max-w-xs bg-indigo-950 border-indigo-500/50 text-white p-4 shadow-xl">
-                                <p className="font-bold text-indigo-200 mb-2">C'est votre score commun !</p>
-                                <p className="text-sm mb-2">Si ton binôme ne valide pas ses missions, VOUS perdez tous les deux des points. Motive-le !</p>
-                                <p className="text-xs italic text-indigo-300 border-t border-indigo-800 pt-2 mt-2">
-                                   Ces points vous serviront dans un avenir proche ;)
-                                </p>
-                             </TooltipContent>
-                          </Tooltip>
-                       </TooltipProvider>
-                    </div>
-                    <span className="text-[10px] font-bold uppercase text-indigo-400">Score d'Escouade</span>
-                 </div>
-
-                 <Button className="bg-purple-600 hover:bg-purple-700 text-white gap-2" onClick={() => window.open(myBuddy.main_platform || myBuddy.current_video_url, '_blank')}>
-                    <ExternalLink className="h-4 w-4" />
-                    Voir son Profil
-                 </Button>
-              </div>
-           </div>
-        </motion.div>
-      ) : (
-        <div className="w-full rounded-xl border border-dashed border-muted p-4 mb-6 text-center mt-6">
-           <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
-             <Users className="h-4 w-4" />
-             Tu n'as pas de binôme assigné cette semaine. 
-           </p>
-        </div>
-      )}
-      
-      {/* === BOOST WINDOW BANNER === */}
-        {activeBoostWindow ? (
-          <motion.div 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="w-full rounded-xl border border-yellow-500/30 bg-gradient-to-r from-yellow-500/10 via-orange-500/10 to-red-500/10 p-6 relative overflow-hidden mb-6"
-          >
-             <div className="absolute top-0 right-0 p-4 opacity-10">
-               <Zap className="h-24 w-24 text-yellow-500" />
-             </div>
-             
-             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
-               <div className="flex items-center gap-4">
-                 <div className="h-12 w-12 rounded-full bg-yellow-100 flex items-center justify-center animate-pulse">
-                   <Zap className="h-6 w-6 text-yellow-600" />
-                 </div>
-                 <div>
-                   <h3 className="text-xl font-black text-yellow-700 uppercase tracking-tight">Boost Window Active !</h3>
-                   <p className="text-sm text-yellow-800/80 font-medium">Fenêtre d'opportunité ouverte. Participe pour gagner des crédits.</p>
-                 </div>
-               </div>
-
-               <div className="flex items-center gap-4">
-                  {hasParticipatedInBoost ? (
-                    <div className="flex items-center gap-2 bg-white/50 px-4 py-2 rounded-full border border-yellow-200">
-                      <CheckCircle className="h-5 w-5 text-green-500" />
-                      <span className="font-bold text-green-700">Participation Validée</span>
-                    </div>
-                  ) : (
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold shadow-lg shadow-orange-500/20 px-8 py-6 text-lg animate-bounce-slow">
-                           PARTICIPER MAINTENANT
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-md">
+                    {hasParticipatedInBoost ? (
+                      <div className="flex flex-col items-center gap-2 bg-white/10 backdrop-blur-md px-6 py-4 rounded-xl border border-white/20">
+                        <CheckCircle className="h-8 w-8 text-green-400" />
+                        <span className="font-bold">Validé</span>
+                      </div>
+                    ) : (
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button size="lg" className="bg-white text-indigo-600 hover:bg-indigo-50 font-bold border-0 shadow-lg">
+                             PARTICIPER
+                             <Zap className="ml-2 h-4 w-4 fill-indigo-600" />
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-md">
                         <DialogHeader>
                           <DialogTitle className="text-2xl font-black flex items-center gap-2 text-indigo-900">
                             <Zap className="h-6 w-6 text-yellow-500 fill-yellow-500" />
@@ -823,404 +764,301 @@ export default function DashboardPage() {
                           </Button>
                         </DialogFooter>
                       </DialogContent>
-                    </Dialog>
+                      </Dialog>
+                    )}
+                 </div>
+              </motion.div>
+           ) : nextBoostWindow ? (
+              <div className="flex items-center justify-between p-4 rounded-xl border border-blue-100 bg-blue-50/50">
+                 <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                       <Clock className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <div>
+                       <p className="text-sm font-bold text-blue-900">Prochain Boost</p>
+                       <p className="text-xs text-blue-700">À {new Date(nextBoostWindow.starts_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                    </div>
+                 </div>
+                 <Button variant="ghost" size="sm" className="text-blue-600 hover:bg-blue-100">Info</Button>
+              </div>
+           ) : null}
+
+           {/* MISSIONS SECTION */}
+           <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                 <h2 className="text-xl font-bold flex items-center gap-2">
+                    <div className="h-8 w-1 bg-indigo-500 rounded-full" />
+                    Missions du Jour
+                 </h2>
+                 <span className="text-sm text-muted-foreground bg-slate-100 px-3 py-1 rounded-full font-medium">
+                    {tasks.filter(t => t.completed).length} / {tasks.length} complétées
+                 </span>
+              </div>
+
+              <div className="grid gap-4">
+                  {/* LOCK STATE */}
+                  {(!isFullyOnboarded || !myVideoUrl) && (
+                    <div className="rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 p-8 text-center space-y-4">
+                       <div className="mx-auto h-16 w-16 rounded-full bg-slate-200 flex items-center justify-center">
+                          <Lock className="h-8 w-8 text-slate-400" />
+                       </div>
+                       <div>
+                          <h3 className="text-lg font-bold text-slate-700">Missions Verrouillées</h3>
+                          <p className="text-slate-500 max-w-sm mx-auto mt-1">
+                             {!isFullyOnboarded 
+                               ? "Tu dois t'abonner à tous les membres de ton escouade pour commencer." 
+                               : "Ajoute le lien de ta vidéo du jour dans la barre latérale pour débloquer les missions."}
+                          </p>
+                       </div>
+                       <Button onClick={() => {
+                          if (!isFullyOnboarded) {
+                             // Navigate handled by link usually
+                             window.location.href = "/dashboard/group"
+                          } else {
+                             // Scroll to sidebar on mobile or focus
+                             const sidebar = document.getElementById('sidebar-config')
+                             sidebar?.scrollIntoView({ behavior: 'smooth' })
+                             setIsEditingVideo(true)
+                          }
+                       }}>
+                          {isFullyOnboarded ? "Configurer ma vidéo" : "Voir mon escouade"}
+                       </Button>
+                    </div>
                   )}
-               </div>
-             </div>
-          </motion.div>
-        ) : nextBoostWindow ? (
-          <motion.div 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="w-full rounded-xl border border-blue-500/30 bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-purple-500/10 p-6 relative overflow-hidden mb-6"
-          >
-             <div className="absolute top-0 right-0 p-4 opacity-10">
-               <Clock className="h-24 w-24 text-blue-500" />
-             </div>
-             
-             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
-               <div className="flex items-center gap-4">
-                 <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
-                   <Clock className="h-6 w-6 text-blue-600" />
-                 </div>
-                 <div>
-                   <h3 className="text-xl font-black text-blue-900 uppercase tracking-tight">Prochain Boost Programmé</h3>
-                   <p className="text-sm text-blue-800/80 font-medium">
-                     Prépare-toi soldat ! L'assaut commence à <span className="font-bold text-blue-900 bg-blue-200 px-1 rounded">{new Date(nextBoostWindow.starts_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
-                   </p>
-                 </div>
-               </div>
 
-               <div className="bg-white/80 backdrop-blur px-4 py-3 rounded-lg border border-blue-100 text-sm font-medium text-blue-800 shadow-sm max-w-md">
-                  💡 Participer au prochain Boost pour gagner des points et devenir la prochaine cible. <br/>
-                  "la cible" : c'est la vidéo qui est likée, partagée, commentée par tous les membres TROUPERS pendant 15 minutes &#128561;
-               </div>
-             </div>
-          </motion.div>
-        ) : null}
-
-      {/* Header Stats */}
-      {isAdmin && (
-        <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-             <Shield className="h-5 w-5 text-primary" />
-             <span className="font-semibold text-primary">Mode Administrateur activé</span>
-          </div>
-          <div className="flex gap-2">
-            <Button size="sm" variant="outline" asChild>
-              <a href="https://whatsapp.com/channel/0029Va..." target="_blank" rel="noopener noreferrer">
-                Canal WhatsApp
-              </a>
-            </Button>
-            <Button size="sm" asChild>
-              <Link href="/admin">Accéder au Panel Admin</Link>
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* HERO SECTION: MY VIDEO */}
-      <div className="rounded-xl border bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 p-1">
-        <div className="bg-card rounded-lg p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="space-y-2 text-center md:text-left">
-            <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
-              🚀 Ta Vidéo à Promouvoir
-            </h2>
-            <p className="text-muted-foreground max-w-lg">
-              C'est le lien que ton escouade va recevoir aujourd'hui. <br/>
-              <span className="font-medium text-foreground">Pas de lien = Pas de soutien !</span>
-            </p>
-          </div>
-          
-          <div className="w-full md:w-auto min-w-[300px]">
-            {isEditingVideo ? (
-              <div className="flex flex-col gap-3 p-4 bg-background border rounded-lg shadow-sm">
-                <label className="text-xs font-semibold uppercase text-muted-foreground">Lien de ta vidéo (TikTok, YouTube...)</label>
-                <div className="flex gap-2">
-                  <input 
-                    type="url" 
-                    placeholder="https://..."
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-blue-500"
-                    value={myVideoUrl}
-                    onChange={(e) => setMyVideoUrl(e.target.value)}
-                    autoFocus
-                  />
-                  <Button onClick={handleUpdateVideo}>Enregistrer</Button>
-                </div>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-3 p-4 bg-background border rounded-lg shadow-sm">
-                 <label className="text-xs font-semibold uppercase text-muted-foreground">Lien Actif</label>
-                 <div className="flex items-center justify-between gap-4">
-                    {myVideoUrl ? (
-                      <div className="flex items-center gap-2 overflow-hidden">
-                        <CheckCircle className="h-4 w-4 text-green-500 shrink-0" />
-                        <a href={myVideoUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline truncate max-w-[200px]">
-                          {myVideoUrl}
-                        </a>
-                      </div>
-                    ) : (
-                      <span className="text-sm text-muted-foreground italic flex items-center gap-2">
-                        <AlertCircle className="h-4 w-4 text-orange-500" />
-                        Aucune vidéo définie !
-                      </span>
-                    )}
-                    <Button variant="outline" size="sm" onClick={() => setIsEditingVideo(true)}>
-                      Modifier
-                    </Button>
-                 </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* HERO SECTION: MY PROFILE */}
-      <div className="rounded-xl border bg-gradient-to-r from-orange-500/10 via-red-500/10 to-yellow-500/10 p-1">
-        <div className="bg-card rounded-lg p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="space-y-2 text-center md:text-left">
-            <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-600 to-red-600">
-              👤 Ton Compte à Promouvoir
-            </h2>
-            <p className="text-muted-foreground max-w-lg">
-              Le lien de ton profil principal (TikTok, Instagram...) pour que ton escouade puisse s'abonner à toi. <br/>
-              <span className="font-medium text-foreground">Indispensable pour recevoir des abonnements !</span>
-            </p>
-          </div>
-          
-          <div className="w-full md:w-auto min-w-[300px]">
-            {isEditingProfile ? (
-              <div className="flex flex-col gap-3 p-4 bg-background border rounded-lg shadow-sm">
-                <label className="text-xs font-semibold uppercase text-muted-foreground">Lien de ton profil</label>
-                <div className="flex gap-2">
-                  <input 
-                    type="url" 
-                    placeholder="https://tiktok.com/@..."
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-orange-500"
-                    value={myProfileUrl}
-                    onChange={(e) => setMyProfileUrl(e.target.value)}
-                    autoFocus
-                  />
-                  <Button onClick={handleUpdateProfile} className="bg-orange-600 hover:bg-orange-700">Sauvegarder</Button>
-                </div>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-3 p-4 bg-background border rounded-lg shadow-sm">
-                 <label className="text-xs font-semibold uppercase text-muted-foreground">Profil Actif</label>
-                 <div className="flex items-center justify-between gap-4">
-                    {myProfileUrl ? (
-                      <div className="flex items-center gap-2 overflow-hidden">
-                        <CheckCircle className="h-4 w-4 text-green-500 shrink-0" />
-                        <a href={myProfileUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline truncate max-w-[200px]">
-                          {myProfileUrl}
-                        </a>
-                      </div>
-                    ) : (
-                      <span className="text-sm text-muted-foreground italic flex items-center gap-2">
-                        <AlertCircle className="h-4 w-4 text-red-500" />
-                        Aucun profil défini !
-                      </span>
-                    )}
-                    <Button variant="outline" size="sm" onClick={() => setIsEditingProfile(true)}>
-                      Modifier
-                    </Button>
-                 </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div className="grid gap-8 md:grid-cols-3">
-        {/* LEFT COLUMN (Wide): MISSIONS */}
-        <div className="md:col-span-2 space-y-8">
-           
-           {/* MAIN MISSION CARD */}
-           <div className="rounded-xl border-2 border-indigo-500/20 bg-indigo-50/10 shadow-lg overflow-hidden relative">
-              <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500" />
-              <div className="p-6 border-b bg-indigo-50/20">
-                <h2 className="text-xl font-bold flex items-center gap-3 text-indigo-900">
-                  <Clock className="h-6 w-6 text-indigo-600" />
-                  TES MISSIONS DU JOUR
-                </h2>
-                <div className="text-indigo-700/80 mt-2 space-y-1 text-sm">
-                  <p>Tu as jusqu'à <span className="font-bold">minuit</span> pour valider ces actions.</p>
-                  <p className="font-medium">1 : Clique sur la vidéo et accomplis ta mission</p>
-                  <p className="font-medium">2 : Une fois fait, valide ta mission en cliquant sur le rond.</p>
-                </div>
-              </div>
-              
-              <div className="p-6 space-y-4 bg-card relative">
-                  {!isFullyOnboarded ? (
-                    <div className="absolute inset-0 z-10 bg-background/80 backdrop-blur-[2px] flex flex-col items-center justify-center text-center p-4">
-                      <Lock className="h-12 w-12 text-muted-foreground mb-2" />
-                      <h3 className="text-lg font-bold text-foreground">Missions Verrouillées</h3>
-                      <p className="text-sm text-muted-foreground mb-4 max-w-xs">
-                        Tu dois t'abonner à tous les membres de ton escouade pour débloquer tes missions du jour.
-                      </p>
-                      <Button asChild>
-                        <Link href="/dashboard/group">
-                          Voir mon escouade
-                        </Link>
-                      </Button>
-                    </div>
-                  ) : !myVideoUrl ? (
-                    <div className="absolute inset-0 z-10 bg-background/80 backdrop-blur-[2px] flex flex-col items-center justify-center text-center p-4">
-                      <AlertCircle className="h-12 w-12 text-orange-500 mb-2" />
-                      <h3 className="text-lg font-bold text-foreground">Missions Verrouillées</h3>
-                      <p className="text-sm text-muted-foreground mb-4 max-w-xs">
-                        Tu dois ajouter le lien de ta vidéo pour accéder aux missions. "Pas de lien = Pas de soutien !"
-                      </p>
-                      <Button onClick={() => {
-                        setIsEditingVideo(true)
-                        window.scrollTo({ top: 0, behavior: 'smooth' })
-                      }}>
-                        Ajouter ma vidéo
-                      </Button>
-                    </div>
-                  ) : null}
-                  {tasks.length === 0 ? (
-                    <div className="text-center py-12">
-                      <p className="text-muted-foreground">Aucune mission pour le moment.</p>
-                    </div>
-                  ) : (
-                    tasks.map((task) => (
-                      <div 
-                        key={task.id} 
-                        className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border p-4 transition-all hover:shadow-md ${task.completed ? 'bg-green-50 border-green-200' : 'bg-background hover:border-indigo-200'} ${(!isFullyOnboarded || !myVideoUrl) ? 'opacity-50 pointer-events-none' : ''}`}
-                      >
-                        <div 
-                            className={`flex items-center gap-4 flex-1 ${!task.completed && task.actionUrl && !viewedVideos.has(task.targetUserId) ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'}`}
-                            onClick={() => toggleTask(task.id)}
-                          >
-                            <div
-                              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 transition-all ${task.completed ? 'bg-green-500 border-green-500 text-white shadow-sm' : (!task.completed && task.actionUrl && !viewedVideos.has(task.targetUserId) ? 'border-gray-300 bg-gray-100' : 'border-muted-foreground/30 bg-muted/10')}`}
-                            >
-                              {task.completed ? <CheckCircle className="h-5 w-5" /> : (!task.completed && task.actionUrl && !viewedVideos.has(task.targetUserId) ? <Lock className="h-4 w-4 text-gray-400" /> : null)}
-                            </div>
-                          <div className="space-y-1">
-                             <span className={`font-semibold text-base ${task.completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
-                               {task.text}
-                             </span>
-                             {task.completed && <span className="text-xs text-green-600 font-medium block">Mission accomplie !</span>}
-                          </div>
+                  {/* TASKS LIST */}
+                  {isFullyOnboarded && myVideoUrl && (
+                     tasks.length === 0 ? (
+                        <div className="text-center py-12 text-muted-foreground italic">
+                           Aucune mission disponible. Reviens plus tard ou invite des amis.
                         </div>
-                        
-                        {task.actionUrl && !task.completed && (
-                           task.id === 99 ? (
-                             <Button 
-                               className="shrink-0 text-white shadow-sm bg-indigo-600 hover:bg-indigo-700"
-                               onClick={() => {
-                                  // Copy current domain URL
-                                  const url = window.location.origin
-                                  navigator.clipboard.writeText(url)
-                                  toast.success("Lien copié !", { description: "Partage-le pour recruter des soldats." })
-                               }}
-                             >
-                               <div className="flex items-center gap-2">
-                                 {task.actionLabel}
-                                 <ExternalLink className="h-4 w-4" />
-                               </div>
-                             </Button>
-                           ) : (
-                           <Button 
-                             className={`shrink-0 text-white shadow-sm ${viewedVideos.has(task.targetUserId) ? 'bg-green-600 hover:bg-green-700' : 'bg-indigo-600 hover:bg-indigo-700'}`} 
-                             asChild
+                     ) : (
+                        tasks.map((task) => (
+                           <motion.div 
+                              layout
+                              key={task.id}
+                              className={`group relative overflow-hidden rounded-xl border p-1 transition-all ${
+                                 task.completed 
+                                    ? 'bg-slate-50 border-slate-200 opacity-75' 
+                                    : 'bg-white border-slate-200 hover:border-indigo-300 hover:shadow-md'
+                              }`}
                            >
-                             <a 
-                               href={task.actionUrl} 
-                               target="_blank" 
-                               rel="noopener noreferrer" 
-                               className="flex items-center gap-2"
-                               onClick={() => handleViewVideo(task.targetUserId)}
-                             >
-                               {viewedVideos.has(task.targetUserId) ? "Revoir la vidéo" : task.actionLabel}
-                               <ExternalLink className="h-4 w-4" />
-                             </a>
-                           </Button>
-                           )
-                        )}
-                      </div>
-                    ))
+                              <div className="flex items-center gap-4 p-4">
+                                 {/* CHECKBOX */}
+                                 <button
+                                    onClick={() => toggleTask(task.id)}
+                                    className={`h-8 w-8 rounded-full border-2 flex items-center justify-center transition-all ${
+                                       task.completed
+                                          ? 'bg-green-500 border-green-500 text-white'
+                                          : (task.actionUrl && !viewedVideos.has(task.targetUserId) 
+                                             ? 'bg-slate-100 border-slate-300 text-slate-300 cursor-not-allowed'
+                                             : 'bg-white border-slate-300 text-transparent hover:border-indigo-500')
+                                    }`}
+                                 >
+                                    <CheckCircle className="h-5 w-5" />
+                                 </button>
+
+                                 {/* CONTENT */}
+                                 <div className="flex-1 min-w-0">
+                                    <p className={`font-semibold text-base truncate ${task.completed ? 'text-slate-500 line-through' : 'text-slate-900'}`}>
+                                       {task.text}
+                                    </p>
+                                    {!task.completed && (
+                                       <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
+                                          {task.actionUrl && !viewedVideos.has(task.targetUserId) && <Lock className="h-3 w-3" />}
+                                          {task.actionUrl && !viewedVideos.has(task.targetUserId) ? "Regarde la vidéo pour débloquer" : "Prêt à valider"}
+                                       </p>
+                                    )}
+                                 </div>
+
+                                 {/* ACTION BUTTON */}
+                                 {task.actionUrl && !task.completed && (
+                                    <Button 
+                                       size="sm"
+                                       className={`${
+                                          viewedVideos.has(task.targetUserId) 
+                                             ? 'bg-slate-100 text-slate-700 hover:bg-slate-200' 
+                                             : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                                       }`}
+                                       onClick={() => {
+                                          if (task.id === 99) {
+                                             const url = window.location.origin
+                                             navigator.clipboard.writeText(url)
+                                             toast.success("Lien copié !")
+                                          } else {
+                                             handleViewVideo(task.targetUserId)
+                                             window.open(task.actionUrl, '_blank')
+                                          }
+                                       }}
+                                    >
+                                       {viewedVideos.has(task.targetUserId) ? "Revoir" : (task.id === 99 ? "Copier" : "Voir")}
+                                       <ExternalLink className="ml-2 h-3 w-3" />
+                                    </Button>
+                                 )}
+                              </div>
+                              {/* Progress Bar Bottom */}
+                              {!task.completed && viewedVideos.has(task.targetUserId) && (
+                                 <div className="h-1 w-full bg-indigo-100">
+                                    <div className="h-full w-1/2 bg-indigo-500 animate-pulse" />
+                                 </div>
+                              )}
+                           </motion.div>
+                        ))
+                     )
+                  )}
+
+                  {/* COMPLETION MESSAGE */}
+                  {allTasksCompleted && tasks.length > 0 && (
+                     <motion.div 
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 p-8 text-center text-white shadow-lg"
+                     >
+                        <Trophy className="h-16 w-16 mx-auto mb-4 text-yellow-300 drop-shadow-md" />
+                        <h3 className="text-2xl font-black mb-2">MISSION ACCOMPLIE !</h3>
+                        <p className="text-emerald-100 font-medium">
+                           Excellent travail soldat. Ton escouade te remercie.
+                        </p>
+                     </motion.div>
                   )}
               </div>
-              
-              {allTasksCompleted && tasks.length > 0 && (
-                <motion.div 
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                  className="bg-gradient-to-r from-green-50 to-emerald-50 p-8 text-center border-t border-green-200 flex flex-col items-center gap-4"
-                >
-                  <motion.div
-                    initial={{ rotate: -10, scale: 0 }}
-                    animate={{ rotate: 10, scale: 1 }}
-                    transition={{ 
-                      type: "spring",
-                      stiffness: 260,
-                      damping: 20,
-                      delay: 0.2,
-                      repeat: Infinity,
-                      repeatType: "reverse",
-                      duration: 1.5
-                    }}
-                  >
-                    <Trophy className="h-16 w-16 text-yellow-500 fill-yellow-500 drop-shadow-md" />
-                  </motion.div>
-                  
-                  <div className="space-y-2">
-                    <motion.h3 
-                      initial={{ y: 20, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      transition={{ delay: 0.4 }}
-                      className="text-2xl font-bold text-green-800"
-                    >
-                      BRAVO SOLDAT ! 🎉
-                    </motion.h3>
-                    <motion.p 
-                      initial={{ y: 20, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      transition={{ delay: 0.6 }}
-                      className="text-green-700 font-medium text-lg"
-                    >
-                      Tu as été au bout de tes missions !!
-                    </motion.p>
-                    <motion.p
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.9 }}
-                      className="text-sm text-green-600/80 italic"
-                    >
-                      Ton escouade te remercie. Repose-toi maintenant.
-                    </motion.p>
-                  </div>
-
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: 1, type: "spring" }}
-                    className="flex gap-2"
-                  >
-                     <PartyPopper className="h-6 w-6 text-purple-500" />
-                     <PartyPopper className="h-6 w-6 text-blue-500" />
-                     <PartyPopper className="h-6 w-6 text-orange-500" />
-                  </motion.div>
-                </motion.div>
-              )}
            </div>
-
         </div>
 
-        {/* RIGHT COLUMN: STATS & CHAT */}
-        <div className="space-y-6">
+        {/* === RIGHT COLUMN (SIDEBAR) === */}
+        <div className="lg:col-span-4 space-y-6" id="sidebar-config">
            
-           {/* STATS CARDS (Vertical Stack) */}
-           <div className="grid gap-4">
-              
-              {/* SURVEILLANCE SHORTCUT */}
-              <Link href="/dashboard/surveillance">
-                <div className="rounded-xl border bg-gradient-to-br from-slate-900 to-slate-800 p-5 shadow-lg flex items-center justify-between hover:scale-[1.02] transition-transform cursor-pointer group relative overflow-hidden">
-                  {/* Radar Effect Background */}
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-green-500/10 to-transparent opacity-50 animate-pulse-slow pointer-events-none" />
-                  
-                  <div className="relative z-10">
-                    <div className="flex items-center gap-2 mb-1">
-                       <div className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
-                       <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Accès Classifié</p>
+           {/* MY CONFIGURATION CARD */}
+           <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
+              <div className="p-4 border-b bg-slate-50/50 flex items-center gap-2">
+                 <div className="h-8 w-8 rounded-lg bg-slate-900 text-white flex items-center justify-center">
+                    <Upload className="h-4 w-4" />
+                 </div>
+                 <h3 className="font-bold text-slate-900">Mes Liens</h3>
+              </div>
+              <div className="p-4 space-y-6">
+                 {/* VIDEO INPUT */}
+                 <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                       <label className="text-xs font-bold uppercase text-slate-500">Ma Vidéo du Jour</label>
+                       {!isEditingVideo && (
+                          <button onClick={() => setIsEditingVideo(true)} className="text-xs text-indigo-600 hover:underline font-medium">Modifier</button>
+                       )}
                     </div>
-                    <div className="flex items-center gap-2">
-                        <span className="text-xl font-black text-white tracking-tight">SURVEILLANCE</span>
+                    {isEditingVideo ? (
+                       <div className="flex gap-2">
+                          <input 
+                             type="url" 
+                             className="flex-1 h-9 rounded-md border px-3 text-sm"
+                             placeholder="https://tiktok.com/..."
+                             value={myVideoUrl}
+                             onChange={(e) => setMyVideoUrl(e.target.value)}
+                             autoFocus
+                          />
+                          <Button size="sm" onClick={handleUpdateVideo}>OK</Button>
+                       </div>
+                    ) : (
+                       <div className="flex items-center gap-2 p-2 rounded-md bg-slate-50 border border-slate-100">
+                          {myVideoUrl ? <CheckCircle className="h-4 w-4 text-green-500" /> : <AlertCircle className="h-4 w-4 text-red-500" />}
+                          <span className={`text-sm truncate ${!myVideoUrl && 'text-red-500 font-medium'}`}>
+                             {myVideoUrl || "Lien manquant !"}
+                          </span>
+                       </div>
+                    )}
+                 </div>
+
+                 {/* PROFILE INPUT */}
+                 <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                       <label className="text-xs font-bold uppercase text-slate-500">Mon Profil Principal</label>
+                       {!isEditingProfile && (
+                          <button onClick={() => setIsEditingProfile(true)} className="text-xs text-indigo-600 hover:underline font-medium">Modifier</button>
+                       )}
                     </div>
-                    <p className="text-xs text-slate-400 mt-1 group-hover:text-green-400 transition-colors">
-                       Accéder au radar tactique
-                    </p>
-                  </div>
-                  
-                  <div className="h-12 w-12 rounded-xl bg-slate-800 border border-slate-700 group-hover:border-green-500/50 flex items-center justify-center transition-colors relative z-10">
-                      <Eye className="h-6 w-6 text-green-500 group-hover:animate-pulse" />
-                  </div>
-                </div>
-              </Link>
+                    {isEditingProfile ? (
+                       <div className="flex gap-2">
+                          <input 
+                             type="url" 
+                             className="flex-1 h-9 rounded-md border px-3 text-sm"
+                             placeholder="Profil URL..."
+                             value={myProfileUrl}
+                             onChange={(e) => setMyProfileUrl(e.target.value)}
+                          />
+                          <Button size="sm" onClick={handleUpdateProfile}>OK</Button>
+                       </div>
+                    ) : (
+                       <div className="flex items-center gap-2 p-2 rounded-md bg-slate-50 border border-slate-100">
+                          {myProfileUrl ? <CheckCircle className="h-4 w-4 text-green-500" /> : <AlertCircle className="h-4 w-4 text-red-500" />}
+                          <span className={`text-sm truncate ${!myProfileUrl && 'text-red-500 font-medium'}`}>
+                             {myProfileUrl || "Profil manquant !"}
+                          </span>
+                       </div>
+                    )}
+                 </div>
+              </div>
            </div>
 
-           {/* CHAT - REMOVED (Moved to global widget) */}
-           
-           {/* Broadcast Channel Button for Everyone */}
-           {!isAdmin && (
-            <div className="bg-green-50 border border-green-200 rounded-xl p-4">
-              <div className="flex items-center gap-3 mb-3">
-                 <MessageCircle className="h-5 w-5 text-green-600" />
-                 <span className="font-semibold text-green-800 text-sm">Rejoins le QG du Général</span>
+           {/* BUDDY WIDGET (COMPACT) */}
+           {myBuddy ? (
+              <div className="rounded-xl border border-purple-200 bg-purple-50/30 overflow-hidden">
+                 <div className="p-4 flex items-center gap-4">
+                    <div className="relative">
+                       <div className="h-12 w-12 rounded-full bg-purple-200 flex items-center justify-center text-purple-700 font-bold text-lg">
+                          {myBuddy.username?.charAt(0)}
+                       </div>
+                       <div className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full bg-green-500 border-2 border-white" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                       <p className="text-xs font-bold text-purple-500 uppercase">Mon Binôme</p>
+                       <p className="font-bold text-slate-900 truncate">{myBuddy.username}</p>
+                       <div className="flex items-center gap-1 text-xs text-slate-500">
+                          <Shield className="h-3 w-3" />
+                          Score Duo: {buddyScore}
+                       </div>
+                    </div>
+                    <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => window.open(myBuddy.main_platform || myBuddy.current_video_url, '_blank')}>
+                       <ExternalLink className="h-4 w-4" />
+                    </Button>
+                 </div>
               </div>
-              <Button size="sm" className="w-full bg-green-600 hover:bg-green-700 text-white" asChild>
-                <a href="https://whatsapp.com/channel/0029VbBcgs71iUxRPnXEdF1z" target="_blank" rel="noopener noreferrer">
-                  Rejoindre sur WhatsApp
-                </a>
-              </Button>
-            </div>
+           ) : (
+              <div className="rounded-xl border border-dashed border-slate-200 p-6 text-center">
+                 <Users className="h-8 w-8 mx-auto text-slate-300 mb-2" />
+                 <p className="text-sm text-muted-foreground">Recherche de binôme en cours...</p>
+              </div>
+           )}
+
+           {/* SURVEILLANCE SHORTCUT */}
+           <Link href="/dashboard/surveillance" className="block group">
+              <div className="rounded-xl bg-slate-900 p-5 text-white shadow-lg relative overflow-hidden transition-transform group-hover:scale-[1.02]">
+                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-green-500/20 to-transparent opacity-50" />
+                 <div className="relative z-10 flex items-center justify-between">
+                    <div>
+                       <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">Accès Restreint</p>
+                       <h3 className="font-black text-lg tracking-tight">SURVEILLANCE</h3>
+                    </div>
+                    <Eye className="h-6 w-6 text-green-500" />
+                 </div>
+              </div>
+           </Link>
+
+           {/* ADMIN TOOLS */}
+           {isAdmin && (
+             <div className="rounded-xl border bg-slate-50 p-4">
+               <h4 className="font-bold text-sm mb-3">Outils Admin</h4>
+               <div className="grid grid-cols-2 gap-2">
+                 <Button size="sm" variant="outline" asChild>
+                   <Link href="/admin">Panel</Link>
+                 </Button>
+                 <Button size="sm" variant="outline" asChild>
+                   <a href="https://whatsapp.com/channel/0029VbBcgs71iUxRPnXEdF1z" target="_blank">WhatsApp</a>
+                 </Button>
+               </div>
+             </div>
            )}
 
         </div>
+
       </div>
     </div>
   )
