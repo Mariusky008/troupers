@@ -401,19 +401,24 @@ export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => vo
           </div>
        </div>
 
+       {/* Grid limited to 2 items for compact view */}
        <div className="grid gap-4 md:grid-cols-2">
-          {safeBounties.map((bounty) => (
+          <AnimatePresence mode="popLayout">
+          {safeBounties.slice(0, 2).map((bounty) => (
              <motion.div  
+                layout
                 key={bounty.id}
                 initial={{ scale: 0.95, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                className="bg-gradient-to-br from-red-50 to-slate-50 border border-red-200 rounded-xl p-4 shadow-sm relative overflow-hidden"
+                exit={{ scale: 0.9, opacity: 0, filter: "blur(10px)" }}
+                transition={{ type: "spring", bounce: 0.3, duration: 0.5 }}
+                className="bg-gradient-to-br from-red-50 to-slate-50 border border-red-200 rounded-xl p-4 shadow-sm relative overflow-hidden h-full"
              >
                 <div className="absolute top-0 right-0 p-4 opacity-5">
                    <Sword className="h-24 w-24 text-red-900" />
                 </div>
 
-                <div className="relative z-10">
+                <div className="relative z-10 flex flex-col h-full">
                    <div className="flex justify-between items-start mb-2">
                       <Badge variant="outline" className="bg-red-100 text-red-800 border-red-200">
                          Sauvetage Escouade
@@ -421,28 +426,37 @@ export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => vo
                       <span className="text-xs font-bold text-red-600">Expire à minuit</span>
                    </div>
                    
-                   <h3 className="font-bold text-lg text-slate-800 mb-1">
+                   <h3 className="font-bold text-lg text-slate-800 mb-1 line-clamp-1">
                       Soutenir {bounty.target?.username || "Soldat Inconnu"}
                    </h3>
-                   <p className="text-sm text-slate-600 mb-4">
+                   <p className="text-sm text-slate-600 mb-4 line-clamp-2">
                       Un membre a déserté. L'escouade a besoin de renfort immédiat.
                    </p>
 
-                   <div className="flex items-center gap-2 text-sm font-medium text-amber-700 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-100 w-fit mb-4">
-                      <Sword className="h-4 w-4" />
-                      Récompense : 1 Crédit + Gloire
-                   </div>
+                   <div className="mt-auto space-y-3">
+                       <div className="flex items-center gap-2 text-sm font-medium text-amber-700 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-100 w-fit">
+                          <Sword className="h-4 w-4" />
+                          Récompense : 1 Crédit + Gloire
+                       </div>
 
-                   <Button 
-                     className="w-full bg-red-600 hover:bg-red-700 text-white font-bold shadow-lg shadow-red-500/20"
-                     onClick={() => handleClaimBounty(bounty)}
-                   >
-                      ACCEPTER LA MISSION
-                   </Button>
+                       <Button 
+                         className="w-full bg-red-600 hover:bg-red-700 text-white font-bold shadow-lg shadow-red-500/20"
+                         onClick={() => handleClaimBounty(bounty)}
+                       >
+                          ACCEPTER LA MISSION
+                       </Button>
+                   </div>
                 </div>
              </motion.div>
           ))}
+          </AnimatePresence>
        </div>
+
+       {safeBounties.length > 2 && (
+           <p className="text-center text-xs text-slate-400 font-medium animate-pulse">
+               +{safeBounties.length - 2} autres missions en attente... Complète celles-ci pour voir la suite.
+           </p>
+       )}
 
        {/* Mission Dialog */}
        <Dialog open={!!selectedBounty} onOpenChange={(open) => !open && setSelectedBounty(null)}>
