@@ -51,6 +51,18 @@ export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => vo
       // Filter out bounties where I am the defector (I cannot claim my own bounty)
       const visibleBounties = (data || []).filter((b: any) => b.defector_user_id !== user.id)
       setBounties(visibleBounties)
+      
+      // DIAGNOSTIC: If we see 0 bounties, check if it's a permission issue
+      if ((data || []).length === 0) {
+          fetch('/api/cron/debug-bounties').then(res => res.json()).then(debugData => {
+              if (debugData.count > 0) {
+                  toast.error("Erreur de Permissions Détectée", {
+                      description: `Il y a ${debugData.count} missions dans la base, mais vous ne pouvez pas les voir. Exécutez le script SQL de réparation (RLS).`,
+                      duration: 10000
+                  })
+              }
+          })
+      }
     } catch (e) {
       console.error("Error fetching bounties", e)
     } finally {
