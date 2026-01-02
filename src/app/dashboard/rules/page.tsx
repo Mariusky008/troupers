@@ -57,7 +57,7 @@ export default function RulesPage() {
           </CardHeader>
           <CardContent className="space-y-3 text-slate-700">
             <p>
-              Chaque jour, vous recevez les vidéos de vos 4 camarades. Vous devez :
+              Chaque jour, vous recevez les vidéos de vos camarades. Vous devez :
             </p>
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm bg-slate-50 p-2 rounded border">

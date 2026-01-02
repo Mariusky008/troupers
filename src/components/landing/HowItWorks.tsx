@@ -42,7 +42,7 @@ Résultat : ton contenu reçoit rapidement de l’engagement réel, humain et co
               </p>
               <ul className="space-y-3 text-sm font-medium">
                 <li className="flex items-start gap-3">
-                   <div className="h-5 w-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0 mt-0.5">30</div>
+                   <div className="h-5 w-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0 mt-0.5">50</div>
                    <span>Interactions à distribuer sur les contenus de ton escouade.</span>
                 </li>
                 <li className="flex items-start gap-3">
