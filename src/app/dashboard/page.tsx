@@ -891,49 +891,6 @@ export default function DashboardPage() {
           </motion.div>
         ) : null}
 
-      {/* === RADAR TACTIQUE (DAILY TREND) === */}
-      {dailyTrend && (
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="w-full rounded-xl border border-indigo-500/30 bg-gradient-to-r from-slate-900 to-indigo-950 p-6 relative overflow-hidden mb-6 shadow-xl"
-        >
-          <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/20 rounded-full blur-3xl -mr-10 -mt-10 animate-pulse" />
-          
-          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-start gap-4">
-               <div className="h-12 w-12 rounded-lg bg-indigo-500/20 border border-indigo-500/50 flex items-center justify-center shrink-0">
-                  <TrendingUp className="h-6 w-6 text-indigo-400" />
-               </div>
-               <div>
-                  <div className="flex items-center gap-2 mb-1">
-                     <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
-                        Radar Tactique
-                     </span>
-                     <span className="text-xs text-slate-400">Ordre de mission du {new Date(dailyTrend.created_at).toLocaleDateString()}</span>
-                  </div>
-                  <h3 className="text-xl font-bold text-white mb-2">{dailyTrend.title}</h3>
-                  <p className="text-sm text-slate-300 max-w-2xl leading-relaxed">
-                     {dailyTrend.description}
-                  </p>
-               </div>
-            </div>
-
-            {dailyTrend.sound_url && (
-               <Button 
-                 className="shrink-0 bg-indigo-600 hover:bg-indigo-500 text-white font-bold shadow-lg shadow-indigo-500/20 gap-2"
-                 asChild
-               >
-                 <a href={dailyTrend.sound_url} target="_blank" rel="noopener noreferrer">
-                   <Music className="h-4 w-4" />
-                   Utiliser ce Son
-                 </a>
-               </Button>
-            )}
-          </div>
-        </motion.div>
-      )}
-
       {/* Header Stats */}
       {isAdmin && (
         <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 flex items-center justify-between">

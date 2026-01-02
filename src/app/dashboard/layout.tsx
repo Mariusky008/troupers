@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Home, Users, Settings, LogOut, Trophy } from "lucide-react"
+import { Home, Users, Settings, LogOut, Trophy, Video } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter, usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -81,6 +81,7 @@ export default function DashboardLayout({
 
   const navItems = [
     { href: "/dashboard", label: "Tableau de bord", icon: Home },
+    { href: "/dashboard/my-posts", label: "Mes Posts TikTok", icon: Video },
     { href: "/dashboard/group", label: "Mon Escouade", icon: Users },
     { href: "/dashboard/settings", label: "Paramètres", icon: Settings },
   ]
