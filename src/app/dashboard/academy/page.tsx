@@ -3,12 +3,14 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
-import { Trophy, CheckCircle, Lock, Play, BookOpen, Target, DollarSign, TrendingUp } from "lucide-react"
+import { Trophy, CheckCircle, Lock, Play, BookOpen, Target, DollarSign, TrendingUp, FileText } from "lucide-react"
 import { motion } from "framer-motion"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 
 export default function AcademyPage() {
   const [currentLevel, setCurrentLevel] = useState(1)
+  const [selectedResource, setSelectedResource] = useState<{title: string, type: string} | null>(null)
   
   // Progression simulée (à connecter à la DB plus tard)
   const [stats, setStats] = useState({
@@ -188,20 +190,68 @@ export default function AcademyPage() {
                      Ne perds pas de temps à chercher. Voici les guides essentiels.
                   </p>
                   <ul className="space-y-3">
-                     <li className="flex items-center gap-2 text-sm hover:text-indigo-300 cursor-pointer transition-colors">
+                     <li 
+                        onClick={() => setSelectedResource({ title: "Comprendre l'Algo TikTok en 2026", type: "video" })}
+                        className="flex items-center gap-2 text-sm hover:text-indigo-300 cursor-pointer transition-colors"
+                     >
                         <Play className="h-4 w-4 fill-indigo-400 text-indigo-400" />
                         Comprendre l'Algo TikTok en 2026
                      </li>
-                     <li className="flex items-center gap-2 text-sm hover:text-indigo-300 cursor-pointer transition-colors">
+                     <li 
+                        onClick={() => setSelectedResource({ title: "Tuto : Monter une vidéo virale", type: "video" })}
+                        className="flex items-center gap-2 text-sm hover:text-indigo-300 cursor-pointer transition-colors"
+                     >
                         <Play className="h-4 w-4 fill-indigo-400 text-indigo-400" />
                         Tuto : Monter une vidéo virale
                      </li>
-                     <li className="flex items-center gap-2 text-sm hover:text-indigo-300 cursor-pointer transition-colors">
-                        <Play className="h-4 w-4 fill-indigo-400 text-indigo-400" />
+                     <li 
+                        onClick={() => setSelectedResource({ title: "La liste des 50 niches rentables", type: "pdf" })}
+                        className="flex items-center gap-2 text-sm hover:text-indigo-300 cursor-pointer transition-colors"
+                     >
+                        <FileText className="h-4 w-4 text-indigo-400" />
                         La liste des 50 niches rentables
                      </li>
                   </ul>
                </div>
+
+               {/* Resource Viewer Modal */}
+               <Dialog open={!!selectedResource} onOpenChange={(open) => !open && setSelectedResource(null)}>
+                 <DialogContent className="sm:max-w-lg">
+                   <DialogHeader>
+                     <DialogTitle className="flex items-center gap-2">
+                        {selectedResource?.type === 'video' ? <Play className="h-5 w-5 text-red-500" /> : <FileText className="h-5 w-5 text-blue-500" />}
+                        {selectedResource?.title}
+                     </DialogTitle>
+                     <DialogDescription>
+                       Ressource exclusive pour les membres de l'académie.
+                     </DialogDescription>
+                   </DialogHeader>
+                   
+                   <div className="py-8 text-center space-y-4 bg-slate-50 rounded-lg border border-dashed border-slate-200">
+                      {selectedResource?.type === 'video' ? (
+                         <div className="flex flex-col items-center gap-3">
+                            <div className="h-16 w-16 bg-red-100 rounded-full flex items-center justify-center">
+                               <Play className="h-8 w-8 text-red-600 ml-1" />
+                            </div>
+                            <p className="font-medium text-slate-700">La vidéo est en cours de montage.</p>
+                            <p className="text-xs text-slate-500">Disponible dans la prochaine mise à jour.</p>
+                         </div>
+                      ) : (
+                         <div className="flex flex-col items-center gap-3">
+                            <div className="h-16 w-16 bg-blue-100 rounded-full flex items-center justify-center">
+                               <FileText className="h-8 w-8 text-blue-600" />
+                            </div>
+                            <p className="font-medium text-slate-700">Le document est en cours de rédaction.</p>
+                            <p className="text-xs text-slate-500">Disponible dans la prochaine mise à jour.</p>
+                         </div>
+                      )}
+                   </div>
+                   
+                   <div className="flex justify-end">
+                      <Button onClick={() => setSelectedResource(null)}>Compris</Button>
+                   </div>
+                 </DialogContent>
+               </Dialog>
 
                <div className="rounded-xl border bg-green-50 p-6 border-green-100">
                   <h3 className="font-bold text-green-800 mb-2 flex items-center gap-2">
