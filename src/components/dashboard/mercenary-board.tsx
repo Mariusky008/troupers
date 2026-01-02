@@ -25,6 +25,7 @@ export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => vo
   const [user, setUser] = useState<any>(null)
   const [showVictoryModal, setShowVictoryModal] = useState(false)
   const [strikeAlert, setStrikeAlert] = useState<any>(null)
+  const [hasViewedVideo, setHasViewedVideo] = useState(false)
   
   const supabase = createClient()
   // const [debugInfo, setDebugInfo] = useState<string>("") // Removed unused state
@@ -159,6 +160,7 @@ export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => vo
 
   const handleClaimBounty = async (bounty: any) => {
     setSelectedBounty(bounty)
+    setHasViewedVideo(false)
   }
 
   const handleCompleteBounty = async () => {
@@ -476,7 +478,8 @@ export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => vo
                   <p className="text-xs font-bold text-slate-400 uppercase mb-2">Cible à soutenir</p>
                   <a 
                      href={selectedBounty?.video_url} 
-                     target="_blank" 
+                     target="_blank"
+                     onClick={() => setHasViewedVideo(true)}
                      className="text-lg font-bold text-blue-600 hover:underline flex items-center justify-center gap-2"
                   >
                      <ExternalLink className="h-4 w-4" />
@@ -495,10 +498,14 @@ export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => vo
             <DialogFooter>
                <Button 
                   onClick={handleCompleteBounty} 
-                  disabled={processing}
-                  className="w-full bg-red-600 hover:bg-red-700 text-white font-bold"
+                  disabled={processing || !hasViewedVideo}
+                  className={`w-full font-bold transition-all ${
+                     !hasViewedVideo 
+                        ? 'bg-slate-300 text-slate-500 cursor-not-allowed' 
+                        : 'bg-red-600 hover:bg-red-700 text-white'
+                  }`}
                >
-                  {processing ? <Loader2 className="h-4 w-4 animate-spin" /> : "J'AI FAIT LE JOB (RÉCLAMER)"}
+                  {processing ? <Loader2 className="h-4 w-4 animate-spin" /> : (!hasViewedVideo ? "VOIR LA VIDÉO D'ABORD" : "J'AI FAIT LE JOB (RÉCLAMER)")}
                </Button>
             </DialogFooter>
          </DialogContent>
