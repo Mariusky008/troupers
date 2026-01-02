@@ -681,6 +681,23 @@ export default function DashboardPage() {
            {/* ALERTS / NOTIFICATIONS */}
            <MercenaryBoard onCreditsEarned={handleCreditsEarned} />
            
+           {/* DISCIPLINE WARNING */}
+           {disciplineScore < 50 && (
+             <div className="rounded-xl border border-red-200 bg-red-50 p-6 flex flex-col items-center text-center gap-3 shadow-sm animate-pulse-slow">
+                <div className="h-12 w-12 rounded-full bg-red-100 flex items-center justify-center">
+                   <AlertTriangle className="h-6 w-6 text-red-600" />
+                </div>
+                <h3 className="text-lg font-bold text-red-900">DISCIPLINE CRITIQUE ({disciplineScore} pts)</h3>
+                <p className="text-sm text-red-700 max-w-md">
+                   Tu as abandonné ton escouade trop souvent. <br/>
+                   Tes missions sont suspendues tant que tu n'as pas racheté ta conduite en accomplissant des missions mercenaires.
+                </p>
+                <Button variant="destructive" className="w-full sm:w-auto" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+                   VOIR LES MISSIONS MERCENAIRES
+                </Button>
+             </div>
+           )}
+           
            {/* BOOST BANNER */}
            {activeBoostWindow ? (
               <motion.div 
