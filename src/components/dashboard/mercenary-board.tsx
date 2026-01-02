@@ -47,14 +47,15 @@ export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => vo
       }
 
       // Filter out bounties where I am the defector (I cannot claim my own bounty)
-      const visibleBounties = (data || []).filter((b: any) => b.defector_user_id !== user.id)
+      // DEBUG: Temporarily show ALL bounties to verify they exist
+      const visibleBounties = (data || []) // .filter((b: any) => b.defector_user_id !== user.id)
       setBounties(visibleBounties)
       
       // DEBUG: Log if we are hiding bounties
-      const hiddenCount = (data || []).length - visibleBounties.length
-      if (hiddenCount > 0) {
-          console.log(`Hiding ${hiddenCount} bounties where user is the defector`)
-      }
+      // const hiddenCount = (data || []).length - visibleBounties.length
+      // if (hiddenCount > 0) {
+      //    console.log(`Hiding ${hiddenCount} bounties where user is the defector`)
+      // }
     } catch (e) {
       console.error("Error fetching bounties", e)
     } finally {
