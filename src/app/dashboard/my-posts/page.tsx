@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
-import { TrendingUp, Music, Lightbulb, PenTool, Sparkles, Copy, FileText, CheckSquare, RefreshCw, Heart, UserPlus, MessageCircle, Bookmark, Edit3, Trophy } from "lucide-react"
+import { TrendingUp, Music, Lightbulb, PenTool, Sparkles, Copy, Check, FileText, CheckSquare, RefreshCw, Trophy, Zap, Shield, Target } from "lucide-react"
 import { motion } from "framer-motion"
 import { toast } from "sonner"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -11,30 +11,19 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
 
 export default function MyPostsPage() {
   const [dailyTrend, setDailyTrend] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [copiedHook, setCopiedHook] = useState<string | null>(null)
   
-  // Stats State
+  // Stats State (Internal Activity)
   const [myStats, setMyStats] = useState({
-    total_likes: 0,
-    total_followers_gained: 0,
-    total_comments: 0,
-    total_saves: 0
+    supports_received: 0,
+    missions_done: 0,
+    squad_size: 0,
+    boost_credits: 0
   })
-  const [isStatsOpen, setIsStatsOpen] = useState(false)
-  const [statsForm, setStatsForm] = useState(myStats)
 
   // Script Builder State
   const [scriptType, setScriptStyle] = useState("educatif")
@@ -88,27 +77,42 @@ export default function MyPostsPage() {
          const { data: { user } } = await supabase.auth.getUser()
          
          if (user) {
-            // Fetch User Stats
+            // 1. Fetch Profile for Boost Credits
             const { data: profile } = await supabase
               .from('profiles')
-              .select('total_likes, total_followers_gained, total_comments, total_saves')
+              .select('boost_credits')
               .eq('id', user.id)
               .single()
             
-            if (profile) {
-              setMyStats({
-                total_likes: profile.total_likes || 0,
-                total_followers_gained: profile.total_followers_gained || 0,
-                total_comments: profile.total_comments || 0,
-                total_saves: profile.total_saves || 0
-              })
-              setStatsForm({
-                total_likes: profile.total_likes || 0,
-                total_followers_gained: profile.total_followers_gained || 0,
-                total_comments: profile.total_comments || 0,
-                total_saves: profile.total_saves || 0
-              })
+            // 2. Fetch Supports Received (How many times I was supported)
+            const { count: supportsReceivedCount } = await supabase
+               .from('daily_supports')
+               .select('*', { count: 'exact', head: true })
+               .eq('target_user_id', user.id)
+
+            // 3. Fetch Missions Done (How many times I supported others)
+            const { count: missionsDoneCount } = await supabase
+               .from('daily_supports')
+               .select('*', { count: 'exact', head: true })
+               .eq('supporter_id', user.id)
+
+            // 4. Fetch Squad Size
+            let squadSize = 0
+            const { data: membership } = await supabase.from('squad_members').select('squad_id').eq('user_id', user.id).single()
+            if (membership) {
+               const { count } = await supabase
+                  .from('squad_members')
+                  .select('*', { count: 'exact', head: true })
+                  .eq('squad_id', membership.squad_id)
+               squadSize = count || 0
             }
+
+            setMyStats({
+               supports_received: supportsReceivedCount || 0,
+               missions_done: missionsDoneCount || 0,
+               squad_size: squadSize,
+               boost_credits: profile?.boost_credits || 0
+            })
          }
 
          // Fetch Daily Trend
@@ -147,28 +151,6 @@ export default function MyPostsPage() {
     toast.success("Script complet copié !")
   }
 
-  const updateStats = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
-
-      const { error } = await supabase.from('profiles').update({
-        total_likes: parseInt(statsForm.total_likes as any),
-        total_followers_gained: parseInt(statsForm.total_followers_gained as any),
-        total_comments: parseInt(statsForm.total_comments as any),
-        total_saves: parseInt(statsForm.total_saves as any)
-      }).eq('id', user.id)
-
-      if (error) throw error
-
-      setMyStats(statsForm)
-      setIsStatsOpen(false)
-      toast.success("Tableau de chasse mis à jour !", { icon: <Trophy className="h-4 w-4 text-yellow-500" /> })
-    } catch (error) {
-      toast.error("Erreur lors de la mise à jour")
-    }
-  }
-
   if (loading) return <div className="p-8 text-center">Chargement du Labo Créatif...</div>
 
   return (
@@ -183,104 +165,64 @@ export default function MyPostsPage() {
         </p>
       </div>
 
-      {/* === TABLEAU DE CHASSE (STATS) === */}
+      {/* === TABLEAU DE CHASSE (STATS INTERNES) === */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-           <h2 className="text-xl font-bold flex items-center gap-2">
-            <Trophy className="h-5 w-5 text-yellow-600" />
-            Mon Tableau de Chasse (Stats TikTok)
-           </h2>
-           <Dialog open={isStatsOpen} onOpenChange={setIsStatsOpen}>
-              <DialogTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2 border-yellow-200 bg-yellow-50 text-yellow-800 hover:bg-yellow-100">
-                   <Edit3 className="h-4 w-4" />
-                   Mettre à jour mes chiffres
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                  <DialogTitle>Mettre à jour mon Tableau de Chasse</DialogTitle>
-                  <DialogDescription>
-                    Rentre ici les stats que tu vois sur ton profil TikTok.
-                    C'est manuel : l'app ne peut pas (encore) lire tes pensées ! 😉
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="followers" className="text-right">Abonnés</Label>
-                    <Input id="followers" type="number" value={statsForm.total_followers_gained} onChange={(e) => setStatsForm({...statsForm, total_followers_gained: parseInt(e.target.value)})} className="col-span-3" />
-                  </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="likes" className="text-right">Likes</Label>
-                    <Input id="likes" type="number" value={statsForm.total_likes} onChange={(e) => setStatsForm({...statsForm, total_likes: parseInt(e.target.value)})} className="col-span-3" />
-                  </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="comments" className="text-right">Commentaires</Label>
-                    <Input id="comments" type="number" value={statsForm.total_comments} onChange={(e) => setStatsForm({...statsForm, total_comments: parseInt(e.target.value)})} className="col-span-3" />
-                  </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="saves" className="text-right">Favoris</Label>
-                    <Input id="saves" type="number" value={statsForm.total_saves} onChange={(e) => setStatsForm({...statsForm, total_saves: parseInt(e.target.value)})} className="col-span-3" />
-                  </div>
+         <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold flex items-center gap-2">
+             <Trophy className="h-5 w-5 text-yellow-600" />
+             Mon Tableau de Chasse (Activité Troupers)
+            </h2>
+         </div>
+         
+         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+             {/* SOUTIENS REÇUS */}
+             <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-3 opacity-10">
+                   <Target className="h-16 w-16 text-red-600" />
                 </div>
-                <DialogFooter>
-                  <Button onClick={updateStats}>Sauvegarder les stats</Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-        </div>
+                <div className="relative z-10">
+                   <p className="text-xs font-bold uppercase text-slate-500 mb-1">Soutiens Reçus</p>
+                   <p className="text-3xl font-black text-slate-900">{myStats.supports_received}</p>
+                   <p className="text-[10px] text-muted-foreground mt-1">De la part de l'escouade</p>
+                </div>
+             </div>
+             
+             {/* MISSIONS ACCOMPLIES */}
+             <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-3 opacity-10">
+                   <CheckSquare className="h-16 w-16 text-green-600" />
+                </div>
+                <div className="relative z-10">
+                   <p className="text-xs font-bold uppercase text-slate-500 mb-1">Missions Validées</p>
+                   <p className="text-3xl font-black text-slate-900">{myStats.missions_done}</p>
+                   <p className="text-[10px] text-muted-foreground mt-1">Ton engagement</p>
+                </div>
+             </div>
 
-        {myStats.total_likes === 0 && myStats.total_followers_gained === 0 ? (
-           <div className="bg-yellow-50 border border-yellow-100 rounded-xl p-6 text-center">
-              <p className="text-yellow-800 font-medium mb-2">Tu n'as pas encore rentré tes statistiques TikTok !</p>
-              <p className="text-sm text-yellow-700/80 mb-4">Clique sur "Mettre à jour" pour suivre ta progression et motiver l'escouade.</p>
-              <Button onClick={() => setIsStatsOpen(true)} className="bg-yellow-600 hover:bg-yellow-700 text-white">
-                 Commencer le tracking
-              </Button>
-           </div>
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
+             {/* TAILLE ESCOUADE */}
+             <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-3 opacity-10">
-                    <UserPlus className="h-16 w-16 text-blue-600" />
+                   <Shield className="h-16 w-16 text-blue-600" />
                 </div>
                 <div className="relative z-10">
-                    <p className="text-xs font-bold uppercase text-slate-500 mb-1">Abonnés Gagnés</p>
-                    <p className="text-3xl font-black text-slate-900">{myStats.total_followers_gained}</p>
+                   <p className="text-xs font-bold uppercase text-slate-500 mb-1">Membres Escouade</p>
+                   <p className="text-3xl font-black text-slate-900">{myStats.squad_size}</p>
+                   <p className="text-[10px] text-muted-foreground mt-1">Tes frères d'armes</p>
                 </div>
-              </div>
-              
-              <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-3 opacity-10">
-                    <Heart className="h-16 w-16 text-red-600" />
-                </div>
-                <div className="relative z-10">
-                    <p className="text-xs font-bold uppercase text-slate-500 mb-1">Likes Reçus</p>
-                    <p className="text-3xl font-black text-slate-900">{myStats.total_likes}</p>
-                </div>
-              </div>
+             </div>
 
-              <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
+             {/* CRÉDITS BOOST */}
+             <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-3 opacity-10">
-                    <MessageCircle className="h-16 w-16 text-green-600" />
+                   <Zap className="h-16 w-16 text-yellow-600" />
                 </div>
                 <div className="relative z-10">
-                    <p className="text-xs font-bold uppercase text-slate-500 mb-1">Commentaires</p>
-                    <p className="text-3xl font-black text-slate-900">{myStats.total_comments}</p>
+                   <p className="text-xs font-bold uppercase text-slate-500 mb-1">Crédits Boost</p>
+                   <p className="text-3xl font-black text-slate-900">{myStats.boost_credits}</p>
+                   <p className="text-[10px] text-muted-foreground mt-1">Pour ta promo</p>
                 </div>
-              </div>
-
-              <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-3 opacity-10">
-                    <Bookmark className="h-16 w-16 text-yellow-600" />
-                </div>
-                <div className="relative z-10">
-                    <p className="text-xs font-bold uppercase text-slate-500 mb-1">Favoris</p>
-                    <p className="text-3xl font-black text-slate-900">{myStats.total_saves}</p>
-                </div>
-              </div>
-          </div>
-        )}
+             </div>
+         </div>
       </div>
 
       {/* === TOP SECTION: RADAR TACTIQUE === */}
