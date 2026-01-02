@@ -20,7 +20,7 @@ export function MercenaryBoard() {
 
   const fetchBounties = async () => {
     try {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('bounties')
         .select(`
             *,
@@ -35,6 +35,14 @@ export function MercenaryBoard() {
         .eq('status', 'open')
         .order('created_at', { ascending: false })
       
+      if (error) {
+        console.error("Supabase Error:", error)
+        // If table doesn't exist (code 42P01), we don't crash, just show empty
+        if (error.code === '42P01') {
+            toast.error("Table 'bounties' introuvable", { description: "Demandez à l'admin d'exécuter la migration SQL." })
+        }
+      }
+
       setBounties(data || [])
     } catch (e) {
       console.error("Error fetching bounties", e)
@@ -108,19 +116,41 @@ export function MercenaryBoard() {
   const simulateProtocol = async () => {
     if (!user) return
     setProcessing(true)
+    
+    // Simulate local state update directly for immediate feedback
+    const fakeBounty = {
+        id: "simulated-" + Date.now(),
+        target_user_id: user.id,
+        defector_user_id: user.id,
+        video_url: "https://tiktok.com/@test/video/123",
+        status: 'open',
+        reward_credits: 1,
+        created_at: new Date().toISOString(),
+        target: { username: "Simulation Target", current_video_url: "#" },
+        squad: { name: "Alpha Squad" }
+    }
+    
+    // Use functional update to ensure we don't lose previous state and force re-render
+    setBounties(prev => {
+        const newState = [fakeBounty, ...prev]
+        console.log("Simulating Bounty. New State:", newState)
+        return newState
+    })
+    
+    toast.success("Protocole Mercenaire Déclenché (Simulation Local)")
+    
     try {
-        // Create a fake bounty
-        await supabase.from('bounties').insert({
+        // Create a fake bounty in DB
+        const { error } = await supabase.from('bounties').insert({
             target_user_id: user.id, // Myself as target for testing
             defector_user_id: user.id, // Myself as defector
             video_url: "https://tiktok.com/@test/video/123",
             status: 'open',
             reward_credits: 1
         })
-        toast.success("Protocole Mercenaire Déclenché (Simulation)")
-        fetchBounties()
+        if (error) console.error("Simulation Insert Error:", error)
     } catch (e) {
-        toast.error("Erreur simulation")
+        console.error("Simulation Exception:", e)
     } finally {
         setProcessing(false)
     }
