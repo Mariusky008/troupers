@@ -8,6 +8,7 @@ import { AlertTriangle, Sword, ShieldAlert, Skull, CheckCircle, Loader2, Externa
 import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
+import confetti from "canvas-confetti"
 
 export function MercenaryBoard() {
   const [bounties, setBounties] = useState<any[]>([])
@@ -132,8 +133,7 @@ export function MercenaryBoard() {
     }
   }
 
-  const triggerConfetti = async () => {
-    const confetti = (await import("canvas-confetti")).default
+  const triggerConfetti = () => {
     const duration = 3000
     const end = Date.now() + duration
 
