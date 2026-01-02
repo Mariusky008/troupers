@@ -35,6 +35,7 @@ export default function DashboardPage() {
   const [nextBoostWindow, setNextBoostWindow] = useState<any>(null)
   const [hasParticipatedInBoost, setHasParticipatedInBoost] = useState(false)
   const [boostCredits, setBoostCredits] = useState(0)
+  const [animateCredits, setAnimateCredits] = useState(false)
   const [dailyTrend, setDailyTrend] = useState<any>(null)
   const [myBuddy, setMyBuddy] = useState<any>(null)
   const [buddyScore, setBuddyScore] = useState(100)
@@ -577,6 +578,8 @@ export default function DashboardPage() {
 
         // 2. Update Credits (Optimistic UI)
         setBoostCredits(prev => prev + 1)
+        setAnimateCredits(true)
+        setTimeout(() => setAnimateCredits(false), 2000)
         setHasParticipatedInBoost(true)
 
         // 3. Direct Update
@@ -590,6 +593,12 @@ export default function DashboardPage() {
         toast.error("Erreur validation")
     }
   }
+  
+  const handleCreditsEarned = () => {
+    setBoostCredits(prev => prev + 1)
+    setAnimateCredits(true)
+    setTimeout(() => setAnimateCredits(false), 2000)
+  }
 
   const allTasksCompleted = tasks.length > 0 && tasks.every(t => t.completed)
   
@@ -602,7 +611,7 @@ export default function DashboardPage() {
       <WelcomePopup userId={userProfile?.id} />
 
       {/* MERCENARY PROTOCOL ALERT ZONE */}
-      <MercenaryBoard />
+      <MercenaryBoard onCreditsEarned={handleCreditsEarned} />
 
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
            <div className="flex items-center gap-4">
@@ -611,10 +620,15 @@ export default function DashboardPage() {
                  QG OPÉRATIONNEL
                </h1>
                <div className="flex items-center gap-4 mt-2">
-                 <div className="flex items-center gap-2 bg-yellow-100 px-3 py-1 rounded-full border border-yellow-200">
-                    <Zap className="h-4 w-4 text-yellow-600" />
+                 <motion.div 
+                    animate={animateCredits ? { scale: [1, 1.3, 1], borderColor: ["#fef08a", "#eab308", "#fef08a"] } : {}}
+                    transition={{ duration: 0.5, type: "spring", stiffness: 300 }}
+                    className="flex items-center gap-2 bg-yellow-100 px-3 py-1 rounded-full border border-yellow-200 shadow-sm relative overflow-hidden"
+                 >
+                    {animateCredits && <motion.div className="absolute inset-0 bg-yellow-300 opacity-50" initial={{ x: '-100%' }} animate={{ x: '100%' }} transition={{ duration: 0.5 }} />}
+                    <Zap className={`h-4 w-4 text-yellow-600 ${animateCredits ? 'fill-yellow-600' : ''}`} />
                     <span className="text-sm font-bold text-yellow-800">{boostCredits} Crédits</span>
-                 </div>
+                 </motion.div>
                  
                  {dayProgress <= 3 && !allTasksCompleted ? (
                    <div className="flex items-center gap-2 bg-red-100 px-3 py-1 rounded-full border border-red-200">

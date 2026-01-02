@@ -10,7 +10,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 
-export function MercenaryBoard() {
+export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => void }) {
   const [bounties, setBounties] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [processing, setProcessing] = useState(false)
@@ -88,6 +88,7 @@ export function MercenaryBoard() {
             setBounties(prev => prev.filter(b => b.id !== selectedBounty.id))
             setShowVictoryModal(true)
             triggerConfetti()
+            if (onCreditsEarned) onCreditsEarned() // Trigger parent animation
             setSelectedBounty(null)
             setProcessing(false)
         }, 1000)
@@ -122,6 +123,7 @@ export function MercenaryBoard() {
 
         setShowVictoryModal(true)
         triggerConfetti()
+        if (onCreditsEarned) onCreditsEarned() // Trigger parent animation
         setSelectedBounty(null)
         fetchBounties()
 
@@ -341,37 +343,48 @@ export function MercenaryBoard() {
                   className="relative"
                >
                   <div className="absolute inset-0 bg-yellow-500 blur-2xl opacity-20 animate-pulse" />
-                  <Medal className="h-24 w-24 text-yellow-400 drop-shadow-[0_0_15px_rgba(250,204,21,0.5)]" />
-                  <Star className="h-8 w-8 text-white absolute -top-2 -right-2 animate-ping" />
+                  <Medal className="h-32 w-32 text-yellow-400 drop-shadow-[0_0_25px_rgba(250,204,21,0.6)]" />
+                  <Star className="h-10 w-10 text-white absolute -top-2 -right-2 animate-ping" />
                </motion.div>
 
                <div className="space-y-2">
-                  <h2 className="text-3xl font-black uppercase text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-orange-300 to-yellow-300 tracking-tighter">
+                  <h2 className="text-4xl font-black uppercase text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-orange-300 to-yellow-300 tracking-tighter drop-shadow-sm">
                      MISSION ACCOMPLIE !
                   </h2>
-                  <p className="text-slate-300 font-medium">
+                  <p className="text-slate-300 font-medium text-lg">
                      L'escouade te doit une fière chandelle, Mercenaire.
                   </p>
                </div>
 
-               <div className="grid grid-cols-2 gap-4 w-full mt-4">
-                  <div className="bg-slate-800/50 p-4 rounded-xl border border-white/10 flex flex-col items-center">
-                     <Flame className="h-6 w-6 text-orange-500 mb-1" />
-                     <span className="text-2xl font-bold text-white">+1</span>
-                     <span className="text-xs text-slate-400 uppercase font-bold">Crédit Boost</span>
-                  </div>
-                  <div className="bg-slate-800/50 p-4 rounded-xl border border-white/10 flex flex-col items-center">
-                     <Sword className="h-6 w-6 text-red-500 mb-1" />
-                     <span className="text-2xl font-bold text-white">+50</span>
-                     <span className="text-xs text-slate-400 uppercase font-bold">XP Gloire</span>
-                  </div>
+               <div className="grid grid-cols-2 gap-4 w-full mt-6">
+                  <motion.div 
+                     initial={{ y: 20, opacity: 0 }}
+                     animate={{ y: 0, opacity: 1 }}
+                     transition={{ delay: 0.2 }}
+                     className="bg-white p-4 rounded-xl border-4 border-yellow-500 shadow-[0_0_20px_rgba(234,179,8,0.3)] flex flex-col items-center transform hover:scale-105 transition-transform"
+                  >
+                     <Flame className="h-8 w-8 text-orange-500 mb-2" />
+                     <span className="text-4xl font-black text-slate-900">+1</span>
+                     <span className="text-xs text-slate-500 uppercase font-bold tracking-wider">Crédit Boost</span>
+                  </motion.div>
+                  
+                  <motion.div 
+                     initial={{ y: 20, opacity: 0 }}
+                     animate={{ y: 0, opacity: 1 }}
+                     transition={{ delay: 0.4 }}
+                     className="bg-white p-4 rounded-xl border-4 border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.3)] flex flex-col items-center transform hover:scale-105 transition-transform"
+                  >
+                     <Sword className="h-8 w-8 text-red-600 mb-2" />
+                     <span className="text-4xl font-black text-slate-900">+50</span>
+                     <span className="text-xs text-slate-500 uppercase font-bold tracking-wider">XP Gloire</span>
+                  </motion.div>
                </div>
 
                <Button 
                   onClick={() => setShowVictoryModal(false)}
-                  className="w-full mt-6 bg-yellow-500 hover:bg-yellow-600 text-black font-bold text-lg h-12"
+                  className="w-full mt-8 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-black text-xl h-14 shadow-lg uppercase tracking-widest"
                >
-                  CONTINUER LE COMBAT
+                  Continuer le Combat
                </Button>
             </div>
          </DialogContent>
