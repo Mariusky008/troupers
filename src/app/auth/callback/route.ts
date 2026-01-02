@@ -28,6 +28,19 @@ export async function GET(request: Request) {
             // Keep existing fields if any
           }, { onConflict: 'id', ignoreDuplicates: false }); // We want to update
       }
+
+      // Check if user is already onboarded
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('is_fully_onboarded, current_video_url')
+        .eq('id', data.user.id)
+        .single();
+
+      // If they have a video URL or are marked as onboarded, go to dashboard
+      // Assuming that having a video URL is a strong signal they passed onboarding
+      if (profile?.is_fully_onboarded || profile?.current_video_url) {
+         return NextResponse.redirect(`${origin}/dashboard`);
+      }
     }
   }
 
