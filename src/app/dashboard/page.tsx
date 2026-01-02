@@ -634,17 +634,26 @@ export default function DashboardPage() {
           <div className="flex flex-wrap items-center gap-3 pt-1">
              <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-lg border border-slate-200 text-sm font-semibold text-slate-700">
                 <Trophy className="h-4 w-4 text-slate-500" />
-                <span>Niveau {Math.floor(dayProgress / 7) + 1}</span>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <span>Grade {Math.floor(dayProgress / 7) + 1}</span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Ton grade augmente chaque semaine de présence !</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
              </div>
              {dayProgress <= 3 && !allTasksCompleted ? (
-               <div className="flex items-center gap-2 px-3 py-1.5 bg-red-50 rounded-lg border border-red-100 text-sm font-semibold text-red-700">
+               <div className="flex items-center gap-2 px-3 py-1.5 bg-yellow-50 rounded-lg border border-yellow-100 text-sm font-semibold text-yellow-700">
                   <AlertCircle className="h-4 w-4" />
-                  <span>Probation</span>
+                  <span>En Formation (J{dayProgress})</span>
                </div>
              ) : (
                <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 rounded-lg border border-emerald-100 text-sm font-semibold text-emerald-700">
                   <Shield className="h-4 w-4" />
-                  <span>Fiabilité 100%</span>
+                  <span>Soldat Actif</span>
                </div>
              )}
           </div>
