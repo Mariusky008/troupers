@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
+import Script from "next/script"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { AlertTriangle, Sword, ShieldAlert, Skull, CheckCircle, Loader2, ExternalLink, Medal, Star, Flame } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
-import confetti from "canvas-confetti"
 
 export function MercenaryBoard() {
   const [bounties, setBounties] = useState<any[]>([])
@@ -134,6 +134,10 @@ export function MercenaryBoard() {
   }
 
   const triggerConfetti = () => {
+    // Check if confetti is loaded globally
+    const confetti = (window as any).confetti
+    if (!confetti) return
+
     const duration = 3000
     const end = Date.now() + duration
 
@@ -225,6 +229,8 @@ export function MercenaryBoard() {
 
   return (
     <div className="space-y-4">
+       <Script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js" strategy="lazyOnload" />
+
        <div className="flex items-center justify-between">
           <h2 className="text-xl font-black text-red-900 flex items-center gap-2 uppercase tracking-tight">
              <Skull className="h-6 w-6 text-red-600" />
