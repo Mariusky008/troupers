@@ -86,8 +86,13 @@ export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => vo
     if (selectedBounty.id.toString().startsWith('simulated-')) {
         setTimeout(() => {
             setBounties(prev => prev.filter(b => b.id !== selectedBounty.id))
+            
+            // Force modal open state
             setShowVictoryModal(true)
-            triggerConfetti()
+            
+            // Trigger confetti with a small delay to ensure DOM is ready
+            setTimeout(() => triggerConfetti(), 100)
+            
             if (onCreditsEarned) onCreditsEarned() // Trigger parent animation
             setSelectedBounty(null)
             setProcessing(false)
@@ -122,7 +127,7 @@ export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => vo
         }
 
         setShowVictoryModal(true)
-        triggerConfetti()
+        setTimeout(() => triggerConfetti(), 100)
         if (onCreditsEarned) onCreditsEarned() // Trigger parent animation
         setSelectedBounty(null)
         fetchBounties()
@@ -138,7 +143,10 @@ export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => vo
   const triggerConfetti = () => {
     // Check if confetti is loaded globally
     const confetti = (window as any).confetti
-    if (!confetti) return
+    if (!confetti) {
+        console.warn("Confetti library not loaded yet")
+        return
+    }
 
     const duration = 3000
     const end = Date.now() + duration
