@@ -11,7 +11,14 @@ import { toast } from "sonner"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 
 export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => void }) {
+  const [isMounted, setIsMounted] = useState(false)
   const [bounties, setBounties] = useState<any[]>([])
+  
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  // ... rest of state ...
   const [loading, setLoading] = useState(true)
   const [processing, setProcessing] = useState(false)
   const [selectedBounty, setSelectedBounty] = useState<any>(null)
@@ -20,7 +27,6 @@ export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => vo
   const [strikeAlert, setStrikeAlert] = useState<any>(null)
   
   const supabase = createClient()
-
   const [debugInfo, setDebugInfo] = useState<string>("")
 
   const fetchBounties = async () => {
@@ -300,9 +306,20 @@ export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => vo
     }
   }
 
+  if (!isMounted) {
+    return (
+        <div className="rounded-xl border border-slate-200 p-8 flex items-center justify-center">
+            <div className="h-8 w-8 text-slate-400 animate-spin rounded-full border-4 border-slate-200 border-t-red-600"></div>
+        </div>
+    )
+  }
+
   if (loading) return null
 
-  if (bounties.length === 0) {
+  // Safe check for bounties array
+  const safeBounties = Array.isArray(bounties) ? bounties : []
+  
+  if (safeBounties.length === 0) {
       return (
           <>
           <div className="rounded-xl bg-gradient-to-r from-slate-50 to-white border border-slate-200 p-8 text-center shadow-sm relative overflow-hidden group hover:shadow-md transition-all duration-300">
@@ -379,14 +396,14 @@ export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => vo
           </h2>
           <div className="flex flex-col items-end">
              <Badge variant="destructive" className="animate-pulse">
-                {bounties.length} Missions Urgentes
+                {safeBounties.length} Missions Urgentes
              </Badge>
           </div>
        </div>
 
        <div className="grid gap-4 md:grid-cols-2">
-          {bounties.map((bounty) => (
-             <motion.div 
+          {safeBounties.map((bounty) => (
+             <motion.div  
                 key={bounty.id}
                 initial={{ scale: 0.95, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
