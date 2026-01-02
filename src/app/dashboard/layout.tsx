@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Home, Users, Settings, LogOut, Trophy, Video, GraduationCap } from "lucide-react"
+import { Home, Users, Settings, LogOut, Trophy, Video, GraduationCap, BookOpen } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter, usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -86,6 +86,7 @@ export default function DashboardLayout({
     { href: "/dashboard/my-posts", label: "Mes Posts TikTok", icon: Video },
     { href: "/dashboard/academy", label: "Académie (Objectif 10K)", icon: GraduationCap },
     { href: "/dashboard/group", label: "Mon Escouade", icon: Users },
+    { href: "/dashboard/rules", label: "Règles du Jeu", icon: BookOpen },
     { href: "/dashboard/settings", label: "Paramètres", icon: Settings },
   ]
 
