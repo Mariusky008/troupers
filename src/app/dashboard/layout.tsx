@@ -96,10 +96,10 @@ export default function DashboardLayout({
     <div className="flex min-h-screen bg-muted/20">
       {/* Sidebar */}
       <aside className="hidden w-64 flex-col border-r bg-background md:flex">
-        <div className="flex h-64 items-center justify-center border-b px-2 py-4">
+        <div className="flex h-32 items-center justify-center border-b px-0 py-0">
           <Link href="/dashboard" className="flex items-center justify-center w-full h-full">
-            <div className="relative h-full w-full overflow-hidden rounded">
-               <GlitchLogo width={400} height={400} className="w-full h-full" imageClassName="object-contain" />
+            <div className="relative h-full w-full overflow-hidden">
+               <GlitchLogo width={256} height={128} className="w-full h-full" imageClassName="object-cover" />
             </div>
           </Link>
         </div>
