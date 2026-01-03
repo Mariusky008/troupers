@@ -97,11 +97,10 @@ export default function DashboardLayout({
       {/* Sidebar */}
       <aside className="hidden w-64 flex-col border-r bg-background md:flex">
         <div className="flex h-16 items-center border-b px-6">
-          <Link href="/dashboard" className="flex items-center gap-2 font-bold text-xl">
-            <div className="relative h-8 w-8 overflow-hidden rounded">
-               <GlitchLogo width={32} height={32} />
+          <Link href="/dashboard" className="flex items-center justify-center w-full">
+            <div className="relative h-12 w-full overflow-hidden rounded">
+               <GlitchLogo width={180} height={48} className="w-full h-full" imageClassName="object-contain" />
             </div>
-            <span>Troupers</span>
           </Link>
         </div>
         <nav className="flex-1 space-y-1 p-4">
