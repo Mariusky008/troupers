@@ -852,7 +852,7 @@ export default function DashboardPage() {
                            <currentRank.icon className="h-6 w-6" />
                         </div>
                         <div>
-                           <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Rang du Jour</p>
+                           <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Missions du jour à accomplir</p>
                            <h3 className={`text-lg font-black ${currentRank.color}`}>{currentRank.name}</h3>
                         </div>
                      </div>
