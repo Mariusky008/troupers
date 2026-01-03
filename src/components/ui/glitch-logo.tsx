@@ -24,7 +24,7 @@ export function GlitchLogo({
         width={width} 
         height={height}
         sizes={sizes}
-        className={cn("rounded-2xl", imageClassName)}
+        className={cn("rounded-2xl opacity-0", imageClassName)}
       />
     </div>
   )

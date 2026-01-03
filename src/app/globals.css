@@ -173,6 +173,10 @@
 .glitch-wrapper {
   position: relative;
   display: inline-block;
+  background-image: url('/logo-v2.png');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .glitch-wrapper::before,
