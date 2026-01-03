@@ -1,12 +1,13 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { CheckCircle, Upload, Clock, AlertCircle, ExternalLink, Heart, Lock, Shield, Eye, BarChart3, AlertTriangle, MessageSquareWarning, MessageCircle, Trophy, PartyPopper, Zap, Play, Gift, TrendingUp, Music, Users, Info } from "lucide-react"
+import { CheckCircle, Upload, Clock, AlertCircle, ExternalLink, Heart, Lock, Shield, Eye, BarChart3, AlertTriangle, MessageSquareWarning, MessageCircle, Trophy, PartyPopper, Zap, Play, Gift, TrendingUp, Music, Users, Info, ChevronRight, Medal } from "lucide-react"
 import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Progress } from "@/components/ui/progress"
 
 import Link from "next/link"
 
@@ -17,6 +18,11 @@ import { MercenaryBoard } from "@/components/dashboard/mercenary-board"
 
 export default function DashboardPage() {
   const [tasks, setTasks] = useState<any[]>([])
+  // Pagination State for Missions
+  const TASKS_PER_WAVE = 5
+  const [currentWave, setCurrentWave] = useState(0)
+  const [showWaveComplete, setShowWaveComplete] = useState(false)
+
   const [disciplineScore, setDisciplineScore] = useState(0)
   const [loading, setLoading] = useState(true)
   const [myVideoUrl, setMyVideoUrl] = useState("")
@@ -608,6 +614,33 @@ export default function DashboardPage() {
 
   const allTasksCompleted = tasks.length > 0 && tasks.every(t => t.completed)
   
+  // Calculate Rank based on progression
+  const totalTasks = tasks.length
+  const completedTasks = tasks.filter(t => t.completed).length
+  const progressPercentage = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0
+  
+  const getRank = (pct: number) => {
+     if (pct >= 100) return { name: "Légende", color: "text-yellow-500", icon: Trophy }
+     if (pct >= 75) return { name: "Vétéran", color: "text-purple-600", icon: Medal }
+     if (pct >= 50) return { name: "Sergent", color: "text-indigo-600", icon: Shield }
+     if (pct >= 25) return { name: "Soldat", color: "text-blue-600", icon: Users }
+     return { name: "Recrue", color: "text-slate-500", icon: Users }
+  }
+
+  const currentRank = getRank(progressPercentage)
+
+  // Get current wave tasks
+  const waveStartIndex = currentWave * TASKS_PER_WAVE
+  const currentWaveTasks = tasks.slice(waveStartIndex, waveStartIndex + TASKS_PER_WAVE)
+  const isWaveComplete = currentWaveTasks.length > 0 && currentWaveTasks.every(t => t.completed)
+  const hasNextWave = waveStartIndex + TASKS_PER_WAVE < tasks.length
+
+  const handleNextWave = () => {
+      setShowWaveComplete(false)
+      setCurrentWave(prev => prev + 1)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   if (loading) {
     return (
       <div className="flex h-screen items-center justify-center flex-col gap-4">
@@ -811,13 +844,38 @@ export default function DashboardPage() {
 
            {/* MISSIONS SECTION */}
            <div className="space-y-6">
+              {/* GAMIFIED HEADER */}
+              <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+                  <div className="flex items-center justify-between mb-4">
+                     <div className="flex items-center gap-3">
+                        <div className={`h-10 w-10 rounded-lg bg-slate-100 flex items-center justify-center ${currentRank.color}`}>
+                           <currentRank.icon className="h-6 w-6" />
+                        </div>
+                        <div>
+                           <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Rang du Jour</p>
+                           <h3 className={`text-lg font-black ${currentRank.color}`}>{currentRank.name}</h3>
+                        </div>
+                     </div>
+                     <div className="text-right">
+                        <p className="text-2xl font-black text-slate-900">{Math.round(progressPercentage)}%</p>
+                        <p className="text-xs font-medium text-slate-400">Objectif Quotidien</p>
+                     </div>
+                  </div>
+                  <div className="relative h-4 w-full bg-slate-100 rounded-full overflow-hidden">
+                     <div 
+                        className="absolute top-0 left-0 h-full bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-1000 ease-out"
+                        style={{ width: `${progressPercentage}%` }}
+                     />
+                  </div>
+              </div>
+
               <div className="flex items-center justify-between">
                  <h2 className="text-xl font-bold flex items-center gap-2">
                     <div className="h-8 w-1 bg-indigo-500 rounded-full" />
-                    Missions du Jour
+                    Vague {currentWave + 1} <span className="text-slate-400 font-normal">/ {Math.ceil(tasks.length / TASKS_PER_WAVE)}</span>
                  </h2>
                  <span className="text-sm text-muted-foreground bg-slate-100 px-3 py-1 rounded-full font-medium">
-                    {tasks.filter(t => t.completed).length} / {tasks.length} complétées
+                    {currentWaveTasks.filter(t => t.completed).length} / {currentWaveTasks.length} terminées
                  </span>
               </div>
 
@@ -859,9 +917,16 @@ export default function DashboardPage() {
                            Aucune mission disponible. Reviens plus tard ou invite des amis.
                         </div>
                      ) : (
-                        tasks.map((task) => (
+                        <>
+                        {/* CURRENT WAVE TASKS */}
+                        <AnimatePresence mode="wait">
+                        <div key={currentWave} className="space-y-4">
+                        {currentWaveTasks.map((task) => (
                            <motion.div 
                               layout
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, x: -20 }}
                               key={task.id}
                               className={`group relative overflow-hidden rounded-xl border p-1 transition-all ${
                                  task.completed 
@@ -929,7 +994,24 @@ export default function DashboardPage() {
                                  </div>
                               )}
                            </motion.div>
-                        ))
+                        ))}
+                        </div>
+                        </AnimatePresence>
+                        
+                        {/* NEXT WAVE BUTTON */}
+                        {isWaveComplete && hasNextWave && (
+                           <div className="flex justify-center pt-4 pb-8">
+                              <Button 
+                                 onClick={handleNextWave}
+                                 size="lg"
+                                 className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-black text-lg h-16 shadow-xl shadow-indigo-500/30 animate-in zoom-in-95 duration-300"
+                              >
+                                 LANCER LA VAGUE SUIVANTE ({currentWave + 2})
+                                 <ChevronRight className="ml-2 h-6 w-6" />
+                              </Button>
+                           </div>
+                        )}
+                        </>
                      )
                   )}
 
