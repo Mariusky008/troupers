@@ -29,9 +29,16 @@ export async function GET(request: Request) {
   try {
     console.log("Starting Mercenary Protocol Check...")
 
-    // 1. Get yesterday's date (or today depending on when the cron runs)
-    // Assuming cron runs at 23:59 or 00:01
-    const today = new Date().toISOString().split('T')[0]
+    // 1. Determine "Target Date" (Yesterday)
+    // The cron runs early in the morning (e.g., 01:00 AM) to check if missions were done YESTERDAY.
+    const now = new Date()
+    const yesterday = new Date(now)
+    yesterday.setDate(yesterday.getDate() - 1)
+    
+    const targetDateStr = yesterday.toISOString().split('T')[0] // YYYY-MM-DD of yesterday
+    const todayStr = now.toISOString().split('T')[0] // YYYY-MM-DD of today (for bounty creation date)
+
+    console.log(`Checking missions for date: ${targetDateStr}`)
     
     // 2. Fetch all Squad Members
     // We need to check every member of every squad
@@ -55,13 +62,13 @@ export async function GET(request: Request) {
     // 3. For each member, check if they SUPPORTED their squad mates today
     // We need to group by squad to know who they were supposed to support
     
-    // FETCH OFF DAYS FOR TODAY
+    // FETCH OFF DAYS FOR TARGET DATE
     const { data: offDays } = await supabaseAdmin
         .from('user_off_days')
         .select('user_id')
-        .eq('off_date', today)
+        .eq('off_date', targetDateStr)
     
-    const usersOffToday = new Set(offDays?.map((d: any) => d.user_id) || [])
+    const usersOffTargetDay = new Set(offDays?.map((d: any) => d.user_id) || [])
 
     const membersBySquad = allMembers.reduce((acc: any, member: any) => {
         if (!acc[member.squad_id]) acc[member.squad_id] = []
@@ -73,12 +80,14 @@ export async function GET(request: Request) {
         const squadMembers = membersBySquad[squadId]
         if (squadMembers.length < 2) continue // Skip solo squads
 
-        // Fetch supports made by this squad's members TODAY
+        // Fetch supports made by this squad's members ON TARGET DATE
+        // We look for supports created between yesterday 00:00 and yesterday 23:59 (approx, using >= yesterday AND < today)
         const { data: supports } = await supabaseAdmin
             .from('daily_supports')
             .select('supporter_id, target_user_id')
             .in('supporter_id', squadMembers.map((m: any) => m.user_id))
-            .gte('created_at', today)
+            .gte('created_at', targetDateStr)
+            .lt('created_at', todayStr) // Strictly less than today start
 
         // Map supports for quick lookup: supporter_id -> Set(target_ids)
         const supportMap = new Map()
@@ -89,9 +98,9 @@ export async function GET(request: Request) {
 
         // Check each member
         for (const defector of squadMembers) {
-            const isOff = usersOffToday.has(defector.user_id)
+            const isOff = usersOffTargetDay.has(defector.user_id)
             if (isOff) {
-                console.log(`User ${defector.profiles?.username} is OFF today. Skipping penalty (Strikes), but creating Bounties to ensure coverage.`)
+                console.log(`User ${defector.profiles?.username} was OFF on ${targetDateStr}. Skipping penalty.`)
             }
 
             // Who they should have supported: everyone else in the squad
@@ -107,20 +116,14 @@ export async function GET(request: Request) {
                 // Check if victim has a video to support
                 if (!victim.profiles?.current_video_url) continue
 
-                // Check if bounty already exists for this pair today to avoid duplicates
-                // IMPORTANT FIX: We check if ANY open bounty exists for this victim in this squad, 
-                // regardless of who caused it? No, we need to track specific failure.
-                // But wait, if 3 people failed to support Victim A, do we create 3 bounties for Victim A?
-                // YES, because Victim A missed 3 likes. So we need 3 mercs to fill the gap.
-                // So checking unique (defector, target) is correct.
-                
+                // Check if bounty already exists for this pair TODAY (created just now)
                 const { data: existing } = await supabaseAdmin
                     .from('bounties')
                     .select('id')
                     .eq('defector_user_id', defector.user_id)
                     .eq('target_user_id', victim.user_id)
                     .eq('status', 'open')
-                    .gte('created_at', today) // Add date check to be safe
+                    .gte('created_at', todayStr) // Created TODAY
                     .single()
 
                 if (!existing) {
