@@ -8,6 +8,7 @@ import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
 import { assignUserToSquad } from "@/lib/squad-actions"
 import { toast } from "sonner"
+import { GlitchLogo } from "@/components/ui/glitch-logo" // Import GlitchLogo
 
 import { SquadChatWidget } from "@/components/dashboard/squad-chat-widget"
 
@@ -97,7 +98,9 @@ export default function DashboardLayout({
       <aside className="hidden w-64 flex-col border-r bg-background md:flex">
         <div className="flex h-16 items-center border-b px-6">
           <Link href="/dashboard" className="flex items-center gap-2 font-bold text-xl">
-            <Trophy className="h-6 w-6 text-primary" />
+            <div className="relative h-8 w-8 overflow-hidden rounded">
+               <GlitchLogo />
+            </div>
             <span>Troupers</span>
           </Link>
         </div>
