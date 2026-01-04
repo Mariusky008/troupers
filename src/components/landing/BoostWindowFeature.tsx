@@ -332,8 +332,8 @@ export function BoostWindowFeature() {
              className="bg-white text-slate-950 hover:bg-slate-200 font-bold px-8 h-12 rounded-full"
              asChild
            >
-             <Link href="/signup">
-               👉 Tester gratuitement la Boost Window
+             <Link href="/pre-inscription">
+               Rejoindre le programme gratuit (7 jours)
              </Link>
            </Button>
            <p className="mt-3 text-xs text-slate-500">7 jours d'essai gratuit • Sans carte bancaire</p>
