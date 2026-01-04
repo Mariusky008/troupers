@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { Loader2, CheckCircle, ArrowLeft } from "lucide-react"
+import { Loader2, CheckCircle, ArrowLeft, Shield, Bell, TrendingUp, Hammer, Mail } from "lucide-react"
 import Link from 'next/link'
 import { toast } from "sonner"
 
@@ -65,30 +65,60 @@ export default function ReservationPage() {
 
   if (isSuccess) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <Card className="max-w-md w-full text-center border-primary/20 shadow-lg">
-          <CardHeader>
-            <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-              <CheckCircle className="w-8 h-8 text-primary" />
+      <div className="min-h-screen flex items-center justify-center bg-background p-4 animate-in fade-in duration-500">
+        <Card className="max-w-lg w-full text-center border-primary/20 shadow-2xl relative overflow-hidden">
+          {/* Confetti effect placeholder */}
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-purple-500 to-primary" />
+          
+          <CardHeader className="space-y-4 pt-10">
+            <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-2 animate-bounce">
+              <Shield className="w-10 h-10 text-green-600" />
             </div>
-            <CardTitle className="text-2xl">Pré-inscription confirmée !</CardTitle>
-            <CardDescription>
-              Merci de ton intérêt pour Troupers.
-            </CardDescription>
+            <div className="space-y-2">
+               <CardTitle className="text-3xl font-black tracking-tight">Ta place est réservée, Trouper ! 🛡️</CardTitle>
+               <CardDescription className="text-lg font-medium text-green-600">
+                 Tu fais officiellement partie de la Cohorte 2.
+               </CardDescription>
+            </div>
           </CardHeader>
-          <CardContent className="space-y-4 text-muted-foreground">
-            <p>
-              Tes informations ont bien été reçues. Nous allons étudier ta candidature.
-            </p>
-            <p>
-              Tu recevras un email de validation dès que ta place sera confirmée.
-            </p>
+
+          <CardContent className="space-y-8 pb-8">
+            <div className="bg-slate-50 p-6 rounded-xl border border-slate-100 space-y-4">
+               <h3 className="font-bold text-slate-900 flex items-center justify-center gap-2">
+                 <Bell className="w-5 h-5 text-primary" />
+                 DERNIÈRE ÉTAPE : Rejoins le QG
+               </h3>
+               <p className="text-sm text-slate-600 leading-relaxed">
+                 Pour garantir le lancement et recevoir les alertes en temps réel, rejoins le canal privé de l'escouade. C'est ici que tout va se passer.
+               </p>
+               
+               <Button size="lg" className="w-full h-14 text-lg font-bold bg-[#229ED9] hover:bg-[#229ED9]/90 shadow-lg shadow-blue-500/20 text-white" asChild>
+                 <a href="https://t.me/ton_lien" target="_blank" rel="noopener noreferrer">
+                   📢 REJOINDRE LE CANAL TELEGRAM
+                 </a>
+               </Button>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 text-left px-4">
+               <div className="flex items-start gap-3">
+                  <Bell className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                  <p className="text-sm text-slate-600"><strong>Alertes en direct</strong> dès que le seuil des 200 est atteint.</p>
+               </div>
+               <div className="flex items-start gap-3">
+                  <TrendingUp className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                  <p className="text-sm text-slate-600"><strong>Conseils exclusifs</strong> pour préparer tes vidéos avant le Jour 1.</p>
+               </div>
+               <div className="flex items-start gap-3">
+                  <Hammer className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                  <p className="text-sm text-slate-600"><strong>Coulisses de l'outil</strong> et avancée du développement.</p>
+               </div>
+            </div>
+
+            <div className="text-xs text-muted-foreground flex items-center justify-center gap-2 pt-4 border-t">
+               <Mail className="w-4 h-4" />
+               <span>On t'a aussi envoyé un email de confirmation. Pense à vérifier tes spams.</span>
+            </div>
           </CardContent>
-          <CardFooter className="flex justify-center">
-            <Button asChild variant="outline">
-              <Link href="/">Retour à l'accueil</Link>
-            </Button>
-          </CardFooter>
         </Card>
       </div>
     )
