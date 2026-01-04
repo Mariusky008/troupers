@@ -7,6 +7,7 @@ import { FAQ } from "@/components/landing/FAQ"
 import { FinalCTA } from "@/components/landing/FinalCTA"
 import { Testimonials } from "@/components/landing/Testimonials"
 import { GoalSelector } from "@/components/landing/GoalSelector"
+import { Footer } from "@/components/layout/Footer"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
@@ -77,21 +78,7 @@ export default function Home() {
         <FinalCTA />
       </main>
 
-      <footer className="border-t py-12 bg-slate-50">
-        <div className="container px-4 text-center">
-           <div className="max-w-2xl mx-auto space-y-6">
-              <h4 className="font-bold text-lg">🧠 À retenir</h4>
-              <p className="text-slate-600">
-                 Les créateurs qui réussissent ne postent pas plus. <br/>
-                 Ils <span className="font-bold text-slate-900">démarrent mieux</span> leurs vidéos.
-              </p>
-              <p className="text-sm text-muted-foreground">
-                 © {new Date().getFullYear()} Troupers. Fait avec discipline.
-                 <Link href="/signup" className="opacity-0 hover:opacity-10 ml-2 transition-opacity cursor-default" title="Access">π</Link>
-              </p>
-           </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }
