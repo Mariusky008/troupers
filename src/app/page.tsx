@@ -34,7 +34,10 @@ export default function Home() {
         {/* SECTION 2 : LE PROBLÈME */}
         <Problem />
 
-        {/* PREUVE SOCIALE TÔT */}
+        {/* SECTION 3 : RÉSULTATS (Remonté pour impact immédiat) */}
+        <CaseStudy />
+
+        {/* PREUVE SOCIALE */}
         <Testimonials />
 
         {/* CTA INTERMÉDIAIRE 1 */}
@@ -61,9 +64,6 @@ export default function Home() {
               </Link>
            </Button>
         </div>
-
-        {/* SECTION 4 : RÉSULTATS */}
-        <CaseStudy />
 
         {/* SECTION 5 : SÉCURITÉ (Remonté) */}
         <SafeGuarantee />
