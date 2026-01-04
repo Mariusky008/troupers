@@ -15,9 +15,6 @@ export default function PreInscriptionPage() {
         <Link href="/" className="text-xl font-bold tracking-tighter">
           Troupers
         </Link>
-        <Button variant="ghost" size="sm" asChild>
-          <Link href="/login">Se connecter</Link>
-        </Button>
       </nav>
 
       <main className="container mx-auto max-w-4xl px-4 py-12 md:py-24 space-y-24">
@@ -36,6 +33,15 @@ export default function PreInscriptionPage() {
             le lancement se fera uniquement lorsque 200 créateurs seront inscrits.
           </p>
         </section>
+
+        {/* CTA HAUT DE PAGE */}
+        <div className="flex justify-center -mt-8 mb-12">
+          <Button size="lg" className="h-14 px-8 text-lg w-full md:w-auto shadow-xl shadow-primary/20 animate-in fade-in zoom-in duration-500 delay-300" asChild>
+            <Link href="/reservation">
+              👉 Je me pré-inscris et je réserve ma place
+            </Link>
+          </Button>
+        </div>
 
         {/* COMPTEUR */}
         <section className="mx-auto max-w-xl">
