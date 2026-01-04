@@ -34,9 +34,6 @@ export default function Home() {
            />
         </div>
         <div className="flex gap-4">
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/login">Se connecter</Link>
-          </Button>
           <Button size="sm" className="hidden sm:inline-flex" asChild>
             <Link href="/pre-inscription">Rejoindre la liste</Link>
           </Button>

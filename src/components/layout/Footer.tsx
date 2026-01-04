@@ -39,6 +39,7 @@ export function Footer() {
                   Comment ça marche
                 </Link>
               </li>
+              {/* HIDDEN TEMPORARILY
               <li>
                 <Link href="/login" className="hover:text-primary transition-colors">
                   Connexion Soldat
@@ -49,6 +50,7 @@ export function Footer() {
                   Recrutement
                 </Link>
               </li>
+              */}
               <li>
                  <span className="flex items-center gap-2 opacity-50 cursor-not-allowed">
                     Shop (Bientôt)
