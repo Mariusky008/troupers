@@ -23,7 +23,7 @@ export function FreeTrial() {
         </p>
         
         <Button size="lg" variant="secondary" className="h-14 px-8 text-lg w-full sm:w-auto" asChild>
-          <Link href="/signup">
+          <Link href="/pre-inscription">
             Rejoindre le programme gratuit
             <ArrowRight className="ml-2 h-5 w-5" />
           </Link>

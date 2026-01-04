@@ -38,7 +38,7 @@ export default function Home() {
             <Link href="/login">Se connecter</Link>
           </Button>
           <Button size="sm" className="hidden sm:inline-flex" asChild>
-            <Link href="/signup">S'inscrire</Link>
+            <Link href="/pre-inscription">Rejoindre la liste</Link>
           </Button>
         </div>
       </nav>
