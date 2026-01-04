@@ -1,8 +1,41 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { ArrowRight, CheckCircle } from "lucide-react"
+import { useState, useEffect } from "react"
 
 export function Hero() {
+  const [count, setCount] = useState(0)
+
+  useEffect(() => {
+    // Animation initiale rapide (0 -> 137)
+    const end = 137
+    const duration = 2000 // 2s
+    const startTime = performance.now()
+
+    const animateCount = (currentTime: number) => {
+      const elapsed = currentTime - startTime
+      const progress = Math.min(elapsed / duration, 1)
+      
+      // Easing easeOutExpo for smooth finish
+      const ease = 1 - Math.pow(2, -10 * progress)
+      
+      setCount(Math.floor(end * ease))
+
+      if (progress < 1) {
+        requestAnimationFrame(animateCount)
+      } else {
+        // Petit effet live : +1 inscription après quelques secondes
+        setTimeout(() => {
+           setCount(prev => prev + 1)
+        }, 3500)
+      }
+    }
+    
+    requestAnimationFrame(animateCount)
+  }, [])
+
   return (
     <section className="relative flex min-h-[90vh] flex-col items-center justify-center overflow-hidden border-b bg-background px-4 py-24 text-center md:py-32">
       
@@ -15,7 +48,7 @@ export function Hero() {
              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
              <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
            </span>
-           <span>Ouverture Cohorte 1 : 137 / 200 places réservées</span>
+           <span className="tabular-nums">Ouverture Cohorte 1 : {count} / 200 places réservées</span>
         </div>
 
         <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl lg:text-7xl">
