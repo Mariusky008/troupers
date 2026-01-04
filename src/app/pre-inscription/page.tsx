@@ -119,7 +119,7 @@ export default function PreInscriptionPage() {
                  </div>
               ))}
            </div>
-           <p className="text-xs text-muted-foreground mt-4">Rejoignent la cohorte 1...</p>
+           <p className="text-xs text-muted-foreground mt-4">Rejoignent la cohorte 2...</p>
         </section>
 
         {/* POURQUOI 200 */}

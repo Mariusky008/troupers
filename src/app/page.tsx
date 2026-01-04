@@ -48,7 +48,7 @@ export default function Home() {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
            </Button>
-           <p className="text-xs text-slate-500 mt-4">Places limitées pour la Cohorte 1</p>
+           <p className="text-xs text-slate-500 mt-4">Places limitées pour la Cohorte 2</p>
         </div>
 
         {/* SECTION 3 : LA SOLUTION */}

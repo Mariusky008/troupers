@@ -49,7 +49,7 @@ export function Hero() {
              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
              <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
            </span>
-           <span className="tabular-nums">Ouverture Cohorte 1 : {count} / 200 places réservées</span>
+           <span className="tabular-nums">Ouverture Cohorte 2 : {count} / 200 places réservées</span>
         </div>
 
         <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl lg:text-7xl">
