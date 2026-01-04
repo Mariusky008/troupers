@@ -35,16 +35,16 @@ export default function Home() {
         </div>
         <div className="flex gap-4">
           <Button size="sm" className="hidden sm:inline-flex" asChild>
-            <Link href="/pre-inscription">Rejoindre la liste</Link>
+            <Link href="/pre-inscription">Réserver ma place</Link>
           </Button>
         </div>
       </nav>
       <Hero />
+      <CaseStudy />
       <HowItWorks />
       <BoostWindowFeature />
       <AlgorithmExplainer />
       <DeepDiveAlgo />
-      <CaseStudy />
       <Problem />
       <Truth />
       <Solution />

@@ -11,7 +11,7 @@ export function FinalCTA() {
         </h2>
         <Button size="lg" className="h-14 px-8 text-lg" asChild>
           <Link href="/pre-inscription">
-            Rejoindre le programme gratuit (7 jours)
+            Réserver ma place pour le lancement
             <ArrowRight className="ml-2 h-5 w-5" />
           </Link>
         </Button>

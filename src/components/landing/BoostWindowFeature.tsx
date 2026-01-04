@@ -333,7 +333,7 @@ export function BoostWindowFeature() {
              asChild
            >
              <Link href="/pre-inscription">
-               Rejoindre le programme gratuit (7 jours)
+               Réserver ma place gratuite
              </Link>
            </Button>
            <p className="mt-3 text-xs text-slate-500">7 jours d'essai gratuit • Sans carte bancaire</p>
