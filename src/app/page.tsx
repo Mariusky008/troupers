@@ -2,6 +2,8 @@ import { Hero } from "@/components/landing/Hero"
 import { HowItWorks } from "@/components/landing/HowItWorks"
 import { BoostWindowFeature } from "@/components/landing/BoostWindowFeature"
 import { AlgorithmExplainer } from "@/components/landing/AlgorithmExplainer"
+import { DeepDiveAlgo } from "@/components/landing/DeepDiveAlgo"
+import { CaseStudy } from "@/components/landing/CaseStudy"
 import { Problem } from "@/components/landing/Problem"
 import { Truth } from "@/components/landing/Truth"
 import { Solution } from "@/components/landing/Solution"
@@ -44,6 +46,8 @@ export default function Home() {
       <HowItWorks />
       <BoostWindowFeature />
       <AlgorithmExplainer />
+      <DeepDiveAlgo />
+      <CaseStudy />
       <Problem />
       <Truth />
       <Solution />
