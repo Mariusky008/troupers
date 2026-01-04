@@ -29,20 +29,20 @@ const testimonials = [
 
 export function Testimonials() {
   return (
-    <section className="py-24 bg-white">
+    <section className="py-24 bg-slate-900 text-white">
       <div className="container px-4 mx-auto">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-3xl font-black tracking-tight mb-4">
             Ils ont hacké l'algorithme.
           </h2>
-          <p className="text-lg text-slate-600">
+          <p className="text-lg text-slate-400">
             Rejoins les créateurs qui ne laissent plus leur succès au hasard.
           </p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
           {testimonials.map((testimonial, i) => (
-            <Card key={i} className="border-slate-100 shadow-lg shadow-slate-200/50">
+            <Card key={i} className="bg-slate-800 border-slate-700 shadow-xl text-slate-100">
               <CardContent className="pt-6">
                 <div className="flex items-center gap-1 mb-4">
                   {[1, 2, 3, 4, 5].map((star) => (
@@ -50,21 +50,21 @@ export function Testimonials() {
                   ))}
                 </div>
                 
-                <p className="text-slate-700 mb-6 font-medium leading-relaxed">
+                <p className="text-slate-300 mb-6 font-medium leading-relaxed italic">
                   "{testimonial.content}"
                 </p>
                 
-                <div className="flex items-center justify-between border-t border-slate-50 pt-4 mt-4">
+                <div className="flex items-center justify-between border-t border-slate-700 pt-4 mt-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-600">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center font-bold text-white shadow-lg">
                       {testimonial.image}
                     </div>
                     <div>
-                      <div className="font-bold text-sm text-slate-900">{testimonial.name}</div>
-                      <div className="text-xs text-slate-500">{testimonial.role}</div>
+                      <div className="font-bold text-sm text-white">{testimonial.name}</div>
+                      <div className="text-xs text-slate-400">{testimonial.role}</div>
                     </div>
                   </div>
-                  <div className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+                  <div className="text-xs font-bold text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-full border border-emerald-400/20">
                     {testimonial.stats}
                   </div>
                 </div>

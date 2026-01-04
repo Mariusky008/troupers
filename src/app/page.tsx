@@ -65,11 +65,11 @@ export default function Home() {
         {/* SECTION 4 : RÉSULTATS */}
         <CaseStudy />
 
+        {/* SECTION 5 : SÉCURITÉ (Remonté) */}
+        <SafeGuarantee />
+
         {/* MICRO-ENGAGEMENT */}
         <GoalSelector />
-
-        {/* SECTION 5 : SÉCURITÉ */}
-        <SafeGuarantee />
 
         {/* SECTION 6 : FAQ */}
         <FAQ />

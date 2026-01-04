@@ -6,10 +6,11 @@ import { ArrowRight, CheckCircle } from "lucide-react"
 import { useState, useEffect } from "react"
 
 export function Hero() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(124) // Start closer to target to avoid "0" flash
 
   useEffect(() => {
-    // Animation initiale rapide (0 -> 137)
+    // Animation (124 -> 137)
+    const start = 124
     const end = 137
     const duration = 2000 // 2s
     const startTime = performance.now()
@@ -21,7 +22,7 @@ export function Hero() {
       // Easing easeOutExpo for smooth finish
       const ease = 1 - Math.pow(2, -10 * progress)
       
-      setCount(Math.floor(end * ease))
+      setCount(Math.floor(start + (end - start) * ease))
 
       if (progress < 1) {
         requestAnimationFrame(animateCount)
