@@ -41,14 +41,14 @@ export default function Home() {
         <Testimonials />
 
         {/* CTA INTERMÉDIAIRE 1 */}
-        <div className="bg-white pb-24 text-center">
-           <Button size="lg" className="h-14 px-8 text-lg shadow-xl shadow-primary/20 rounded-full" asChild>
+        <div className="bg-slate-900 pb-24 text-center">
+           <Button size="lg" className="h-16 px-10 text-xl shadow-xl shadow-primary/20 rounded-full font-bold bg-white text-slate-900 hover:bg-slate-100 hover:scale-105 transition-transform" asChild>
               <Link href="/pre-inscription">
                 Tester gratuitement maintenant
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <ArrowRight className="ml-2 h-6 w-6" />
               </Link>
            </Button>
-           <p className="text-xs text-slate-500 mt-4">Places limitées pour la Cohorte 2</p>
+           <p className="text-xs text-slate-400 mt-4">Places limitées pour la Cohorte 2</p>
         </div>
 
         {/* SECTION 3 : LA SOLUTION */}

@@ -41,7 +41,6 @@ export function Hero() {
     <section className="relative flex min-h-[90vh] flex-col items-center justify-center overflow-hidden border-b bg-background px-4 py-24 text-center md:py-32">
       
       <div className="container relative z-10 mx-auto max-w-4xl space-y-8">
-         <br/> <br/> <br/>
         
         {/* FOMO BADGE */}
         <div className="inline-flex items-center gap-2 rounded-full border border-orange-500/30 bg-orange-500/10 px-4 py-1.5 text-sm font-bold text-orange-500 backdrop-blur-sm animate-in fade-in slide-in-from-top-4 duration-1000">
