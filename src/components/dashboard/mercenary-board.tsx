@@ -385,6 +385,11 @@ export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => vo
                    <AlertTriangle className="mr-2 h-3 w-3" />
                    (Admin) Simuler Alerte Mercenaire
                 </Button>
+
+                {/* DEBUG LOG IN EMPTY STATE */}
+                <div className="mt-4 text-[10px] font-mono text-slate-400 bg-slate-100 p-2 rounded max-w-full overflow-hidden whitespace-nowrap">
+                    DEBUG: {debugLog}
+                </div>
              </div>
           </div>
           
