@@ -7,6 +7,7 @@ import { useState, useEffect } from "react"
 
 export function Hero() {
   const [count, setCount] = useState(124) // Start closer to target to avoid "0" flash
+  const [showNew, setShowNew] = useState(false)
 
   useEffect(() => {
     // Animation (124 -> 137)
@@ -30,6 +31,8 @@ export function Hero() {
         // Petit effet live : +1 inscription après quelques secondes
         setTimeout(() => {
            setCount(prev => prev + 1)
+           setShowNew(true)
+           setTimeout(() => setShowNew(false), 3000)
         }, 3500)
       }
     }
@@ -43,7 +46,12 @@ export function Hero() {
       <div className="container relative z-10 mx-auto max-w-4xl space-y-8">
         
         {/* FOMO BADGE */}
-        <div className="inline-flex items-center gap-2 rounded-full border border-orange-500/30 bg-orange-500/10 px-4 py-1.5 text-sm font-bold text-orange-500 backdrop-blur-sm animate-in fade-in slide-in-from-top-4 duration-1000">
+        <div className="inline-flex items-center gap-2 rounded-full border border-orange-500/30 bg-orange-500/10 px-4 py-1.5 text-sm font-bold text-orange-500 backdrop-blur-sm animate-in fade-in slide-in-from-top-4 duration-1000 relative">
+           {showNew && (
+             <span className="absolute -top-3 -right-3 bg-green-500 text-white text-[10px] px-2 py-0.5 rounded-full animate-bounce shadow-lg">
+               +1 à l'instant
+             </span>
+           )}
            <span className="relative flex h-2 w-2">
              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
              <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>

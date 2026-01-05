@@ -107,3 +107,35 @@ Voici les tables clés utilisées par l'application :
 *   **Lancer le projet :** `npm run dev`
 *   **Déployer migrations :** Les fichiers SQL sont dans `supabase/migrations/`.
 *   **Simuler Cron Mercenaire :** `GET /api/cron/generate-bounties?key=XXX`
+
+---
+
+## 8. Algorithme V2 (Simulateur Organique)
+**Composant :** `src/components/dashboard/MissionPlan.tsx`
+
+Refonte majeure de la logique d'engagement pour rendre l'activité indétectable par TikTok et booster le SEO.
+
+### A. Distribution Intelligente (Boost Window ++)
+Au lieu de simples likes, les missions quotidiennes sont réparties statistiquement :
+*   **30% Commentaires Qualifiés** (Modèles contextuels fournis, copier-coller interdit).
+*   **20% Réponses (Reply Loop)** (Répondre aux commentaires pour créer des threads).
+*   **10% Partage Silencieux** (Copier le lien / MP).
+*   **40% Classique** (Like / Favoris alternés).
+
+### B. Search & Find Protocol (SEO)
+Pour éviter le trafic "Direct Link" (suspect), 50% des missions demandent à l'utilisateur de passer par la recherche :
+1.  **Instruction :** "Tape [Pseudo] dans la recherche".
+2.  **Action :** Trouve la vidéo manuellement.
+3.  **Impact :** Booste le référencement interne du créateur.
+
+### C. Sandwich Protocol (Comportement Humain)
+Chaque mission est enveloppée dans une session de surf naturelle :
+1.  **Warm-up :** "Scrolle 2-3 vidéos aléatoires avant de commencer".
+2.  **Mission :** Action Troupers.
+3.  **Cool-down :** "Ne quitte pas l'app, scrolle encore un peu".
+
+### D. Sécurité & Finesse
+*   **Micro-Abandon (15%) :** Certaines missions demandent explicitement de quitter la vidéo à 70% sans liker, pour rendre la courbe de rétention réaliste.
+*   **Décalage Temporel :** Un délai ("Attends 5 min") est imposé aléatoirement pour éviter les pics simultanés.
+*   **Anti-Double Dip :** Avertissement rouge : "Si tu as déjà vu/liké cette vidéo organiquement, NE FAIS RIEN (valide juste la mission)".
+
