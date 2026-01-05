@@ -208,8 +208,11 @@ export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => vo
         if (onCreditsEarned) onCreditsEarned() // Trigger parent animation
         setSelectedBounty(null)
         
-        // Refresh the list immediately to show remaining bounties
-        fetchBounties()
+        // 2. Refresh List
+        // We need to wait for the DB to update or force a refresh after delay
+        setTimeout(() => {
+            fetchBounties()
+        }, 2000)
 
     } catch (e) {
         console.error(e)
@@ -278,7 +281,9 @@ export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => vo
             
             if (result.bounties_created > 0) {
                 toast.success(`Succès : ${result.bounties_created} missions créées !`)
-                fetchBounties() // Refresh list
+                // FORCE IMMEDIATE REFRESH AND WAIT A BIT
+                await new Promise(r => setTimeout(r, 1000))
+                await fetchBounties()
                 setProcessing(false)
                 return
             }
