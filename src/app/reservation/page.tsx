@@ -93,7 +93,7 @@ export default function ReservationPage() {
                </p>
                
                <Button size="lg" className="w-full h-14 text-lg font-bold bg-[#229ED9] hover:bg-[#229ED9]/90 shadow-lg shadow-blue-500/20 text-white" asChild>
-                 <a href="https://t.me/ton_lien" target="_blank" rel="noopener noreferrer">
+                 <a href="https://t.me/+sOXykcRp3uZhZDlk" target="_blank" rel="noopener noreferrer">
                    📢 REJOINDRE LE CANAL TELEGRAM
                  </a>
                </Button>

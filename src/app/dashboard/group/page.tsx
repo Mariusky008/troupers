@@ -77,27 +77,11 @@ export default function GroupPage() {
   }, [])
 
   const handleSubscribe = async () => {
+    // OLD LOGIC: Subscribing was mandatory
+    // NEW LOGIC (Algo V2): Subscribing is optional and discouraged if not organic
     if (!confirmingSubscription) return
-
-    try {
-      const { error } = await supabase.from('member_subscriptions').insert({
-        subscriber_id: currentUser.id,
-        target_user_id: confirmingSubscription
-      })
-
-      if (error) throw error
-
-      toast.success("Abonnement confirmé !")
-      
-      // Optimistic update
-      setMembers(members.map(m => 
-        m.id === confirmingSubscription ? { ...m, isSubscribed: true } : m
-      ))
-      setConfirmingSubscription(null)
-
-    } catch (error) {
-      toast.error("Erreur lors de la validation")
-    }
+    setConfirmingSubscription(null)
+    toast.success("Profil ouvert !")
   }
 
   if (loading) return <div className="p-8 text-center">Chargement du classement...</div>
@@ -151,19 +135,17 @@ export default function GroupPage() {
                 </div>
 
                 <div className="flex items-center gap-4 ml-12 sm:ml-0">
-                  {!member.isMe && !member.isSubscribed && (
+                  {!member.isMe && (
                     <Button 
                       size="sm" 
                       variant="outline" 
                       className="h-8 gap-2 text-xs"
                       onClick={() => {
                         window.open(member.platform_link, '_blank')
-                        // Trigger confirmation dialog
-                        setConfirmingSubscription(member.id)
                       }}
                     >
                       <ExternalLink className="h-3 w-3" />
-                      S'abonner
+                      Voir Profil
                     </Button>
                   )}
                   
@@ -180,28 +162,6 @@ export default function GroupPage() {
           </div>
         </div>
       </div>
-
-      <Dialog open={!!confirmingSubscription} onOpenChange={(open) => !open && setConfirmingSubscription(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Confirmation d'abonnement</DialogTitle>
-            <DialogDescription>
-              Pour valider cette action, tu dois t'être abonné au compte de ce membre.
-              <br />
-              C'est important pour le soutien mutuel de l'escouade !
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="flex gap-2 sm:justify-end">
-            <Button variant="outline" onClick={() => setConfirmingSubscription(null)}>
-              Pas encore
-            </Button>
-            <Button onClick={handleSubscribe} className="bg-green-600 hover:bg-green-700">
-              <CheckCircle className="mr-2 h-4 w-4" />
-              C'est fait, je suis abonné
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }
