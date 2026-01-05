@@ -9,9 +9,10 @@ interface MissionPlanProps {
   delayMinutes?: number
   trafficSource?: 'search' | 'profile' | 'direct'
   targetUsername?: string
+  shouldFollow?: boolean
 }
 
-export function MissionPlan({ type, scenario = 'engagement', delayMinutes = 0, trafficSource = 'search', targetUsername = "le créateur" }: MissionPlanProps) {
+export function MissionPlan({ type, scenario = 'engagement', delayMinutes = 0, trafficSource = 'search', targetUsername = "le créateur", shouldFollow = false }: MissionPlanProps) {
   if (scenario === 'abandon') {
     return (
       <div className="space-y-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
@@ -169,6 +170,22 @@ export function MissionPlan({ type, scenario = 'engagement', delayMinutes = 0, t
             <p className="text-xs text-slate-500">Continue de scroller un peu après.</p>
           </div>
         </div>
+
+        {/* BONUS: FOLLOW (Rare) */}
+        {shouldFollow && (
+          <div className="mt-4 p-3 bg-purple-50 rounded-lg border border-purple-100 flex items-start gap-3">
+             <div className="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center shrink-0">
+                <Star className="h-4 w-4 text-purple-600" />
+             </div>
+             <div>
+                <p className="text-sm font-bold text-purple-900 uppercase tracking-wide">Opportunité Tactique : Abonnement</p>
+                <p className="text-xs text-purple-700 mt-1 leading-relaxed">
+                   Si le contenu te plaît vraiment, abonne-toi maintenant. <br/>
+                   <span className="opacity-75 font-medium">(Action rare : ne le fais que si c'est cohérent avec ton profil).</span>
+                </p>
+             </div>
+          </div>
+        )}
       </div>
     </div>
   )
