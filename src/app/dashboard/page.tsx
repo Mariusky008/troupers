@@ -51,11 +51,17 @@ export default function DashboardPage() {
   // ALGO V2.1 - CACHE BUSTER
   const [tasks, setTasks] = useState<any[]>([])
   // Pagination State for Missions
-  const TASKS_PER_WAVE = 12 // Increased to match daily limit
-  const [currentWave, setCurrentWave] = useState(0)
-  const [showWaveComplete, setShowWaveComplete] = useState(false)
+  const [currentTaskIndex, setCurrentTaskIndex] = useState(0)
   
-  const [selectedTask, setSelectedTask] = useState<any>(null) // For MissionPlan Dialog
+  // Auto-advance to first incomplete task when tasks are loaded
+  useEffect(() => {
+    if (tasks.length > 0) {
+       const firstIncomplete = tasks.findIndex(t => !t.completed)
+       if (firstIncomplete !== -1) {
+          setCurrentTaskIndex(firstIncomplete)
+       }
+    }
+  }, [tasks])
 
   const [disciplineScore, setDisciplineScore] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -746,15 +752,10 @@ export default function DashboardPage() {
      return 'like'
   })()
 
-  // Get current wave tasks
-  const waveStartIndex = currentWave * TASKS_PER_WAVE
-  const currentWaveTasks = tasks.slice(waveStartIndex, waveStartIndex + TASKS_PER_WAVE)
-  const isWaveComplete = currentWaveTasks.length > 0 && currentWaveTasks.every(t => t.completed)
-  const hasNextWave = waveStartIndex + TASKS_PER_WAVE < tasks.length
-
-  const handleNextWave = () => {
-      setShowWaveComplete(false)
-      setCurrentWave(prev => prev + 1)
+  const handleNextTask = () => {
+      if (currentTaskIndex < tasks.length - 1) {
+         setCurrentTaskIndex(prev => prev + 1)
+      }
       window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
@@ -1015,159 +1016,110 @@ export default function DashboardPage() {
                   </div>
               </div>
 
-              <div className="flex items-center justify-between">
-                 <h2 className="text-xl font-bold flex items-center gap-2">
-                    <div className="h-8 w-1 bg-indigo-500 rounded-full" />
-                    Vague {currentWave + 1} <span className="text-slate-400 font-normal">/ {Math.ceil(tasks.length / TASKS_PER_WAVE)}</span>
-                 </h2>
-                 <span className="text-sm text-muted-foreground bg-slate-100 px-3 py-1 rounded-full font-medium">
-                    {currentWaveTasks.filter(t => t.completed).length} / {currentWaveTasks.length} terminées
-                 </span>
-              </div>
-
-              <div className="grid gap-4">
-                  {/* LOCK STATE */}
-                  {!myVideoUrl && (
-                    <div className="rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 p-8 text-center space-y-4">
-                       <div className="mx-auto h-16 w-16 rounded-full bg-slate-200 flex items-center justify-center">
-                          <Lock className="h-8 w-8 text-slate-400" />
+              {/* MISSION CARD ONE-BY-ONE */}
+              <div className="bg-white rounded-xl border border-slate-200 shadow-lg overflow-hidden relative">
+                 {/* Header: Mission X/Y */}
+                 <div className="bg-slate-900 p-4 flex items-center justify-between text-white">
+                    <div className="flex items-center gap-3">
+                       <div className="h-10 w-10 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-lg">
+                          {currentTaskIndex + 1}
                        </div>
                        <div>
-                          <h3 className="text-lg font-bold text-slate-700">Missions Verrouillées</h3>
-                          <p className="text-slate-500 max-w-sm mx-auto mt-1">
-                             Ajoute le lien de ta vidéo du jour dans la barre latérale pour débloquer les missions.
-                          </p>
+                          <p className="text-xs text-indigo-300 font-bold uppercase tracking-wider">Mission Actuelle</p>
+                          <h3 className="font-bold text-lg leading-none">
+                             {tasks[currentTaskIndex]?.targetUsername ? `Cible : @${tasks[currentTaskIndex].targetUsername}` : 'Chargement...'}
+                          </h3>
                        </div>
-                       <Button onClick={() => {
-                             // Scroll to sidebar on mobile or focus
-                             const sidebar = document.getElementById('sidebar-config')
-                             sidebar?.scrollIntoView({ behavior: 'smooth' })
-                             setIsEditingVideo(true)
-                       }}>
-                          Configurer ma vidéo
-                       </Button>
                     </div>
-                  )}
+                    <div className="text-right">
+                       <p className="text-xs text-slate-400 font-mono">
+                          {currentTaskIndex + 1} / {tasks.length}
+                       </p>
+                    </div>
+                 </div>
 
-                  {/* TASKS LIST */}
-                  {myVideoUrl && (
-                     tasks.length === 0 ? (
-                        <div className="text-center py-12 text-muted-foreground italic">
-                           Aucune mission disponible. Reviens plus tard ou invite des amis.
+                 <div className="p-6">
+                    {!myVideoUrl ? (
+                        // LOCK STATE
+                        <div className="text-center py-8 space-y-4">
+                           <Lock className="h-12 w-12 text-slate-300 mx-auto" />
+                           <p className="text-slate-500">Configure ta vidéo pour débloquer les missions.</p>
+                           <Button onClick={() => {
+                                 const sidebar = document.getElementById('sidebar-config')
+                                 sidebar?.scrollIntoView({ behavior: 'smooth' })
+                                 setIsEditingVideo(true)
+                           }}>Configurer</Button>
                         </div>
-                     ) : (
-                        <>
-                        {/* CURRENT WAVE TASKS */}
-                        <AnimatePresence mode="wait">
-                        <div key={currentWave} className="space-y-4">
-                        {currentWaveTasks.map((task) => (
-                           <motion.div 
-                              layout
-                              initial={{ opacity: 0, y: 20 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, x: -20 }}
-                              key={task.id}
-                              className={`group relative overflow-hidden rounded-xl border p-1 transition-all ${
-                                 task.completed 
-                                    ? 'bg-slate-50 border-slate-200 opacity-75' 
-                                    : 'bg-white border-slate-200 hover:border-indigo-300 hover:shadow-md'
-                              }`}
-                           >
-                              <div className="flex items-center gap-4 p-4">
-                                 {/* CHECKBOX */}
-                                 <button
-                                    onClick={() => toggleTask(task.id)}
-                                    className={`h-8 w-8 rounded-full border-2 flex items-center justify-center transition-all ${
-                                       task.completed
-                                          ? 'bg-green-500 border-green-500 text-white'
-                                          : (task.actionUrl && !viewedVideos.has(task.targetUserId) 
-                                             ? 'bg-slate-100 border-slate-300 text-slate-300 cursor-not-allowed'
-                                             : 'bg-white border-slate-300 text-transparent hover:border-indigo-500')
-                                    }`}
-                                 >
-                                    <CheckCircle className="h-5 w-5" />
-                                 </button>
-
-                                 {/* CONTENT */}
-                                 <div className="flex-1 min-w-0">
-                                    <p className={`font-semibold text-base truncate ${task.completed ? 'text-slate-500 line-through' : 'text-slate-900'}`}>
-                                       {task.text}
-                                    </p>
-                                    {!task.completed && (
-                                       <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
-                                          {task.actionUrl && !viewedVideos.has(task.targetUserId) && <Lock className="h-3 w-3" />}
-                                          {task.actionUrl && !viewedVideos.has(task.targetUserId) ? "Regarde la vidéo pour débloquer" : "Prêt à valider"}
-                                       </p>
-                                    )}
-                                 </div>
-
-                                 {/* ACTION BUTTON */}
-                                 {task.actionUrl && !task.completed && (
+                    ) : allTasksCompleted ? (
+                        // SUCCESS STATE
+                        <div className="text-center py-12">
+                           <Trophy className="h-20 w-20 text-yellow-400 mx-auto mb-4" />
+                           <h3 className="text-2xl font-black text-slate-900 mb-2">MISSION ACCOMPLIE !</h3>
+                           <p className="text-slate-500 max-w-md mx-auto">
+                              Tu as terminé toutes tes missions pour aujourd'hui. Reviens demain pour de nouveaux ordres.
+                           </p>
+                        </div>
+                    ) : tasks[currentTaskIndex] ? (
+                        // ACTIVE TASK
+                        <div className="space-y-6">
+                           <MissionPlan 
+                              type={tasks[currentTaskIndex].type}
+                              scenario={tasks[currentTaskIndex].scenario}
+                              delayMinutes={tasks[currentTaskIndex].delayMinutes}
+                              trafficSource={tasks[currentTaskIndex].trafficSource}
+                              targetUsername={tasks[currentTaskIndex].targetUsername}
+                           />
+                           
+                           <div className="flex flex-col gap-3 pt-4 border-t">
+                              {!tasks[currentTaskIndex].completed ? (
+                                 !viewedVideos.has(tasks[currentTaskIndex].targetUserId) ? (
                                     <Button 
-                                       size="sm"
-                                       className={`${
-                                          viewedVideos.has(task.targetUserId) 
-                                             ? 'bg-slate-100 text-slate-700 hover:bg-slate-200' 
-                                             : 'bg-indigo-600 text-white hover:bg-indigo-700'
-                                       }`}
+                                       size="lg" 
+                                       className="w-full h-14 text-lg font-bold bg-indigo-600 hover:bg-indigo-700 shadow-xl shadow-indigo-200"
                                        onClick={() => {
-                                          if (task.id === 99) {
-                                             const url = window.location.origin
-                                             navigator.clipboard.writeText(url)
-                                             toast.success("Lien copié !")
-                                          } else {
-                                             handleViewVideo(task.targetUserId)
-                                             window.open(task.actionUrl, '_blank')
+                                          handleViewVideo(tasks[currentTaskIndex].targetUserId)
+                                          window.open(tasks[currentTaskIndex].actionUrl, '_blank')
+                                       }}
+                                    >
+                                       <Play className="mr-2 h-5 w-5 fill-white" />
+                                       LANCER LA MISSION (Ouvrir TikTok)
+                                    </Button>
+                                 ) : (
+                                    <Button 
+                                       size="lg" 
+                                       className="w-full h-14 text-lg font-bold bg-green-600 hover:bg-green-700 shadow-xl shadow-green-200 animate-in zoom-in"
+                                       onClick={async () => {
+                                          await toggleTask(tasks[currentTaskIndex].id)
+                                          // Auto advance logic is handled in toggleTask or here
+                                          if (currentTaskIndex < tasks.length - 1) {
+                                             setTimeout(() => handleNextTask(), 1500) // Small delay to see success toast
                                           }
                                        }}
                                     >
-                                       {viewedVideos.has(task.targetUserId) ? "Revoir" : (task.id === 99 ? "Copier" : "Voir")}
-                                       <ExternalLink className="ml-2 h-3 w-3" />
+                                       <CheckCircle className="mr-2 h-5 w-5" />
+                                       J'AI TERMINÉ LA MISSION
                                     </Button>
-                                 )}
-                              </div>
-                              {/* Progress Bar Bottom */}
-                              {!task.completed && viewedVideos.has(task.targetUserId) && (
-                                 <div className="h-1 w-full bg-indigo-100">
-                                    <div className="h-full w-1/2 bg-indigo-500 animate-pulse" />
+                                 )
+                              ) : (
+                                 <div className="text-center py-4 bg-green-50 rounded-lg border border-green-100">
+                                    <p className="text-green-700 font-bold mb-2">Mission déjà validée</p>
+                                    <Button onClick={handleNextTask} variant="outline" className="border-green-200 text-green-700 hover:bg-green-100">
+                                       Passer à la suivante <ChevronRight className="ml-1 h-4 w-4" />
+                                    </Button>
                                  </div>
                               )}
-                           </motion.div>
-                        ))}
-                        </div>
-                        </AnimatePresence>
-                        
-                        {/* NEXT WAVE BUTTON */}
-                        {isWaveComplete && hasNextWave && (
-                           <div className="flex justify-center pt-4 pb-8">
-                              <Button 
-                                 onClick={handleNextWave}
-                                 size="lg"
-                                 className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-black text-lg h-16 shadow-xl shadow-indigo-500/30 animate-in zoom-in-95 duration-300"
-                              >
-                                 LANCER LA VAGUE SUIVANTE ({currentWave + 2})
-                                 <ChevronRight className="ml-2 h-6 w-6" />
-                              </Button>
+                              
+                              {viewedVideos.has(tasks[currentTaskIndex].targetUserId) && !tasks[currentTaskIndex].completed && (
+                                <p className="text-xs text-center text-muted-foreground">
+                                   En validant, tu confirmes avoir respecté le protocole ci-dessus.
+                                </p>
+                              )}
                            </div>
-                        )}
-                        </>
-                     )
-                  )}
-
-                  {/* COMPLETION MESSAGE */}
-                  {allTasksCompleted && tasks.length > 0 && (
-                     <motion.div 
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 p-8 text-center text-white shadow-lg"
-                     >
-                        <Trophy className="h-16 w-16 mx-auto mb-4 text-yellow-300 drop-shadow-md" />
-                        <h3 className="text-2xl font-black mb-2">MISSION ACCOMPLIE !</h3>
-                        <p className="text-emerald-100 font-medium">
-                           Excellent travail soldat. Ton escouade te remercie.
-                        </p>
-                     </motion.div>
-                  )}
+                        </div>
+                    ) : (
+                        <div className="py-12 text-center text-slate-400">Chargement de la mission...</div>
+                    )}
+                 </div>
               </div>
            </div>
         </div>
