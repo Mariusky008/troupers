@@ -73,6 +73,15 @@ export function MissionPlan({ type, scenario = 'engagement', delayMinutes = 0, t
            </div>
         ) : null}
 
+        {/* STEP 0.5: WARM UP (SANDWICH PROTOCOL) */}
+        <div className="flex items-start gap-3 group opacity-80 hover:opacity-100 transition-opacity">
+          <div className="h-6 w-6 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5 border border-slate-200">0</div>
+          <div className="space-y-1">
+            <p className="text-sm font-bold text-slate-600">Préchauffage (Sécurité)</p>
+            <p className="text-xs text-slate-500">Scrolle 2-3 vidéos aléatoires dans ton "Pour Toi" et like-en une au hasard <strong>AVANT</strong> de commencer cette mission.</p>
+          </div>
+        </div>
+
         {/* STEP 1: TRAFFIC SOURCE (The Hunt) */}
         <div className="flex items-start gap-3 group">
           <div className="h-6 w-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5 group-hover:scale-110 transition-transform">1</div>
@@ -146,6 +155,15 @@ export function MissionPlan({ type, scenario = 'engagement', delayMinutes = 0, t
             ) : (
               <p className="text-xs text-slate-500">Effectue l'action {type} maintenant.</p>
             )}
+          </div>
+        </div>
+
+        {/* STEP 5: COOL DOWN (SANDWICH PROTOCOL) */}
+        <div className="flex items-start gap-3 group opacity-80 hover:opacity-100 transition-opacity">
+          <div className="h-6 w-6 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5 border border-slate-200">5</div>
+          <div className="space-y-1">
+            <p className="text-sm font-bold text-slate-600">Camouflage (Anti-Bot)</p>
+            <p className="text-xs text-slate-500">Ne quitte pas l'app tout de suite ! Regarde encore 2 vidéos aléatoires pour noyer ton action.</p>
           </div>
         </div>
       </div>
