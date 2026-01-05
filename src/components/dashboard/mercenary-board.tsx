@@ -314,7 +314,8 @@ export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => vo
             target: { 
                 username: "Simulation Cible", 
                 current_video_url: "#" 
-            }
+            },
+            type: 'like' // Ensure type exists for MissionPlan
         }
         
         const newState = [enrichedBounty, ...current]
