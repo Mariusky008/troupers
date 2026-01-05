@@ -40,8 +40,12 @@ export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => vo
       
       const { bounties: data } = await response.json()
       
+      console.log("Raw Bounties from API:", data?.length, data)
+
        // Filter out bounties where I am the defector
-       let visibleBounties = (data || []).filter((b: any) => b.defector_user_id !== user?.id)
+       // TEMPORARILY DISABLED FILTER TO DEBUG WHY USER SEES NOTHING
+       // let visibleBounties = (data || []).filter((b: any) => b.defector_user_id !== user?.id)
+       let visibleBounties = data || []
        
        // DEV SIMULATION IF EMPTY (To show UI for demo)
        if (visibleBounties.length === 0) {
