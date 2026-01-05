@@ -32,12 +32,15 @@ export async function GET() {
         reward_credits,
         created_at
     `)
-    .eq('status', 'open')
+    // .eq('status', 'open') // COMMENT OUT STATUS FILTER FOR DEBUGGING
     .order('created_at', { ascending: false })
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
+  
+  // Log count for debugging
+  console.log(`API returning ${bounties?.length} bounties`)
 
   return NextResponse.json({ bounties })
 }
