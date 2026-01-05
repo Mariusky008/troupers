@@ -251,35 +251,44 @@ export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => vo
 
   // DEV ONLY: Trigger Simulation
   const simulateProtocol = async () => {
-    if (!user) return
+    toast.info("Lancement de la simulation...")
+    
+    if (!user) {
+        toast.error("Erreur : Utilisateur non connecté")
+        return
+    }
     setProcessing(true)
     
     // TRY REAL CRON GENERATION FIRST
     try {
         const today = new Date().toISOString().split('T')[0]
-        // Call the CRON API with today as target date to force generation based on today's missing actions
-        // (Since no one did anything today, it should generate bounties)
+        console.log("Calling cron for date:", today)
+        
         const response = await fetch(`/api/cron/generate-bounties?key=troupers_cron_key_123&date=${today}`, {
             method: 'GET'
         })
         
-        const result = await response.json()
-        console.log("CRON Result:", result)
-        
-        if (result.bounties_created > 0) {
-            toast.success(`Protocole Réel Déclenché : ${result.bounties_created} missions créées`)
-            fetchBounties() // Refresh list
-            setProcessing(false)
-            return
+        if (response.ok) {
+            const result = await response.json()
+            console.log("CRON Result:", result)
+            
+            if (result.bounties_created > 0) {
+                toast.success(`Succès : ${result.bounties_created} missions créées !`)
+                fetchBounties() // Refresh list
+                setProcessing(false)
+                return
+            }
+        } else {
+            console.error("Cron response not ok", response.status)
         }
-        
-        toast.info("Aucune mission réelle générée, passage en mode simulation...")
         
     } catch (e) {
         console.error("Failed to call cron", e)
     }
 
     // Fallback to Simulation if real cron created nothing
+    toast.info("Mode Simulation activé (aucune vraie donnée)")
+    
     const fakeBounty = {
         id: "simulated-" + Date.now(),
         target_user_id: user.id,
@@ -288,34 +297,22 @@ export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => vo
         status: 'open',
         reward_credits: 1,
         created_at: new Date().toISOString(),
-        target: { username: "Simulation Target", current_video_url: "#" },
-        squad: { name: "Alpha Squad" }
+        target: { username: "Simulation Cible", current_video_url: "#" },
+        squad: { name: "Alpha Squad" },
+        type: 'like'
     }
     
     // Use functional update to ensure we don't lose previous state and force re-render
     setBounties(prev => {
-        const newState = [fakeBounty, ...prev]
+        // Ensure prev is an array
+        const current = Array.isArray(prev) ? prev : []
+        const newState = [fakeBounty, ...current]
         console.log("Simulating Bounty. New State:", newState)
         return newState
     })
     
-    toast.success("Protocole Mercenaire Déclenché (Simulation Local)")
-    
-    try {
-        // Create a fake bounty in DB
-        const { error } = await supabase.from('bounties').insert({
-            target_user_id: user.id, // Myself as target for testing
-            defector_user_id: user.id, // Myself as defector
-            video_url: "https://tiktok.com/@test/video/123",
-            status: 'open',
-            reward_credits: 1
-        })
-        if (error) console.error("Simulation Insert Error:", error)
-    } catch (e) {
-        console.error("Simulation Exception:", e)
-    } finally {
-        setProcessing(false)
-    }
+    toast.success("Mission de Test Générée !")
+    setProcessing(false)
   }
 
   if (!isMounted) {
