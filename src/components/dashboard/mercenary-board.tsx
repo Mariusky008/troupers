@@ -44,16 +44,19 @@ export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => vo
       // DEBUG: Log status explicitly
       if (!response.ok) {
          const errorText = await response.text()
+         let detailedError = ""
          
          // Try to parse JSON error if possible
          try {
              const jsonError = JSON.parse(errorText)
-             setDebugLog(`Error ${response.status}: ${jsonError.error || errorText.slice(0, 100)}`)
+             detailedError = jsonError.error || errorText.slice(0, 100)
          } catch (e) {
-             setDebugLog(`Error ${response.status}: ${errorText.slice(0, 100)}`)
+             detailedError = errorText.slice(0, 100)
          }
          
-         throw new Error("Failed to fetch bounties API: " + response.status)
+         const msg = `Error ${response.status}: ${detailedError}`
+         setDebugLog(msg)
+         throw new Error(msg)
       }
       
       const json = await response.json()
