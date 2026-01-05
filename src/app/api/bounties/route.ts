@@ -32,7 +32,7 @@ export async function GET() {
           reward_credits,
           created_at
       `)
-      // .eq('status', 'open') // COMMENT OUT STATUS FILTER FOR DEBUGGING
+      .eq('status', 'open')
       .order('created_at', { ascending: false })
 
     if (error) {
