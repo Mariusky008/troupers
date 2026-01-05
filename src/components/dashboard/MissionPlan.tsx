@@ -29,7 +29,7 @@ export function MissionPlan({ type, scenario = 'engagement', delayMinutes = 0, t
                 <div className="h-6 w-6 rounded-full bg-amber-100 flex items-center justify-center text-[10px] font-bold text-amber-700 shrink-0 mt-0.5">
                    <Clock className="w-3 h-3" />
                 </div>
-                <p className="text-sm text-amber-700 font-bold">Attends {delayMinutes} min avant de lancer la vidéo.</p>
+                <p className="text-sm text-amber-700 font-bold">Attends entre 30s et 2min avant de lancer.</p>
              </div>
            )}
 
@@ -39,7 +39,7 @@ export function MissionPlan({ type, scenario = 'engagement', delayMinutes = 0, t
           </div>
           <div className="flex items-start gap-3">
             <div className="h-6 w-6 rounded-full bg-slate-200 flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">2</div>
-            <p className="text-sm text-slate-700">Regarde la vidéo pendant environ <strong>70% de sa durée</strong>.</p>
+            <p className="text-sm text-slate-700">Regarde entre <strong>60% et 80%</strong> de la vidéo.</p>
           </div>
           <div className="flex items-start gap-3">
             <div className="h-6 w-6 rounded-full bg-red-100 flex items-center justify-center text-[10px] font-bold text-red-600 shrink-0 mt-0.5">3</div>
@@ -62,10 +62,9 @@ export function MissionPlan({ type, scenario = 'engagement', delayMinutes = 0, t
         <div className="p-2 bg-red-50 border border-red-100 rounded text-xs text-red-800 mb-2 flex gap-2 items-start">
            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
            <div>
-              <strong>STOP !</strong> Si tu as déjà vu et liké cette vidéo naturellement dans ton "Pour Toi" : <br/>
+              <strong>STOP !</strong> Si tu as déjà vu et liké cette vidéo naturellement : <br/>
               1. Ne fais RIEN (ne retire pas ton like). <br/>
               2. Valide juste cette mission ici. <br/>
-              <span className="text-[10px] opacity-80">Double-cliquer est suspect pour l'algo.</span>
            </div>
         </div>
 
@@ -76,9 +75,9 @@ export function MissionPlan({ type, scenario = 'engagement', delayMinutes = 0, t
                 <Clock className="w-3 h-3" />
              </div>
              <div className="space-y-1">
-               <p className="text-sm font-bold text-amber-800">Décalage Temporel Requis</p>
+               <p className="text-sm font-bold text-amber-800">Décalage Temporel</p>
                <p className="text-xs text-amber-700">
-                 Ne commence pas tout de suite. Attends <strong>{delayMinutes} minutes</strong> pour simuler un trafic naturel.
+                 Attends <strong>entre 30s et {Math.max(2, delayMinutes)} min</strong> pour simuler un trafic naturel.
                </p>
              </div>
            </div>
@@ -86,29 +85,28 @@ export function MissionPlan({ type, scenario = 'engagement', delayMinutes = 0, t
 
         {/* STEP 0.5: WARM UP (SANDWICH PROTOCOL) */}
         <div className="flex items-start gap-3 group opacity-80 hover:opacity-100 transition-opacity">
-          <div className="h-6 w-6 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5 border border-slate-200">0</div>
+          <div className="h-6 w-6 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5 border border-slate-200">1</div>
           <div className="space-y-1">
-            <p className="text-sm font-bold text-slate-600">Préchauffage (Sécurité)</p>
-            <p className="text-xs text-slate-500">Scrolle 2-3 vidéos aléatoires dans ton "Pour Toi" et like-en une au hasard <strong>AVANT</strong> de commencer cette mission.</p>
+            <p className="text-sm font-bold text-slate-600">Préchauffage Léger</p>
+            <p className="text-xs text-slate-500">Scrolle 2-3 vidéos aléatoires avant d'arriver sur la cible.</p>
           </div>
         </div>
 
         {/* STEP 1: TRAFFIC SOURCE (The Hunt) */}
         <div className="flex items-start gap-3 group">
-          <div className="h-6 w-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5 group-hover:scale-110 transition-transform">1</div>
+          <div className="h-6 w-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5 group-hover:scale-110 transition-transform">2</div>
           <div className="space-y-1 w-full">
-            <p className="text-sm font-bold text-slate-800">Source d'Entrée : {trafficSource === 'search' ? 'RECHERCHE (SEO)' : (trafficSource === 'profile' ? 'VISITE PROFIL' : 'LIEN DIRECT')}</p>
+            <p className="text-sm font-bold text-slate-800">Accès Cible : {trafficSource === 'search' ? 'RECHERCHE' : (trafficSource === 'profile' ? 'PROFIL' : 'LIEN DIRECT')}</p>
             
             {trafficSource === 'search' ? (
                 <div className="bg-slate-100 p-2 rounded text-xs border border-slate-200 mt-1">
-                    <p className="text-slate-500 mb-1">Ouvre TikTok et tape dans la recherche :</p>
+                    <p className="text-slate-500 mb-1">Tape dans la recherche :</p>
                     <div className="flex items-center gap-2 bg-white px-2 py-1 rounded border border-slate-200 font-mono font-bold text-slate-800 select-all cursor-pointer" onClick={() => navigator.clipboard.writeText(targetUsername)}>
                         {targetUsername}
                     </div>
-                    <p className="text-[10px] text-slate-400 mt-1">Trouve sa dernière vidéo dans les résultats.</p>
                 </div>
             ) : trafficSource === 'profile' ? (
-                <p className="text-xs text-slate-500">Va sur le profil <strong>@{targetUsername}</strong> et clique sur sa dernière vidéo (ne clique pas le lien direct).</p>
+                <p className="text-xs text-slate-500">Va sur le profil <strong>@{targetUsername}</strong> et ouvre la dernière vidéo.</p>
             ) : (
                 <p className="text-xs text-slate-500">Utilise le bouton "Voir la Vidéo" ci-dessus.</p>
             )}
@@ -117,19 +115,10 @@ export function MissionPlan({ type, scenario = 'engagement', delayMinutes = 0, t
 
         {/* STEP 2: Visionnage */}
         <div className="flex items-start gap-3 group">
-          <div className="h-6 w-6 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5 group-hover:scale-110 transition-transform">2</div>
-          <div className="space-y-1">
-            <p className="text-sm font-bold text-slate-800">Visionnage Complet</p>
-            <p className="text-xs text-slate-500">Regarde la vidéo jusqu'à la toute dernière seconde. Ne saute pas.</p>
-          </div>
-        </div>
-
-        {/* STEP 3: Rewatch */}
-        <div className="flex items-start gap-3 group">
           <div className="h-6 w-6 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5 group-hover:scale-110 transition-transform">3</div>
           <div className="space-y-1">
-            <p className="text-sm font-bold text-slate-800">Signal d'intérêt</p>
-            <p className="text-xs text-slate-500">Reviens en arrière de 3 à 5 secondes pour simuler une re-lecture d'un passage.</p>
+            <p className="text-sm font-bold text-slate-800">Visionnage Complet</p>
+            <p className="text-xs text-slate-500">Regarde la vidéo en entier. Reviens légèrement en arrière si un passage t'a marqué.</p>
           </div>
         </div>
 
@@ -137,48 +126,37 @@ export function MissionPlan({ type, scenario = 'engagement', delayMinutes = 0, t
         <div className="flex items-start gap-3 group">
           <div className="h-6 w-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5 group-hover:scale-110 transition-transform">4</div>
           <div className="space-y-1">
-            <p className="text-sm font-bold text-slate-800 uppercase">Action Finale : {type}</p>
+            <p className="text-sm font-bold text-slate-800 uppercase">Interaction : {type}</p>
             
             {type === 'comment' ? (
               <div className="mt-2 space-y-2">
-                <p className="text-xs text-slate-500 mb-2 italic">Choisis un modèle et personnalise-le (interdiction de copier-coller exact) :</p>
+                <p className="text-xs text-slate-500 mb-2 italic">Idées (ne pas copier-coller) :</p>
                 
                 <div className="grid gap-2">
                    {/* Option 1: Question */}
-                  <div className="p-2 bg-slate-50 border rounded text-[11px] text-slate-600 cursor-pointer hover:bg-slate-100 transition-colors">
-                    <span className="font-bold text-indigo-500">[Question]</span> "Pourquoi tu fais [X] au lieu de [Y] ? J'ai un doute sur..."
+                  <div className="p-2 bg-slate-50 border rounded text-[11px] text-slate-600">
+                    <span className="font-bold text-indigo-500">Question :</span> "Pourquoi tu fais [X]... ?"
                   </div>
                    {/* Option 2: Débat */}
-                  <div className="p-2 bg-slate-50 border rounded text-[11px] text-slate-600 cursor-pointer hover:bg-slate-100 transition-colors">
-                    <span className="font-bold text-indigo-500">[Débat]</span> "J'ai testé l'inverse et ça n'a pas donné ça, tu expliques comment ?"
-                  </div>
-                   {/* Option 3: Reply to Pinned (Nouveau Point 6) */}
-                  <div className="p-2 bg-purple-50 border border-purple-100 rounded text-[11px] text-purple-700 cursor-pointer hover:bg-purple-100 transition-colors font-medium">
-                    <span className="font-bold">⚡ SIGNAL FORT :</span> Réponds au commentaire épinglé par le créateur (si présent).
+                  <div className="p-2 bg-slate-50 border rounded text-[11px] text-slate-600">
+                    <span className="font-bold text-indigo-500">Avis :</span> "J'ai testé l'inverse et..."
                   </div>
                 </div>
               </div>
             ) : type === 'share' ? (
               <div className="space-y-1">
-                 <p className="text-xs text-slate-500">Utilise "Copier le lien" ou envoie en MP (Message Privé).</p>
-                 <Badge variant="outline" className="text-[10px] border-green-200 bg-green-50 text-green-700">Partage Silencieux</Badge>
+                 <p className="text-xs text-slate-500">Copier le lien ou MP.</p>
               </div>
             ) : type === 'watch' ? (
                <div className="space-y-1">
-                  <p className="text-xs text-slate-500 font-medium">Ne fais <span className="text-red-600 font-bold uppercase">aucune interaction</span> (pas de like, pas de com).</p>
-                  <p className="text-[10px] text-slate-400">Le simple visionnage complet + rewind est un signal fort.</p>
+                  <p className="text-xs text-slate-500 font-medium">Juste regarder (Watchtime).</p>
                </div>
             ) : type === 'like' ? (
-               <p className="text-xs text-slate-500">Double-tap pour liker la vidéo.</p>
+               <p className="text-xs text-slate-500">Double-tap pour liker (ou juste regarder si pas inspiré).</p>
             ) : type === 'favorite' ? (
-               <p className="text-xs text-slate-500">Ajoute la vidéo à tes favoris (Marque-page).</p>
-            ) : type === 'reply' ? (
-               <div className="space-y-1">
-                  <p className="text-xs text-slate-500 font-medium">Ne poste pas un nouveau commentaire.</p>
-                  <p className="text-[10px] text-slate-400">Trouve un commentaire existant (ou une réponse du créateur) et réponds-y pour créer une boucle.</p>
-               </div>
+               <p className="text-xs text-slate-500">Ajoute aux favoris.</p>
             ) : (
-              <p className="text-xs text-slate-500">Effectue l'action {type} maintenant.</p>
+              <p className="text-xs text-slate-500">Action libre : {type}</p>
             )}
           </div>
         </div>
@@ -187,8 +165,8 @@ export function MissionPlan({ type, scenario = 'engagement', delayMinutes = 0, t
         <div className="flex items-start gap-3 group opacity-80 hover:opacity-100 transition-opacity">
           <div className="h-6 w-6 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5 border border-slate-200">5</div>
           <div className="space-y-1">
-            <p className="text-sm font-bold text-slate-600">Camouflage (Anti-Bot)</p>
-            <p className="text-xs text-slate-500">Ne quitte pas l'app tout de suite ! Regarde encore 2 vidéos aléatoires pour noyer ton action.</p>
+            <p className="text-sm font-bold text-slate-600">Navigation Naturelle</p>
+            <p className="text-xs text-slate-500">Continue de scroller un peu après.</p>
           </div>
         </div>
       </div>
