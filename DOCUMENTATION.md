@@ -6,26 +6,27 @@ Ce document sert de référence complète pour comprendre le fonctionnement de l
 
 ---
 
-## 1. Dashboard & Missions du Jour (Gamification)
+## 1. Dashboard & Missions du Jour (Focus Mode)
 **Fichier Principal :** `src/app/dashboard/page.tsx`
 
 C'est le cœur de l'application où l'utilisateur progresse dans ses tâches quotidiennes.
 
 ### Fonctionnalités
-*   **Système de Vagues (Waves) :** Les missions ne sont pas affichées en vrac. Elles sont présentées par paquets de 5 (Vague 1, Vague 2...).
-    *   L'utilisateur doit finir la vague 1 pour débloquer la vague 2.
-    *   Cela réduit la charge mentale et gamifie la progression.
+*   **Flux Mission par Mission (Focus Mode) :** Contrairement à une liste classique (to-do list), les missions s'affichent **une par une**.
+    *   L'utilisateur doit "Lancer la mission" (ouvre TikTok), effectuer l'action, puis confirmer "J'ai terminé".
+    *   Cela garantit une attention maximale sur chaque action et permet d'afficher les consignes tactiques détaillées.
 *   **Rangs Dynamiques :** Une barre de progression en haut affiche le grade du jour selon l'avancement :
     *   0% : **Recrue**
     *   25% : **Soldat**
     *   50% : **Sergent**
     *   75% : **Vétéran**
     *   100% : **Légende** 🏆
-*   **Rotation des Actions :** L'action demandée change cycliquement pour chaque membre (Like -> Commentaire -> Favori) basé sur l'historique `video_tracking`.
+*   **Guidage Tactique (MissionPlan) :** Chaque écran de mission affiche un plan d'action précis (Source de trafic, Délai, Scénario).
 
 ### Implémentation Technique
-*   **State `tasks` :** Tableau d'objets généré dynamiquement.
-*   **Pagination :** Utilisation de `slice()` pour n'afficher que les 5 tâches de la vague courante.
+*   **Échantillonnage Tactique :** Le système sélectionne aléatoirement (mais de façon déterministe par jour) entre **8 et 12 membres** de l'escouade à soutenir.
+*   **State `currentTaskIndex` :** Gère la navigation séquentielle.
+*   **Auto-Resume :** Si l'utilisateur quitte et revient, il est redirigé vers la première mission non terminée.
 *   **Sécurité Cache :** L'état "Vu" des vidéos est stocké dans `sessionStorage` avec une **date d'expiration**. Si la date stockée n'est pas aujourd'hui, le cache est purgé au chargement pour éviter de valider des missions d'hier.
 
 ---
@@ -115,12 +116,13 @@ Voici les tables clés utilisées par l'application :
 
 Refonte majeure de la logique d'engagement pour rendre l'activité indétectable par TikTok et booster le SEO.
 
-### A. Distribution Intelligente (Boost Window ++)
-Au lieu de simples likes, les missions quotidiennes sont réparties statistiquement :
-*   **30% Commentaires Qualifiés** (Modèles contextuels fournis, copier-coller interdit).
-*   **20% Réponses (Reply Loop)** (Répondre aux commentaires pour créer des threads).
-*   **10% Partage Silencieux** (Copier le lien / MP).
-*   **40% Classique** (Like / Favoris alternés).
+### A. Distribution Intelligente (Probabilités)
+Au lieu de simples likes, les missions quotidiennes sont réparties statistiquement pour chaque utilisateur :
+*   **30% Watch Only** (Regarder sans interagir, très important pour la rétention).
+*   **30% Like** (Classique).
+*   **20% Commentaire** (Modèles contextuels fournis).
+*   **10% Favoris** (Signal fort).
+*   **10% Scroll Fast / Micro-Abandon** (Simuler un désintérêt pour rendre le profil humain).
 
 ### B. Search & Find Protocol (SEO)
 Pour éviter le trafic "Direct Link" (suspect), 50% des missions demandent à l'utilisateur de passer par la recherche :
@@ -152,8 +154,8 @@ Pour garantir la durabilité du système et le réalisme des actions.
 *   **But :** Éviter l'épuisement des membres et le comportement "ferme à clics".
 
 ### B. Stratégie d'Abonnement (Follow)
-*   **Règle d'or :** Ne jamais forcer le follow massif.
-*   **Probabilité :** Seulement **10%** de chance de voir une instruction "S'abonner (Optionnel)".
+*   **Règle d'or :** Ne jamais forcer le follow massif. L'obligation de "S'abonner à tous" a été **supprimée**.
+*   **Probabilité :** Seulement **10%** de chance de voir une instruction "S'abonner (Optionnel)" dans une mission.
 *   **Limite :** Max 2 à 5 follows par jour par personne.
 *   **Logique :** Le follow doit rester un signal rare et fort pour être valorisé par l'algo.
 
