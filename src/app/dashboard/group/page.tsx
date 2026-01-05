@@ -51,7 +51,13 @@ export default function GroupPage() {
                // Calculate Score based on Joined At to simulate progress for demo
                // In production this will be m.profiles?.discipline_score
                const daysSinceJoin = Math.floor((new Date().getTime() - new Date(m.joined_at).getTime()) / (1000 * 60 * 60 * 24))
-               const score = m.profiles?.discipline_score !== undefined ? m.profiles.discipline_score : (Math.min(100, Math.max(0, 10 + daysSinceJoin * 5))) // Fake score if null
+               
+               // DEBUG: Force re-calc for demo purposes if score is default (60, 70, 100) and user is new (< 7 days)
+               // This allows new users to see "real" low scores even if DB has defaults
+               let score = m.profiles?.discipline_score || 0
+               if (daysSinceJoin < 7 && (score === 60 || score === 70 || score === 100)) {
+                  score = Math.min(100, Math.max(0, 10 + daysSinceJoin * 5))
+               }
                
                let status = "active"
                if (score < 50) status = "warning"
