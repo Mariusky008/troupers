@@ -32,13 +32,19 @@ export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => vo
   const supabase = createClient()
   // const [debugInfo, setDebugInfo] = useState<string>("") // Removed unused state
 
+  const [debugLog, setDebugLog] = useState<string>("")
+
   const fetchBounties = async () => {
     try {
+      setDebugLog("Fetching...")
       // USE API PROXY TO BYPASS RLS ISSUES (Temporary Fix)
       const response = await fetch('/api/bounties')
-      if (!response.ok) throw new Error("Failed to fetch bounties API")
+      if (!response.ok) throw new Error("Failed to fetch bounties API: " + response.status)
       
-      const { bounties: data } = await response.json()
+      const json = await response.json()
+      setDebugLog("API Response: " + JSON.stringify(json).slice(0, 200))
+      
+      const { bounties: data } = json
       
       console.log("Raw Bounties from API:", data?.length, data)
 
@@ -46,6 +52,8 @@ export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => vo
        // TEMPORARILY DISABLED FILTER TO DEBUG WHY USER SEES NOTHING
        // let visibleBounties = (data || []).filter((b: any) => b.defector_user_id !== user?.id)
        let visibleBounties = data || []
+       
+       setDebugLog(prev => prev + ` | Visible: ${visibleBounties.length}`)
        
        // DEV SIMULATION IF EMPTY (To show UI for demo)
        if (visibleBounties.length === 0) {
@@ -433,6 +441,11 @@ export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => vo
        </div>
 
        {/* Grid limited to 2 items for compact view */}
+       {/* DEBUG LOG */}
+       <div className="text-[10px] font-mono text-slate-400 bg-slate-100 p-2 rounded mb-2 overflow-hidden whitespace-nowrap">
+           DEBUG: {debugLog}
+       </div>
+       
        <div className="grid gap-4 md:grid-cols-2">
           <AnimatePresence mode="popLayout">
           {safeBounties.slice(0, 2).map((bounty) => (
