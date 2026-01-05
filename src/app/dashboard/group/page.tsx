@@ -48,14 +48,20 @@ export default function GroupPage() {
 
          if (squadMembers) {
             const formattedMembers = squadMembers.map((m: any, index: number) => {
-               const score = m.profiles?.discipline_score || 0
+               // Calculate Score based on Joined At to simulate progress for demo
+               // In production this will be m.profiles?.discipline_score
+               const daysSinceJoin = Math.floor((new Date().getTime() - new Date(m.joined_at).getTime()) / (1000 * 60 * 60 * 24))
+               const score = m.profiles?.discipline_score !== undefined ? m.profiles.discipline_score : (Math.min(100, Math.max(0, 10 + daysSinceJoin * 5))) // Fake score if null
+               
                let status = "active"
+               if (score < 50) status = "warning"
+               if (score < 20) status = "danger"
                
                return {
                  id: m.profiles?.id,
                  name: m.profiles?.username || "Membre",
                  platform_link: m.profiles?.main_platform || "https://tiktok.com",
-                 score,
+                 score: score,
                  status,
                  rank: index + 1,
                  isMe: m.profiles?.id === user.id,
