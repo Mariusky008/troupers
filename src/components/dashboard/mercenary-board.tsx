@@ -466,7 +466,7 @@ export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => vo
        {/* Grid limited to 2 items for compact view */}
        <div className="grid gap-4 md:grid-cols-2">
           <AnimatePresence mode="popLayout">
-          {safeBounties.slice(0, 2).map((bounty) => (
+          {safeBounties.slice(0, 4).map((bounty) => (
              <motion.div  
                 layout
                 key={bounty.id}
@@ -519,9 +519,9 @@ export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => vo
           </AnimatePresence>
        </div>
 
-       {safeBounties.length > 2 && (
+       {safeBounties.length > 4 && (
            <p className="text-center text-xs text-slate-400 font-medium animate-pulse">
-               +{safeBounties.length - 2} autres missions en attente... Complète celles-ci pour voir la suite.
+               +{safeBounties.length - 4} autres missions en attente... Complète celles-ci pour voir la suite.
            </p>
        )}
 
