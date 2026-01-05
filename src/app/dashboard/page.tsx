@@ -1069,6 +1069,7 @@ export default function DashboardPage() {
                                  delayMinutes={tasks[currentTaskIndex].delayMinutes}
                                  trafficSource={tasks[currentTaskIndex].trafficSource}
                                  targetUsername={tasks[currentTaskIndex].targetUsername}
+                                 shouldFollow={tasks[currentTaskIndex].shouldFollow}
                               />
                            ) : (
                               <div className="p-8 text-center bg-slate-50 rounded-xl border border-slate-200 animate-in fade-in zoom-in-95 duration-300">
