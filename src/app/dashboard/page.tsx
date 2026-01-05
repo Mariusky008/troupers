@@ -1120,7 +1120,7 @@ export default function DashboardPage() {
                                        <CheckCircle className="mr-2 h-5 w-5" />
                                        J'AI TERMINÉ LA MISSION
                                     </Button>
-                                 )
+                                 )}
                               
                               {viewedVideos.has(tasks[currentTaskIndex].targetUserId) && (
                                 <p className="text-xs text-center text-muted-foreground">
