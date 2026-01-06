@@ -40,7 +40,7 @@ export function WaveSchedule({ squadId }: { squadId: string | null }) {
                 .order('start_time', { ascending: true })
 
             if (waves) {
-                // Group by Date ONLY (Aggregate start/end times)
+                // Group by Date ONLY
                 const groupedMap = new Map<string, WaveSlot>()
 
                 waves.forEach((wave: any) => {
@@ -49,9 +49,7 @@ export function WaveSchedule({ squadId }: { squadId: string | null }) {
                     if (groupedMap.has(dateKey)) {
                         const slot = groupedMap.get(dateKey)!
                         slot.missionCount += 1
-                        // Update start time if earlier
                         if (wave.start_time < slot.startTime) slot.startTime = wave.start_time
-                        // Update end time if later
                         if (wave.end_time > slot.endTime) slot.endTime = wave.end_time
                     } else {
                         groupedMap.set(dateKey, {
@@ -63,7 +61,24 @@ export function WaveSchedule({ squadId }: { squadId: string | null }) {
                     }
                 })
 
-                setSlots(Array.from(groupedMap.values()))
+                // Convert map to array
+                let finalSlots = Array.from(groupedMap.values())
+
+                // Check if Today is present
+                const todayStr = new Date().toISOString().split('T')[0]
+                const hasToday = finalSlots.some(s => s.date === todayStr)
+
+                if (!hasToday) {
+                    // Add "Rest Day" slot for Today
+                    finalSlots.unshift({
+                        date: todayStr,
+                        startTime: "",
+                        endTime: "",
+                        missionCount: 0
+                    })
+                }
+
+                setSlots(finalSlots)
             }
             setLoading(false)
         }
@@ -117,26 +132,39 @@ export function WaveSchedule({ squadId }: { squadId: string | null }) {
 
                     if (isNext) {
                         return (
-                            <div key={idx} className="rounded-lg bg-indigo-50 border border-indigo-100 p-3 relative overflow-hidden">
-                                <div className="absolute top-0 right-0 px-2 py-1 bg-indigo-200 text-indigo-800 text-[9px] font-bold rounded-bl-lg">
-                                    PRIORITAIRE
+                            <div key={idx} className={`rounded-lg border p-3 relative overflow-hidden ${slot.missionCount === 0 ? 'bg-emerald-50 border-emerald-100' : 'bg-indigo-50 border-indigo-100'}`}>
+                                <div className={`absolute top-0 right-0 px-2 py-1 text-[9px] font-bold rounded-bl-lg ${slot.missionCount === 0 ? 'bg-emerald-200 text-emerald-800' : 'bg-indigo-200 text-indigo-800'}`}>
+                                    {slot.missionCount === 0 ? "STATUT" : "PRIORITAIRE"}
                                 </div>
-                                <p className="text-xs font-black text-indigo-900 mb-2">{dateLabel}</p>
-                                <div className="flex items-end justify-between">
-                                    <div>
-                                        <p className="text-[10px] text-indigo-500 font-bold uppercase mb-1">Créneau d'Intervention</p>
-                                        <div className="flex items-center gap-1.5 text-indigo-900">
-                                            <Clock className="h-4 w-4" />
-                                            <span className="text-lg font-black tracking-tight">
-                                                {slot.startTime.slice(0, 5)} - {slot.endTime.slice(0, 5)}
-                                            </span>
+                                <p className={`text-xs font-black mb-2 ${slot.missionCount === 0 ? 'text-emerald-900' : 'text-indigo-900'}`}>{dateLabel}</p>
+                                
+                                {slot.missionCount === 0 ? (
+                                    <div className="flex items-center gap-2 text-emerald-700">
+                                        <div className="h-8 w-8 rounded-full bg-emerald-100 flex items-center justify-center">
+                                            <span className="text-lg">✅</span>
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] font-bold uppercase">Repos Accordé</p>
+                                            <p className="text-xs font-bold">Aucune mission</p>
                                         </div>
                                     </div>
-                                    <div className={`px-2 py-1 rounded-md border ${intensityColor} flex flex-col items-center min-w-[50px]`}>
-                                        <span className="text-sm font-black">{slot.missionCount}</span>
-                                        <span className="text-[8px] font-bold uppercase">Missions</span>
+                                ) : (
+                                    <div className="flex items-end justify-between">
+                                        <div>
+                                            <p className="text-[10px] text-indigo-500 font-bold uppercase mb-1">Créneau d'Intervention</p>
+                                            <div className="flex items-center gap-1.5 text-indigo-900">
+                                                <Clock className="h-4 w-4" />
+                                                <span className="text-lg font-black tracking-tight">
+                                                    {slot.startTime.slice(0, 5)} - {slot.endTime.slice(0, 5)}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className={`px-2 py-1 rounded-md border ${intensityColor} flex flex-col items-center min-w-[50px]`}>
+                                            <span className="text-sm font-black">{slot.missionCount}</span>
+                                            <span className="text-[8px] font-bold uppercase">Missions</span>
+                                        </div>
                                     </div>
-                                </div>
+                                )}
                             </div>
                         )
                     }
