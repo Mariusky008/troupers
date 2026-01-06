@@ -222,3 +222,25 @@ Cela signifie que pour une même vidéo, certains membres devront liker, et d'au
 *   **Correction API Bounties :** Résolution des erreurs 500 liées à des colonnes manquantes (`type`) et ajout d'une gestion d'erreur robuste.
 *   **Simulation Admin :** Le bouton "(Admin) Simuler Alerte" est désormais fiable, avec un fallback local si le Cron ne renvoie rien, permettant de tester l'interface à tout moment.
 *   **Affichage :** Augmentation du nombre de missions visibles simultanément de 2 à 4 pour une meilleure ergonomie.
+
+---
+
+## 12. Moteur Troupers V3 (Planificateur de Vagues)
+
+Introduction d'un système de planification stratégique pour maximiser l'impact algorithmique.
+
+### A. Le Concept de Vague
+Au lieu de diluer les actions sur 50 vidéos, le moteur concentre la puissance de l'escouade sur **8 à 12 vidéos cibles par jour**.
+*   **Vague Cœur (Core) :** 5 à 7 vidéos reçoivent un soutien massif (90% engagement, 10% ghost) pour percer.
+*   **Vague Bruit (Noise) :** 5 à 7 vidéos reçoivent un soutien faible (20% like, 80% abandon) pour crédibiliser l'activité du groupe.
+
+### B. Notification Préalable
+Les membres sélectionnés ("Élus du jour") reçoivent une alerte 48h à l'avance sur leur Dashboard :
+*   **Message :** "Vague imminente détectée".
+*   **Instruction :** "Publie ta vidéo impérativement 30 à 45 min avant le début de la vague".
+*   **But :** Synchroniser la publication avec le pic d'activité artificiel.
+
+### C. Architecture Technique
+*   **Table `daily_waves` :** Stocke le planning (Qui passe ? Quand ? Quel type ?).
+*   **Moteur de Priorité :** Remplace l'aléatoire complet par une file d'attente intelligente (Queue Priority) pour garantir que tout le monde passe à son tour.
+*   **Fallback V2 :** Si aucune vague n'est planifiée, le système revient automatiquement au mode aléatoire V2 pour ne jamais bloquer l'application.

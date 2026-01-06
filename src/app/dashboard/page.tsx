@@ -17,6 +17,8 @@ import { WelcomePopup } from "@/components/welcome-popup"
 import { MercenaryBoard } from "@/components/dashboard/mercenary-board"
 import { MissionPlan } from "@/components/dashboard/MissionPlan"
 
+import { WaveNotification } from "@/components/dashboard/WaveNotification"
+
 // Helper for deterministic shuffling based on date + userId
 function getDailySeed(userId: string) {
   const today = new Date().toISOString().split('T')[0]
@@ -344,15 +346,55 @@ export default function DashboardPage() {
                
                setVideoTrackingData(videoTracking || [])
 
-               // === TACTICAL SAMPLING (ALGO V2) ===
+               setVideoTrackingData(videoTracking || [])
+               
+               // === ENGINE V3: WAVE SYSTEM INTEGRATION ===
+               // 1. Fetch Today's Waves
+               let activeWaves: any[] = []
+               try {
+                   const { data: waves } = await supabase
+                       .from('daily_waves')
+                       .select('*')
+                       .eq('squad_id', membership.squad_id)
+                       .eq('scheduled_date', today)
+                   
+                   if (waves && waves.length > 0) {
+                       activeWaves = waves
+                   }
+               } catch (e) {
+                   console.log("Wave system not active yet, using fallback")
+               }
+
+               // === TACTICAL SAMPLING (ALGO V3) ===
                // 1. Deterministic Shuffle
                const dailySeed = getDailySeed(user.id)
                const shuffledMembers = seededShuffle(allMembers, dailySeed)
                
-               // 2. Limit Workload (8-12 videos max)
-               // Use seed to decide between 8 and 12
-               const workloadLimit = 8 + Math.floor(seededRandom(dailySeed) * 5) // 8 to 12
-               const selectedMembers = shuffledMembers.slice(0, workloadLimit)
+               // 2. Select Members based on Waves OR Fallback
+               let selectedMembers: any[] = []
+               let waveConfigMap = new Map<string, any>() // userId -> waveConfig
+
+               if (activeWaves.length > 0) {
+                   // V3: Use Waves
+                   const waveUserIds = new Set(activeWaves.map(w => w.creator_id))
+                   selectedMembers = allMembers.filter((m: any) => waveUserIds.has(m.user_id))
+                   
+                   // Map wave type to user
+                   activeWaves.forEach(w => {
+                       waveConfigMap.set(w.creator_id, w)
+                   })
+                   
+                   // If not enough waves (e.g. < 8), fill with randoms (Noise)
+                   if (selectedMembers.length < 8) {
+                       const remaining = shuffledMembers.filter((m: any) => !waveUserIds.has(m.user_id))
+                       const fillCount = 8 - selectedMembers.length
+                       selectedMembers = [...selectedMembers, ...remaining.slice(0, fillCount)]
+                   }
+               } else {
+                   // V2 Fallback: Limit Workload (8-12 videos max)
+                   const workloadLimit = 8 + Math.floor(seededRandom(dailySeed) * 5) // 8 to 12
+                   selectedMembers = shuffledMembers.slice(0, workloadLimit)
+               }
                
                const newTasks = [
                  ...selectedMembers.map((m: any, index: number) => {
@@ -368,7 +410,7 @@ export default function DashboardPage() {
                       count = count - 1
                    }
                    
-                   // ALGO V2: Smart Distribution (30% Watch, 30% Like, 20% Comment, 10% Fav, 10% Scroll)
+                   // ALGO V3: Smart Distribution based on Wave Type
                    // We use the seed + index to create a stable random per user per day
                    const distributionVal = seededRandom(dailySeed + index + 100) * 100 // 0-100
                    const trafficSourceVal = seededRandom(dailySeed + index + 200) * 100 // 0-100
@@ -379,32 +421,77 @@ export default function DashboardPage() {
                    let actionIcon = "👀"
                    let scenario = 'engagement'
                    
-                   if (distributionVal < 30) { 
-                      // 0-30% -> WATCH ONLY
-                      actionType = 'watch'
-                      actionText = `Regarder uniquement la vidéo de ${m.profiles?.username || 'Membre'}`
-                      actionIcon = "👀"
-                   } else if (distributionVal < 60) {
-                      // 30-60% -> WATCH + LIKE
-                      actionType = 'like'
-                      actionText = `Liker la vidéo de ${m.profiles?.username || 'Membre'}`
-                      actionIcon = "❤️"
-                   } else if (distributionVal < 80) {
-                      // 60-80% -> WATCH + COMMENT
-                      actionType = 'comment'
-                      actionText = `Commenter la vidéo de ${m.profiles?.username || 'Membre'}`
-                      actionIcon = "💬"
-                   } else if (distributionVal < 90) {
-                      // 80-90% -> WATCH + FAVORITE
-                      actionType = 'favorite'
-                      actionText = `Ajouter aux favoris la vidéo de ${m.profiles?.username || 'Membre'}`
-                      actionIcon = "⭐"
+                   // Check Wave Type
+                   const wave = waveConfigMap.get(m.user_id)
+                   const isCoreWave = wave?.wave_type === 'core'
+                   
+                   // V3 LOGIC
+                   if (isCoreWave) {
+                       // CORE WAVE: 90% Engagement, 10% Abandon (Natural)
+                       if (distributionVal < 10) {
+                           actionType = 'watch' // Watch Only (Ghost)
+                           actionText = `Regarder uniquement (Ghost) - Cible Prioritaire`
+                           actionIcon = "👻"
+                           scenario = 'watch_only'
+                       } else if (distributionVal < 40) {
+                           actionType = 'like'
+                           actionText = `Liker la vidéo Prioritaire de ${m.profiles?.username || 'Membre'}`
+                           actionIcon = "❤️"
+                       } else if (distributionVal < 70) {
+                           actionType = 'favorite'
+                           actionText = `Ajouter aux favoris (Cible Core)`
+                           actionIcon = "⭐"
+                       } else {
+                           actionType = 'comment'
+                           actionText = `Commenter la vidéo (Cible Core)`
+                           actionIcon = "💬"
+                       }
+                   } else if (wave?.wave_type === 'noise') {
+                       // NOISE WAVE: 80% Weak/Abandon, 20% Like
+                       if (distributionVal < 50) {
+                           actionType = 'scroll_fast'
+                           actionText = `Micro-Abandon (Noise) sur ${m.profiles?.username || 'Membre'}`
+                           actionIcon = "⏩"
+                           scenario = 'abandon'
+                       } else if (distributionVal < 80) {
+                           actionType = 'watch'
+                           actionText = `Regarder sans liker (Noise)`
+                           actionIcon = "👀"
+                           scenario = 'watch_only'
+                       } else {
+                           actionType = 'like'
+                           actionText = `Liker simplement (Noise)`
+                           actionIcon = "❤️"
+                       }
                    } else {
-                      // 90-100% -> SCROLL FAST (MICRO-ABANDON)
-                      actionType = 'scroll_fast'
-                      actionText = `Micro-Abandon sur la vidéo de ${m.profiles?.username || 'Membre'}`
-                      actionIcon = "⏩"
-                      scenario = 'abandon'
+                       // FALLBACK V2 LOGIC (No Wave Defined)
+                       if (distributionVal < 30) { 
+                          // 0-30% -> WATCH ONLY
+                          actionType = 'watch'
+                          actionText = `Regarder uniquement la vidéo de ${m.profiles?.username || 'Membre'}`
+                          actionIcon = "👀"
+                       } else if (distributionVal < 60) {
+                          // 30-60% -> WATCH + LIKE
+                          actionType = 'like'
+                          actionText = `Liker la vidéo de ${m.profiles?.username || 'Membre'}`
+                          actionIcon = "❤️"
+                       } else if (distributionVal < 80) {
+                          // 60-80% -> WATCH + COMMENT
+                          actionType = 'comment'
+                          actionText = `Commenter la vidéo de ${m.profiles?.username || 'Membre'}`
+                          actionIcon = "💬"
+                       } else if (distributionVal < 90) {
+                          // 80-90% -> WATCH + FAVORITE
+                          actionType = 'favorite'
+                          actionText = `Ajouter aux favoris la vidéo de ${m.profiles?.username || 'Membre'}`
+                          actionIcon = "⭐"
+                       } else {
+                          // 90-100% -> SCROLL FAST (MICRO-ABANDON)
+                          actionType = 'scroll_fast'
+                          actionText = `Micro-Abandon sur la vidéo de ${m.profiles?.username || 'Membre'}`
+                          actionIcon = "⏩"
+                          scenario = 'abandon'
+                       }
                    }
                    
                    // Traffic Source Distribution
@@ -767,6 +854,42 @@ export default function DashboardPage() {
      return 'like'
   })()
 
+  // ALGO V2.4 for BOOST WINDOW
+  const boostAlgoState = (() => {
+     if (!activeBoostWindow || !userProfile) return null
+     
+     // Deterministic Seed
+     // Use last chars of UUIDs to ensure stability per user/window
+     const windowSeed = activeBoostWindow.id.charCodeAt(0) + (activeBoostWindow.id.length * 10)
+     const userSeed = userProfile.id.charCodeAt(0) + (userProfile.id.length * 10)
+     
+     const combinedSeed = windowSeed + userSeed
+     
+     // 1. Scenario: 40% Watch Only
+     const isWatchOnly = (combinedSeed % 10) < 4
+     const scenario = isWatchOnly ? 'watch_only' : 'engagement'
+     
+     // 2. Type (if engagement)
+     // 70% Like+Fav, 20% Comment, 10% Share
+     const typeSeed = combinedSeed % 100
+     let type = 'favorite' // Default (Like + Fav)
+     if (typeSeed < 10) type = 'share'
+     else if (typeSeed < 30) type = 'comment'
+     
+     // 3. Watch Duration (60-95%)
+     const watchDuration = 60 + (windowSeed % 36)
+     
+     // 4. Delay (Boost is usually immediate, but let's add small randomization 0-5 min)
+     const delayMinutes = combinedSeed % 3
+     
+     // 5. Traffic Source
+     const trafficSource = (combinedSeed % 2 === 0) ? 'search' : 'direct'
+     
+     const targetUsername = extractTikTokUsername(activeBoostWindow.target_video_url) || "Inconnu"
+     
+     return { scenario, type, watchDuration, delayMinutes, trafficSource, targetUsername, combinedSeed }
+  })()
+
   const handleNextTask = () => {
       if (currentTaskIndex < tasks.length - 1) {
          setCurrentTaskIndex(prev => prev + 1)
@@ -844,6 +967,9 @@ export default function DashboardPage() {
         {/* === LEFT COLUMN (MAIN CONTENT) === */}
         <div className="lg:col-span-8 space-y-8">
            
+           {/* WAVE NOTIFICATION AREA (V3) */}
+           {userProfile && <WaveNotification userId={userProfile.id} />}
+
            {/* HUNTING BOARD (TABLEAU DE CHASSE) */}
            <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
@@ -937,51 +1063,43 @@ export default function DashboardPage() {
                             MISSION BOOST
                           </DialogTitle>
                           <DialogDescription className="text-base">
-                            Aide un membre de l'escouade à percer l'algorithme. Fais les 3 actions ci-dessous rapidement.
+                            Opportunité Tactique. Suis le plan ci-dessous pour aider l'escouade.
                           </DialogDescription>
                         </DialogHeader>
                         
-                        <div className="grid gap-6 py-4">
-                          <div className="p-4 bg-indigo-50 rounded-lg border border-indigo-100 text-center">
-                            <p className="text-xs font-bold text-indigo-400 uppercase mb-2">Cible du jour</p>
-                            <a 
-                              href={activeBoostWindow.target_video_url} 
-                              target="_blank" 
-                              className="text-lg font-bold text-indigo-600 hover:underline flex items-center justify-center gap-2"
-                            >
-                              <ExternalLink className="h-4 w-4" />
-                              Ouvrir la Vidéo
-                            </a>
-                          </div>
-
-                          <div className="space-y-3">
-                             <div className="flex items-center gap-3 p-3 rounded-md hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all">
-                               <div className="h-8 w-8 rounded-full bg-pink-100 flex items-center justify-center">
-                                 <Heart className="h-4 w-4 text-pink-600" />
-                               </div>
-                               <span className="font-medium text-slate-700">Liker la vidéo</span>
-                             </div>
-                             <div className="flex items-center gap-3 p-3 rounded-md hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all">
-                               <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
-                                 <MessageCircle className="h-4 w-4 text-blue-600" />
-                               </div>
-                               <span className="font-medium text-slate-700">Laisser un commentaire (4 mots min)</span>
-                             </div>
-                             <div className="flex items-center gap-3 p-3 rounded-md hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all">
-                               <div className="h-8 w-8 rounded-full bg-yellow-100 flex items-center justify-center">
-                                 <Gift className="h-4 w-4 text-yellow-600" />
-                               </div>
-                               <span className="font-medium text-slate-700">Ajouter aux Favoris</span>
-                             </div>
-                          </div>
+                        <div className="py-2">
+                           {boostAlgoState && (
+                             <MissionPlan 
+                                type={boostAlgoState.type}
+                                scenario={boostAlgoState.scenario}
+                                delayMinutes={boostAlgoState.delayMinutes}
+                                trafficSource={boostAlgoState.trafficSource as any}
+                                targetUsername={boostAlgoState.targetUsername}
+                                watchDuration={boostAlgoState.watchDuration}
+                                missionId={boostAlgoState.combinedSeed} // Theme variation
+                                shouldFollow={false}
+                             />
+                           )}
+                           
+                           {/* FALLBACK IF URL LINK NEEDED (Hidden by MissionPlan usually) */}
+                           <div className="mt-4 text-center">
+                              <a 
+                                href={activeBoostWindow.target_video_url} 
+                                target="_blank" 
+                                className="text-xs text-indigo-400 hover:underline flex items-center justify-center gap-1"
+                              >
+                                <ExternalLink className="h-3 w-3" />
+                                Lien de secours
+                              </a>
+                           </div>
                         </div>
 
                         <DialogFooter className="sm:justify-center">
                           <Button 
                             onClick={handleBoostValidation}
-                            className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-6 text-lg"
+                            className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-6 text-lg shadow-lg shadow-green-200 animate-in zoom-in"
                           >
-                            J'AI FAIT LES ACTIONS (+1 CRÉDIT)
+                            J'AI TERMINÉ LA MISSION (+1 CRÉDIT)
                           </Button>
                         </DialogFooter>
                       </DialogContent>
