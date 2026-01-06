@@ -87,47 +87,76 @@ export function WaveSchedule({ squadId }: { squadId: string | null }) {
 
     return (
         <div className="rounded-xl border border-indigo-100 bg-white shadow-sm overflow-hidden mb-6">
-            <div className="bg-indigo-50/50 p-3 border-b border-indigo-100 flex items-center justify-between">
+            <div className="bg-indigo-900 p-3 flex items-center justify-between text-white">
                 <div className="flex items-center gap-2">
-                    <ShieldAlert className="h-4 w-4 text-indigo-600" />
-                    <h3 className="text-xs font-black text-indigo-900 uppercase tracking-wider">Ordres de Présence</h3>
+                    <ShieldAlert className="h-4 w-4 text-indigo-300" />
+                    <h3 className="text-xs font-black uppercase tracking-wider">Ordres de Présence</h3>
                 </div>
-                <span className="text-[10px] font-bold bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">
-                    3 Jours
-                </span>
             </div>
             
-            <div className="divide-y divide-slate-100">
+            <div className="p-3 space-y-3">
                 {slots.map((slot, idx) => {
                     const dateObj = parseISO(slot.date)
                     let dateLabel = format(dateObj, 'EEEE d MMM', { locale: fr })
-                    if (isToday(dateObj)) dateLabel = "AUJOURD'HUI"
-                    else if (isTomorrow(dateObj)) dateLabel = "DEMAIN"
-                    else dateLabel = dateLabel.toUpperCase()
+                    let isNext = false
+                    
+                    if (isToday(dateObj)) {
+                        dateLabel = "AUJOURD'HUI"
+                        isNext = true
+                    } else if (isTomorrow(dateObj)) {
+                        dateLabel = "DEMAIN"
+                        if (idx === 0) isNext = true // First slot is tomorrow if no today
+                    } else {
+                        dateLabel = dateLabel.toUpperCase()
+                    }
 
-                    return (
-                        <div key={idx} className="p-3 flex items-center justify-between hover:bg-slate-50 transition-colors">
-                            <div>
-                                <p className={`text-[10px] font-bold uppercase mb-0.5 ${dateLabel === "AUJOURD'HUI" ? "text-green-600" : "text-slate-400"}`}>
-                                    {dateLabel}
-                                </p>
-                                <div className="flex items-center gap-1.5">
-                                    <Clock className="h-3.5 w-3.5 text-slate-600" />
-                                    <span className="text-sm font-black text-slate-800">
-                                        {slot.startTime.slice(0, 5)}
-                                    </span>
-                                    <span className="text-xs text-slate-400 font-medium">
-                                        - {slot.endTime.slice(0, 5)}
-                                    </span>
+                    // Intensity Color
+                    let intensityColor = "bg-blue-100 text-blue-700 border-blue-200"
+                    if (slot.missionCount > 8) intensityColor = "bg-amber-100 text-amber-700 border-amber-200"
+                    if (slot.missionCount > 12) intensityColor = "bg-red-100 text-red-700 border-red-200"
+
+                    if (isNext) {
+                        return (
+                            <div key={idx} className="rounded-lg bg-indigo-50 border border-indigo-100 p-3 relative overflow-hidden">
+                                <div className="absolute top-0 right-0 px-2 py-1 bg-indigo-200 text-indigo-800 text-[9px] font-bold rounded-bl-lg">
+                                    PRIORITAIRE
+                                </div>
+                                <p className="text-xs font-black text-indigo-900 mb-2">{dateLabel}</p>
+                                <div className="flex items-end justify-between">
+                                    <div>
+                                        <p className="text-[10px] text-indigo-500 font-bold uppercase mb-1">Créneau d'Intervention</p>
+                                        <div className="flex items-center gap-1.5 text-indigo-900">
+                                            <Clock className="h-4 w-4" />
+                                            <span className="text-lg font-black tracking-tight">
+                                                {slot.startTime.slice(0, 5)} - {slot.endTime.slice(0, 5)}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className={`px-2 py-1 rounded-md border ${intensityColor} flex flex-col items-center min-w-[50px]`}>
+                                        <span className="text-sm font-black">{slot.missionCount}</span>
+                                        <span className="text-[8px] font-bold uppercase">Missions</span>
+                                    </div>
                                 </div>
                             </div>
-                            
-                            <div className="flex flex-col items-end">
-                                <div className="flex items-center gap-1 bg-slate-100 px-2 py-1 rounded-md border border-slate-200">
-                                    <Users className="h-3 w-3 text-slate-500" />
-                                    <span className="text-xs font-bold text-slate-700">{slot.missionCount}</span>
+                        )
+                    }
+
+                    return (
+                        <div key={idx} className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0">
+                            <div className="flex items-center gap-3">
+                                <div className="h-8 w-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 font-bold text-xs">
+                                    {format(dateObj, 'dd')}
                                 </div>
-                                <span className="text-[9px] text-slate-400 font-medium mt-0.5">Missions</span>
+                                <div>
+                                    <p className="text-xs font-bold text-slate-700 capitalize">{dateLabel.toLowerCase()}</p>
+                                    <p className="text-[10px] text-slate-400 font-mono">
+                                        {slot.startTime.slice(0, 5)} - {slot.endTime.slice(0, 5)}
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-1">
+                                <span className="text-xs font-bold text-slate-600">{slot.missionCount}</span>
+                                <span className="text-[9px] text-slate-400">miss.</span>
                             </div>
                         </div>
                     )
@@ -135,8 +164,9 @@ export function WaveSchedule({ squadId }: { squadId: string | null }) {
             </div>
             
             <div className="bg-slate-50 p-2 text-center border-t border-slate-100">
-                <p className="text-[10px] text-slate-500">
-                    Présence obligatoire sur ces créneaux.
+                <p className="text-[10px] text-slate-400 flex items-center justify-center gap-1">
+                    <MapPin className="h-3 w-3" />
+                    Présence obligatoire au rapport
                 </p>
             </div>
         </div>
