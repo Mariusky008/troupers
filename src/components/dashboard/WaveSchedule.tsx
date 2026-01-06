@@ -43,7 +43,7 @@ export function WaveSchedule({ squadId }: { squadId: string | null }) {
                 // Group by Date + StartTime
                 const groupedMap = new Map<string, WaveSlot>()
 
-                waves.forEach(wave => {
+                waves.forEach((wave: any) => {
                     const key = `${wave.scheduled_date}-${wave.start_time}`
                     if (groupedMap.has(key)) {
                         const slot = groupedMap.get(key)!
