@@ -14,49 +14,22 @@ export default function AdminPlanningPage() {
 
     useEffect(() => {
         const fetchPlanning = async () => {
-            const supabase = createClient()
-            
-            // Check Admin
-            const { data: { user } } = await supabase.auth.getUser()
-            
-            // Allow access if email matches OR if in dev mode (localhost)
-            const isDev = window.location.hostname === 'localhost'
-            const isAdmin = user?.email === "mariustalk@yahoo.fr"
-            
-            if (!user || (!isAdmin && !isDev)) {
-                toast.error("Accès Refusé", { description: `Vous n'êtes pas administrateur (${user?.email})` })
-                // window.location.href = "/dashboard" // Disabled for debug
+            // Use internal API to bypass RLS issues on profiles table
+            try {
+                const res = await fetch('/api/admin/get-planning')
+                const json = await res.json()
+                
+                if (json.success) {
+                    setWaves(json.data)
+                } else {
+                    console.error("API Error:", json.error)
+                    toast.error("Erreur chargement planning")
+                }
+            } catch (e) {
+                console.error("Fetch Error:", e)
+            } finally {
                 setLoading(false)
-                return
             }
-
-            const today = new Date().toISOString().split('T')[0]
-            
-            // Fetch waves for next 7 days with profile info
-            const { data, error } = await supabase
-                .from('daily_waves')
-                .select(`
-                    *,
-                    profiles:creator_id (
-                        username,
-                        current_video_url,
-                        updated_at
-                    )
-                `)
-                //.gte('scheduled_date', today) // Commented out for debug
-                .order('scheduled_date', { ascending: true })
-                .order('start_time', { ascending: true })
-
-            if (error) {
-                console.error("Supabase Error:", error)
-                toast.error(`Erreur DB: ${error.message}`)
-            }
-
-            if (data) {
-                console.log("Waves fetched:", data)
-                setWaves(data)
-            }
-            setLoading(false)
         }
         
         fetchPlanning()
