@@ -18,8 +18,15 @@ export default function AdminPlanningPage() {
             
             // Check Admin
             const { data: { user } } = await supabase.auth.getUser()
-            if (!user || user.email !== "mariustalk@yahoo.fr") {
-                window.location.href = "/dashboard"
+            
+            // Allow access if email matches OR if in dev mode (localhost)
+            const isDev = window.location.hostname === 'localhost'
+            const isAdmin = user?.email === "mariustalk@yahoo.fr"
+            
+            if (!user || (!isAdmin && !isDev)) {
+                toast.error("Accès Refusé", { description: `Vous n'êtes pas administrateur (${user?.email})` })
+                // window.location.href = "/dashboard" // Disabled for debug
+                setLoading(false)
                 return
             }
 

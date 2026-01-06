@@ -5,8 +5,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { LogOut } from "lucide-react"
+import { LogOut, Shield } from "lucide-react"
 import { useEffect, useState } from "react"
+import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
@@ -25,6 +26,8 @@ export default function SettingsPage() {
     avatar_url: ""
   })
 
+  const [isAdmin, setIsAdmin] = useState(false)
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -32,6 +35,11 @@ export default function SettingsPage() {
         if (!user) {
           router.push("/login")
           return
+        }
+        
+        // Check Admin
+        if (user.email === "mariustalk@yahoo.fr" || window.location.hostname === 'localhost') {
+            setIsAdmin(true)
         }
 
         const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single()
@@ -272,7 +280,33 @@ export default function SettingsPage() {
         </TabsContent>
       </Tabs>
       
-      <div className="pt-6 border-t">
+      <div className="pt-6 border-t space-y-4">
+         {isAdmin && (
+             <Card className="border-indigo-200 bg-indigo-50">
+                 <CardHeader>
+                     <CardTitle className="flex items-center gap-2 text-indigo-900">
+                         <Shield className="h-5 w-5" />
+                         Zone Admin
+                     </CardTitle>
+                     <CardDescription className="text-indigo-700">
+                         Accès réservé au commandement.
+                     </CardDescription>
+                 </CardHeader>
+                 <CardContent className="space-y-2">
+                     <Link href="/admin/planning">
+                         <Button variant="outline" className="w-full justify-start bg-white border-indigo-200 text-indigo-700 hover:bg-indigo-100">
+                             📅 Planning Stratégique (J+7)
+                         </Button>
+                     </Link>
+                     <Link href="/admin">
+                         <Button variant="outline" className="w-full justify-start bg-white border-indigo-200 text-indigo-700 hover:bg-indigo-100">
+                             🛠️ Panel Principal
+                         </Button>
+                     </Link>
+                 </CardContent>
+             </Card>
+         )}
+
          <Button variant="destructive" className="w-full sm:w-auto" onClick={handleSignOut}>
             <LogOut className="mr-2 h-4 w-4" />
             Se déconnecter
