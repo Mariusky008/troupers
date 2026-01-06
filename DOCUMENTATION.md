@@ -198,17 +198,25 @@ Le composant `MissionPlan` a été entièrement redessiné pour être plus immer
     *   🚀 **Viral (Rose/Rouge) :** "Impulsion Virale" (High Energy)
 *   **Copywriting Sécurisé :** Intégration stricte des consignes de sécurité (Ghost Viewing, Rewind, SEO Boost).
 
-### B. Variété des Actions & Algorithme Humain
-Les missions mercenaires ne se limitent plus au "Like". Le système génère désormais une variété d'ordres :
-*   **70% :** Like + Favori (Engagement standard)
-*   **20% :** Like + Commentaire (Engagement fort)
-*   **10% :** Like + Partage (Viralité)
+### B. Variété des Actions & Algorithme Humain (V2.4)
+Le moteur Troupers optimise la sécurité en séparant la distribution des missions et la durée d'exécution.
 
-**Amélioration "Ghost Viewing" (20%) :**
-L'ordre de "NE RIEN FAIRE" (Abandon) n'est plus lié uniquement à la mission, mais au couple **(Mission + Utilisateur)**.
-*   *Avant :* La Mission #5 demandait à TOUT LE MONDE d'abandonner (Pattern détectable).
-*   *Maintenant :* Sur la Mission #5, l'utilisateur A devra abandonner, mais l'utilisateur B devra liker.
-*   **Résultat :** Le comportement devient 100% organique et imprévisible pour l'algorithme TikTok.
+#### 1. Répartition des Missions (Qui fait quoi ?)
+*   **40% Watch Only (Nouveau) :** Environ 4 membres sur 10 recevront l'ordre de ne PAS liker. C'est essentiel pour le réalisme.
+*   **60% Engagement Actif :**
+    *   Like + Favori (Majorité)
+    *   Like + Commentaire (10-12%)
+    *   Like + Partage (5-8%)
+
+#### 2. Durée de Visionnage Variable (Combien de temps ?)
+Pour la mission "Watch Only", la durée n'est pas fixe.
+*   Chaque membre reçoit une consigne de durée personnalisée entre **60% et 95%** de la vidéo.
+*   *Exemple :* Sur une vidéo de 20s, un membre devra regarder 12s (60%), un autre 19s (95%).
+*   Cela évite le pattern robotique "Tout le monde quitte à la seconde 15".
+
+**Amélioration "Ghost Viewing" :**
+L'ordre "Watch Only" est calculé sur le couple **(Mission + Utilisateur)**.
+Cela signifie que pour une même vidéo, certains membres devront liker, et d'autres devront juste regarder, créant un mélange organique parfait.
 
 ### C. Stabilisation Technique
 *   **Correction API Bounties :** Résolution des erreurs 500 liées à des colonnes manquantes (`type`) et ajout d'une gestion d'erreur robuste.

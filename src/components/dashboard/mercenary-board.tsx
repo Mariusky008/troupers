@@ -562,14 +562,16 @@ export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => vo
                       (parseInt(selectedBounty.id.toString().slice(-2)) || 0) % 10 < 9 ? 'comment' : 'share'
                   )} 
                   scenario={
-                      // 20% Abandon / 80% Engagement
-                      // NEW V2.3 LOGIC: (MissionID + UserID) % 5 == 0
-                      // Ensures that "No-Action" is distributed among users, not just missions.
-                      // For a given mission, User A might abandon while User B engages.
+                      // NEW V2.4: 40% Watch Only
+                      // ((ID + UserID) % 10) < 4 -> Watch Only (0, 1, 2, 3)
                       ((parseInt(selectedBounty.id.toString().slice(-2)) || 0) + 
-                       (parseInt((user?.id || "0").slice(-2), 16) || 0)) % 5 === 0 
-                        ? 'abandon' 
+                       (parseInt((user?.id || "0").slice(-2), 16) || 0)) % 10 < 4
+                        ? 'watch_only' 
                         : 'engagement'
+                  }
+                  watchDuration={
+                      // Duration between 60% and 95%
+                      60 + ((parseInt(selectedBounty.id) || 0) % 36)
                   }
                   delayMinutes={(parseInt(selectedBounty.id.toString().slice(-2)) || Date.parse(selectedBounty.created_at)) % 20}
                   trafficSource={

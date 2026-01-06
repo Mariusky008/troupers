@@ -11,6 +11,7 @@ interface MissionPlanProps {
   targetUsername?: string
   shouldFollow?: boolean
   missionId?: string | number // Optional ID for randomization
+  watchDuration?: number // 60-95%
 }
 
 const THEMES = [
@@ -46,7 +47,7 @@ const THEMES = [
     }
 ]
 
-export function MissionPlan({ type, scenario = 'engagement', delayMinutes = 0, trafficSource = 'search', targetUsername = "le créateur", shouldFollow = false, missionId }: MissionPlanProps) {
+export function MissionPlan({ type, scenario = 'engagement', delayMinutes = 0, trafficSource = 'search', targetUsername = "le créateur", shouldFollow = false, missionId, watchDuration = 75 }: MissionPlanProps) {
   
   // Deterministic theme selection based on missionId
   const seed = missionId ? (typeof missionId === 'string' ? parseInt(missionId) || missionId.length : missionId) : 0
@@ -173,7 +174,7 @@ export function MissionPlan({ type, scenario = 'engagement', delayMinutes = 0, t
                           <Badge variant="secondary" className="text-[10px] h-5 bg-indigo-50 text-indigo-600 border-indigo-100">Rétention</Badge>
                       </h4>
                       <p className="text-sm text-slate-700">
-                          Regarde la vidéo <strong>jusqu’au bout</strong>.
+                          Regarde <strong>{watchDuration}%</strong> de la vidéo.
                       </p>
                       <div className="flex items-start gap-2 bg-indigo-50/50 p-2 rounded border border-indigo-100/50">
                           <RotateCcw className="w-4 h-4 text-indigo-500 mt-0.5" />
@@ -182,7 +183,7 @@ export function MissionPlan({ type, scenario = 'engagement', delayMinutes = 0, t
                           </div>
                       </div>
                       <p className="text-xs text-slate-400 italic mt-1">
-                          Pourquoi ? Cela crée un taux de complétion &gt; 100%. Signal n°1 de viralité.
+                          Cela correspond à {watchDuration}% de rétention, un signal fort pour l'algorithme.
                       </p>
                   </div>
               </div>
@@ -202,24 +203,26 @@ export function MissionPlan({ type, scenario = 'engagement', delayMinutes = 0, t
                       
                       {/* Scenario Display */}
                       <div className="grid grid-cols-2 gap-2">
-                          <div className={`p-2 rounded border text-xs ${scenario !== 'abandon' ? 'bg-purple-100 border-purple-300 ring-1 ring-purple-400' : 'bg-slate-50 border-slate-200 opacity-50'}`}>
-                              <p className="font-bold text-purple-900 mb-1">Option A (80%)</p>
+                          <div className={`p-2 rounded border text-xs ${scenario === 'engagement' ? 'bg-purple-100 border-purple-300 ring-1 ring-purple-400' : 'bg-slate-50 border-slate-200 opacity-50'}`}>
+                              <p className="font-bold text-purple-900 mb-1">Option A (Engagement)</p>
                               <p className="text-purple-700">
                                   {type === 'comment' ? 'Like + Commentaire' : 
                                    type === 'share' ? 'Like + Partage' : 
                                    'Like + Favori'}
                               </p>
-                              {scenario !== 'abandon' && <Badge className="mt-2 bg-purple-600 hover:bg-purple-700">TON ORDRE</Badge>}
+                              {scenario === 'engagement' && <Badge className="mt-2 bg-purple-600 hover:bg-purple-700">TON ORDRE</Badge>}
                           </div>
-                          <div className={`p-2 rounded border text-xs ${scenario === 'abandon' ? 'bg-slate-100 border-slate-300 ring-1 ring-slate-400' : 'bg-slate-50 border-slate-200 opacity-50'}`}>
-                              <p className="font-bold text-slate-700 mb-1">Option B (20%)</p>
-                              <p className="text-slate-600">Ne fais RIEN</p>
-                              {scenario === 'abandon' && <Badge variant="secondary" className="mt-2 bg-slate-600 text-white hover:bg-slate-700">TON ORDRE</Badge>}
+                          <div className={`p-2 rounded border text-xs ${scenario === 'watch_only' ? 'bg-slate-100 border-slate-300 ring-1 ring-slate-400' : 'bg-slate-50 border-slate-200 opacity-50'}`}>
+                              <p className="font-bold text-slate-700 mb-1">Option B (Watch Only)</p>
+                              <p className="text-slate-600">Visionnage Seul (Pas de Like)</p>
+                              {scenario === 'watch_only' && <Badge variant="secondary" className="mt-2 bg-slate-600 text-white hover:bg-slate-700">TON ORDRE</Badge>}
                           </div>
                       </div>
 
                       <div className="text-xs text-slate-500 bg-slate-50 p-2 rounded border border-slate-100">
-                         <strong>Pourquoi ?</strong> Une vidéo avec 100% de likes/vues est suspecte. Le "Ghost Viewing" (Option B) rend le boost réel aux yeux de l'algo.
+                         <strong>Pourquoi ?</strong> {scenario === 'watch_only' ? 
+                            "Un ratio de 100% de likes est suspect. Le 'Watch Only' crédibilise ton profil." : 
+                            "Cette action précise a été sélectionnée pour diversifier tes interactions."}
                       </div>
                   </div>
               </div>
