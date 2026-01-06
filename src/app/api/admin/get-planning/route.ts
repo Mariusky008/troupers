@@ -11,25 +11,35 @@ export async function GET(request: Request) {
     try {
         const today = new Date().toISOString().split('T')[0]
         
-        // Fetch waves for next 7 days with profile info
-        // Using Service Role allows us to read ALL profiles
-        const { data, error } = await supabaseAdmin
+        // 1. Fetch waves
+        const { data: waves, error: wavesError } = await supabaseAdmin
             .from('daily_waves')
-            .select(`
-                *,
-                profiles:creator_id (
-                    username,
-                    current_video_url,
-                    updated_at
-                )
-            `)
+            .select('*')
             .gte('scheduled_date', today)
             .order('scheduled_date', { ascending: true })
             .order('start_time', { ascending: true })
 
-        if (error) throw error
+        if (wavesError) throw wavesError
+        if (!waves || waves.length === 0) return NextResponse.json({ success: true, data: [] })
 
-        return NextResponse.json({ success: true, data })
+        // 2. Fetch profiles for these waves
+        const userIds = [...new Set(waves.map(w => w.creator_id))]
+        const { data: profiles, error: profilesError } = await supabaseAdmin
+            .from('profiles')
+            .select('id, username, current_video_url, updated_at')
+            .in('id', userIds)
+        
+        if (profilesError) throw profilesError
+
+        // 3. Merge data manually
+        const profileMap = new Map(profiles?.map(p => [p.id, p]))
+        
+        const enrichedWaves = waves.map(wave => ({
+            ...wave,
+            profiles: profileMap.get(wave.creator_id) || { username: 'Inconnu', current_video_url: null }
+        }))
+
+        return NextResponse.json({ success: true, data: enrichedWaves })
 
     } catch (e: any) {
         return NextResponse.json({ success: false, error: e.message }, { status: 500 })
