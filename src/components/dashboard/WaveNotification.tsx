@@ -8,8 +8,14 @@ import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 
 export function WaveNotification({ userId }: { userId: string }) {
+    // 1. ALL Hooks must be at the top level
     const [nextWave, setNextWave] = useState<any>(null)
     const [loading, setLoading] = useState(true)
+    
+    // State for video submission (Moved up to fix React Error #310)
+    const [videoLink, setVideoLink] = useState("")
+    const [submitting, setSubmitting] = useState(false)
+    const [isSubmitted, setIsSubmitted] = useState(false)
 
     useEffect(() => {
         const fetchWave = async () => {
@@ -35,6 +41,7 @@ export function WaveNotification({ userId }: { userId: string }) {
         fetchWave()
     }, [userId])
 
+    // 2. Conditional Return AFTER hooks
     if (loading || !nextWave) return null
 
     // Calculate dates
@@ -60,11 +67,6 @@ export function WaveNotification({ userId }: { userId: string }) {
             return "--:--"
         }
     }
-
-    // State for video submission
-    const [videoLink, setVideoLink] = useState("")
-    const [submitting, setSubmitting] = useState(false)
-    const [isSubmitted, setIsSubmitted] = useState(false)
 
     // Handle Submission
     const handleSubmitVideo = async () => {
