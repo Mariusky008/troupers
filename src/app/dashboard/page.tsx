@@ -16,8 +16,13 @@ import { createClient } from "@/lib/supabase/client"
 import { WelcomePopup } from "@/components/welcome-popup"
 import { MercenaryBoard } from "@/components/dashboard/mercenary-board"
 import { MissionPlan } from "@/components/dashboard/MissionPlan"
+import dynamic from "next/dynamic"
 
-import { WaveNotification } from "@/components/dashboard/WaveNotification"
+// Dynamic import to prevent hydration mismatch on dates
+const WaveNotification = dynamic(
+  () => import("@/components/dashboard/WaveNotification").then(mod => mod.WaveNotification),
+  { ssr: false }
+)
 
 // Helper for deterministic shuffling based on date + userId
 function getDailySeed(userId: string) {
