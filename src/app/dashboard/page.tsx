@@ -107,6 +107,11 @@ export default function DashboardPage() {
 
   // Load from session storage on mount with DATE CHECK
   useEffect(() => {
+    // DEBUG: Always clear cache on reload to ensure full flow testing
+    sessionStorage.removeItem('viewedVideos')
+    setViewedVideos(new Set())
+    
+    /* RESTORE THIS FOR PRODUCTION
     const todayStr = new Date().toISOString().split('T')[0]
     const stored = sessionStorage.getItem('viewedVideos')
     
@@ -129,6 +134,7 @@ export default function DashboardPage() {
           sessionStorage.removeItem('viewedVideos')
       }
     }
+    */
   }, [])
 
   const [stats, setStats] = useState({
