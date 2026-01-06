@@ -554,21 +554,23 @@ export function MercenaryBoard({ onCreditsEarned }: { onCreditsEarned?: () => vo
                </div>
 
                <MissionPlan 
+                  missionId={selectedBounty.id} // Added for theme variation
                   type={selectedBounty.type || (
                       // Deterministic Type Generation based on ID
-                      (parseInt(selectedBounty.id) || 0) % 10 < 7 ? 'like' : 
-                      (parseInt(selectedBounty.id) || 0) % 10 < 9 ? 'comment' : 'share'
+                      // Use simpler modulo to ensure distribution even with sequential IDs
+                      (parseInt(selectedBounty.id.toString().slice(-2)) || 0) % 10 < 7 ? 'like' : 
+                      (parseInt(selectedBounty.id.toString().slice(-2)) || 0) % 10 < 9 ? 'comment' : 'share'
                   )} 
                   scenario={
                       // 20% Abandon / 80% Engagement (Matches Doc)
-                      (parseInt(selectedBounty.id) || Date.parse(selectedBounty.created_at)) % 5 === 0 
+                      (parseInt(selectedBounty.id.toString().slice(-2)) || Date.parse(selectedBounty.created_at)) % 5 === 0 
                         ? 'abandon' 
                         : 'engagement'
                   }
-                  delayMinutes={(parseInt(selectedBounty.id) || Date.parse(selectedBounty.created_at)) % 20}
+                  delayMinutes={(parseInt(selectedBounty.id.toString().slice(-2)) || Date.parse(selectedBounty.created_at)) % 20}
                   trafficSource={
                       // 50% Search, 30% Profile, 20% Direct
-                      (parseInt(selectedBounty.id) || 0) % 2 === 0 ? 'search' : ((parseInt(selectedBounty.id) || 0) % 3 === 0 ? 'profile' : 'direct')
+                      (parseInt(selectedBounty.id.toString().slice(-2)) || 0) % 2 === 0 ? 'search' : ((parseInt(selectedBounty.id.toString().slice(-2)) || 0) % 3 === 0 ? 'profile' : 'direct')
                   }
                   targetUsername={selectedBounty.target?.username || "inconnu"}
                />
