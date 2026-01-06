@@ -10,25 +10,64 @@ interface MissionPlanProps {
   trafficSource?: 'search' | 'profile' | 'direct'
   targetUsername?: string
   shouldFollow?: boolean
+  missionId?: string | number // Optional ID for randomization
 }
 
-export function MissionPlan({ type, scenario = 'engagement', delayMinutes = 0, trafficSource = 'search', targetUsername = "le créateur", shouldFollow = false }: MissionPlanProps) {
+const THEMES = [
+    {
+        name: 'tactical',
+        headerBg: 'bg-slate-900',
+        headerText: 'text-indigo-100',
+        badge: 'v2.2 (Indétectable)',
+        badgeStyle: 'text-indigo-200 border-indigo-500/50 bg-indigo-500/10',
+        icon: '🛡️',
+        title: 'Mission Optimisée',
+        highlightColor: 'indigo'
+    },
+    {
+        name: 'stealth',
+        headerBg: 'bg-zinc-900',
+        headerText: 'text-emerald-100',
+        badge: 'Protocole Fantôme',
+        badgeStyle: 'text-emerald-200 border-emerald-500/50 bg-emerald-500/10',
+        icon: '👻',
+        title: 'Opération Furtive',
+        highlightColor: 'emerald'
+    },
+    {
+        name: 'viral',
+        headerBg: 'bg-rose-950',
+        headerText: 'text-rose-100',
+        badge: 'Boost Algorithmique',
+        badgeStyle: 'text-rose-200 border-rose-500/50 bg-rose-500/10',
+        icon: '🚀',
+        title: 'Impulsion Virale',
+        highlightColor: 'rose'
+    }
+]
+
+export function MissionPlan({ type, scenario = 'engagement', delayMinutes = 0, trafficSource = 'search', targetUsername = "le créateur", shouldFollow = false, missionId }: MissionPlanProps) {
+  
+  // Deterministic theme selection based on missionId
+  const seed = missionId ? (typeof missionId === 'string' ? parseInt(missionId) || missionId.length : missionId) : 0
+  const theme = THEMES[seed % THEMES.length]
+  
   return (
     <div className="space-y-6 font-sans">
       {/* HEADER: Mission Title & Target */}
-      <div className="bg-slate-900 text-white p-4 rounded-xl shadow-lg border border-slate-700">
+      <div className={`${theme.headerBg} text-white p-4 rounded-xl shadow-lg border border-slate-700 transition-colors duration-500`}>
           <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                  <span className="text-xl">🛡️</span>
-                  <h3 className="font-bold text-lg tracking-tight text-indigo-100">Mission Optimisée</h3>
+                  <span className="text-xl">{theme.icon}</span>
+                  <h3 className={`font-bold text-lg tracking-tight ${theme.headerText}`}>{theme.title}</h3>
               </div>
-              <Badge variant="outline" className="text-indigo-200 border-indigo-500/50 bg-indigo-500/10 text-[10px] px-2 py-0.5">
-                  v2.2 (Indétectable)
+              <Badge variant="outline" className={`${theme.badgeStyle} text-[10px] px-2 py-0.5`}>
+                  {theme.badge}
               </Badge>
           </div>
           <div className="flex items-center justify-between bg-slate-800/50 rounded-lg p-3 border border-slate-700/50">
               <div className="flex items-center gap-2">
-                  <div className="h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-sm">
+                  <div className={`h-8 w-8 rounded-full bg-${theme.highlightColor}-600 flex items-center justify-center font-bold text-sm`}>
                      {targetUsername.charAt(0).toUpperCase()}
                   </div>
                   <div>
@@ -39,7 +78,7 @@ export function MissionPlan({ type, scenario = 'engagement', delayMinutes = 0, t
               {/* Fake progression for design - or use props if available later */}
               <div className="text-right">
                   <p className="text-xs text-slate-500 font-mono">Progression</p>
-                  <p className="text-sm font-mono text-indigo-400 font-bold">1 / 10</p>
+                  <p className={`text-sm font-mono text-${theme.highlightColor}-400 font-bold`}>1 / 10</p>
               </div>
           </div>
       </div>
