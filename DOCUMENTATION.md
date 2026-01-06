@@ -244,3 +244,10 @@ Les membres sélectionnés ("Élus du jour") reçoivent une alerte 48h à l'avan
 *   **Table `daily_waves` :** Stocke le planning (Qui passe ? Quand ? Quel type ?).
 *   **Moteur de Priorité :** Remplace l'aléatoire complet par une file d'attente intelligente (Queue Priority) pour garantir que tout le monde passe à son tour.
 *   **Fallback V2 :** Si aucune vague n'est planifiée, le système revient automatiquement au mode aléatoire V2 pour ne jamais bloquer l'application.
+
+### D. Verrouillage Tactique (V3.1)
+Pour garantir la synchronisation parfaite lors d'une vague :
+*   Les missions liées à une vague sont visibles sur le Dashboard mais **VERROUILLÉES (🔒)** le matin.
+*   Elles ne se débloquent qu'à l'heure de publication prévue (45 min avant le début de la vague).
+*   **Avantage :** Empêche les soldats de chercher une vidéo qui n'existe pas encore.
+*   **Alternative :** Les membres voulant agir le matin peuvent toujours réaliser les missions "Mercenaires" ou "Bruit" non verrouillées.
