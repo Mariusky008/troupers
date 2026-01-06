@@ -116,6 +116,10 @@ export function WaveNotification({ userId }: { userId: string }) {
                             <p className="text-xs text-red-500 font-bold mt-2">
                                 (30 à 45 min avant la vague)
                             </p>
+                            
+                            <div className="mt-3 bg-red-50 border border-red-100 p-2 rounded text-[10px] text-red-700 leading-tight">
+                                <strong>⚠️ Attention :</strong> Si tu ne respectes pas ce créneau ou si tu ne publies pas, ta vague sera annulée et tu seras replacé en fin de file d'attente (pénalité de 7 à 10 jours).
+                            </div>
                         </div>
                         
                         <Button className="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 font-bold">
