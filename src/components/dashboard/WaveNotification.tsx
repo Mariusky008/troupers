@@ -163,19 +163,9 @@ export function WaveNotification({ userId }: { userId: string }) {
                 <div>
                     <h3 className="font-black text-amber-900 text-lg uppercase tracking-tight flex items-center gap-2">
                         Vague imminente détectée
-                        <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger>
-                                    <Info className="h-4 w-4 text-amber-600 cursor-help" />
-                                </TooltipTrigger>
-                                <TooltipContent className="max-w-xs bg-slate-900 text-slate-100 border-slate-800">
-                                    <p>Tu as été sélectionné par l'algorithme. Pendant 2 heures, toute l'escouade va converger vers ta vidéo pour maximiser ton impact sur TikTok.</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
                     </h3>
-                    <p className="text-amber-700 text-xs font-bold">
-                        ORDRE DE MISSION PRIORITAIRE
+                    <p className="text-amber-800 text-xs font-medium mt-1 leading-snug max-w-[500px]">
+                        Tu as été sélectionné par l'algorithme. Pendant 2 heures, toute l'escouade va converger vers ta vidéo pour maximiser ton impact sur TikTok.
                     </p>
                 </div>
             </div>
