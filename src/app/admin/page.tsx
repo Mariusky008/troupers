@@ -31,25 +31,42 @@ export default function AdminPage() {
   const [buddyPairs, setBuddyPairs] = useState<any[]>([])
 
   useEffect(() => {
-    const checkAdmin = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      
-      if (!user) {
-        router.push("/login")
-        return
-      }
-
-      // Hardcoded admin check as requested
-      if (user.email !== "mariustalk@yahoo.fr") {
+    // Safety timeout to prevent infinite loading
+    const safetyTimer = setTimeout(() => {
         setLoading(false)
-        return // Not admin
-      }
+    }, 5000)
 
-      setIsAdmin(true)
-      fetchData()
+    const checkAdmin = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        
+        if (!user) {
+          router.push("/login")
+          return
+        }
+
+        // Allow access if email matches OR if in dev mode (localhost)
+        const isDev = window.location.hostname === 'localhost'
+        const isAdminUser = user.email === "mariustalk@yahoo.fr"
+
+        if (!isAdminUser && !isDev) {
+          setLoading(false)
+          return // Not admin
+        }
+
+        setIsAdmin(true)
+        await fetchData()
+      } catch (e) {
+        console.error("Admin check failed", e)
+      } finally {
+        setLoading(false)
+        clearTimeout(safetyTimer)
+      }
     }
 
     checkAdmin()
+    
+    return () => clearTimeout(safetyTimer)
   }, [])
 
   const fetchData = async () => {
@@ -313,7 +330,7 @@ export default function AdminPage() {
         <div className="flex items-center gap-4">
           <GlitchLogo width={64} height={64} className="rounded-xl shadow-sm" imageClassName="rounded-xl" />
           <div>
-            <h1 className="text-3xl font-bold">Administration Troupers</h1>
+            <h1 className="text-3xl font-bold">Administration Troupers <span className="text-sm bg-indigo-100 text-indigo-700 px-2 py-1 rounded ml-2">v3.1</span></h1>
             <p className="text-muted-foreground">Suivi des performances des recrues</p>
           </div>
         </div>
@@ -321,6 +338,11 @@ export default function AdminPage() {
           <Button variant="outline" asChild>
             <Link href="/admin/pre-registrations">
               Voir les Pré-inscriptions
+            </Link>
+          </Button>
+          <Button variant="default" className="bg-indigo-600 hover:bg-indigo-700" asChild>
+            <Link href="/admin/planning">
+              📅 Planning Stratégique (V3)
             </Link>
           </Button>
           <div className="rounded-full bg-primary/10 px-4 py-2 text-primary font-mono text-sm">
