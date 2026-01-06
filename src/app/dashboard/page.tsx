@@ -1035,12 +1035,9 @@ export default function DashboardPage() {
               </div>
            </div>
 
-           {/* ALERTS / NOTIFICATIONS */}
-           <MercenaryBoard onCreditsEarned={handleCreditsEarned} />
-           
            {/* DISCIPLINE WARNING */}
            {disciplineScore < 50 && (
-             <div className="rounded-xl border border-red-200 bg-red-50 p-6 flex flex-col items-center text-center gap-3 shadow-sm animate-pulse-slow">
+             <div className="mt-6 rounded-xl border border-red-200 bg-red-50 p-6 flex flex-col items-center text-center gap-3 shadow-sm animate-pulse-slow">
                 <div className="h-12 w-12 rounded-full bg-red-100 flex items-center justify-center">
                    <AlertTriangle className="h-6 w-6 text-red-600" />
                 </div>
@@ -1305,6 +1302,11 @@ export default function DashboardPage() {
                  </div>
               </div>
            </div>
+           
+           {/* MERCENARY PROTOCOL (BONUS MISSIONS) */}
+           <div className="mt-8">
+               <MercenaryBoard onCreditsEarned={handleCreditsEarned} />
+           </div>
         </div>
 
         {/* === RIGHT COLUMN (SIDEBAR) === */}
@@ -1319,36 +1321,6 @@ export default function DashboardPage() {
                  <h3 className="font-bold text-slate-900">Mes Liens</h3>
               </div>
               <div className="p-4 space-y-6">
-                 {/* VIDEO INPUT */}
-                 <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                       <label className="text-xs font-bold uppercase text-slate-500">Ma Vidéo du Jour</label>
-                       {!isEditingVideo && (
-                          <button onClick={() => setIsEditingVideo(true)} className="text-xs text-indigo-600 hover:underline font-medium">Modifier</button>
-                       )}
-                    </div>
-                    {isEditingVideo ? (
-                       <div className="flex gap-2">
-                          <input 
-                             type="url" 
-                             className="flex-1 h-9 rounded-md border px-3 text-sm"
-                             placeholder="https://tiktok.com/..."
-                             value={myVideoUrl}
-                             onChange={(e) => setMyVideoUrl(e.target.value)}
-                             autoFocus
-                          />
-                          <Button size="sm" onClick={handleUpdateVideo}>OK</Button>
-                       </div>
-                    ) : (
-                       <div className="flex items-center gap-2 p-2 rounded-md bg-slate-50 border border-slate-100">
-                          {myVideoUrl ? <CheckCircle className="h-4 w-4 text-green-500" /> : <AlertCircle className="h-4 w-4 text-red-500" />}
-                          <span className={`text-sm truncate ${!myVideoUrl && 'text-red-500 font-medium'}`}>
-                             {myVideoUrl || "Lien manquant !"}
-                          </span>
-                       </div>
-                    )}
-                 </div>
-
                  {/* PROFILE INPUT */}
                  <div className="space-y-2">
                     <div className="flex items-center justify-between">
