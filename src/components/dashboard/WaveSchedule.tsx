@@ -40,16 +40,21 @@ export function WaveSchedule({ squadId }: { squadId: string | null }) {
                 .order('start_time', { ascending: true })
 
             if (waves) {
-                // Group by Date + StartTime
+                // Group by Date ONLY (Aggregate start/end times)
                 const groupedMap = new Map<string, WaveSlot>()
 
                 waves.forEach((wave: any) => {
-                    const key = `${wave.scheduled_date}-${wave.start_time}`
-                    if (groupedMap.has(key)) {
-                        const slot = groupedMap.get(key)!
+                    const dateKey = wave.scheduled_date
+                    
+                    if (groupedMap.has(dateKey)) {
+                        const slot = groupedMap.get(dateKey)!
                         slot.missionCount += 1
+                        // Update start time if earlier
+                        if (wave.start_time < slot.startTime) slot.startTime = wave.start_time
+                        // Update end time if later
+                        if (wave.end_time > slot.endTime) slot.endTime = wave.end_time
                     } else {
-                        groupedMap.set(key, {
+                        groupedMap.set(dateKey, {
                             date: wave.scheduled_date,
                             startTime: wave.start_time,
                             endTime: wave.end_time,
