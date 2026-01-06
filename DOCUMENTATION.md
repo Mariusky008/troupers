@@ -185,3 +185,27 @@ Les instructions des missions ont été réécrites pour être moins "robotiques
 *   **Wording :** "Camouflage Anti-Bot" remplacé par "Navigation Naturelle".
 *   **Suppression des % visibles :** Les pourcentages précis (ex: "Engagement 85%") sont masqués pour l'utilisateur final afin de réduire la charge mentale.
 
+---
+
+## 11. Mise à jour V2.3 (Janvier 2026) - Mercenaire & Design Tactique
+
+### A. Refonte de la Fiche Mission (Tactical Card)
+Le composant `MissionPlan` a été entièrement redessiné pour être plus immersif et réduire la lassitude des utilisateurs.
+*   **Design :** Adoption d'un style "Carte Tactique" structurée par étapes claires (0 à 4).
+*   **Thèmes Dynamiques :** Pour briser la monotonie, chaque mission adopte aléatoirement (basé sur son ID) un thème visuel différent :
+    *   🛡️ **Tactique (Indigo) :** "Mission Optimisée" (Standard)
+    *   👻 **Furtif (Émeraude/Gris) :** "Opération Furtive" (Low Profile)
+    *   🚀 **Viral (Rose/Rouge) :** "Impulsion Virale" (High Energy)
+*   **Copywriting Sécurisé :** Intégration stricte des consignes de sécurité (Ghost Viewing, Rewind, SEO Boost).
+
+### B. Variété des Actions
+Les missions mercenaires ne se limitent plus au "Like". Le système génère désormais une variété d'ordres :
+*   **70% :** Like + Favori (Engagement standard)
+*   **20% :** Like + Commentaire (Engagement fort)
+*   **10% :** Like + Partage (Viralité)
+*   **Scénario d'Abandon (20%) :** Une mission sur 5 demande explicitement de NE RIEN FAIRE (Ghost Viewing) pour crédibiliser le compte aux yeux de TikTok.
+
+### C. Stabilisation Technique
+*   **Correction API Bounties :** Résolution des erreurs 500 liées à des colonnes manquantes (`type`) et ajout d'une gestion d'erreur robuste.
+*   **Simulation Admin :** Le bouton "(Admin) Simuler Alerte" est désormais fiable, avec un fallback local si le Cron ne renvoie rien, permettant de tester l'interface à tout moment.
+*   **Affichage :** Augmentation du nombre de missions visibles simultanément de 2 à 4 pour une meilleure ergonomie.
