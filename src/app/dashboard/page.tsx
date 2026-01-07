@@ -1185,6 +1185,21 @@ export default function DashboardPage() {
                         </div>
                     ) : activeTask ? (
                         // ACTIVE TASK
+                        activeTask.isLocked ? (
+                            // LOCKED STATE
+                            <div className="flex flex-col items-center justify-center py-16 px-4 text-center space-y-4 animate-in fade-in">
+                                <div className="h-16 w-16 rounded-full bg-slate-100 flex items-center justify-center mb-2">
+                                    <Lock className="h-8 w-8 text-slate-400" />
+                                </div>
+                                <h3 className="text-xl font-black text-slate-900">MISSION VERROUILLÉE</h3>
+                                <p className="text-slate-500 max-w-xs mx-auto font-medium">
+                                    {activeTask.text}
+                                </p>
+                                <div className="text-xs text-slate-400 bg-slate-50 px-3 py-1 rounded-full border border-slate-100">
+                                    En attente de publication de la cible
+                                </div>
+                            </div>
+                        ) : (
                         <div className="space-y-6">
                            <MissionPlan 
                               type={activeTask.type}
@@ -1245,6 +1260,7 @@ export default function DashboardPage() {
                               )}
                            </div>
                         </div>
+                        )
                     ) : (
                         <div className="py-12 text-center text-slate-400">Chargement de la mission...</div>
                     )}
