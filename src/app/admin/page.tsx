@@ -84,7 +84,13 @@ export default function AdminPage() {
 
       setUsers(profiles || [])
 
-      // Fetch Reports & Inbox
+      // Fetch Admin Messages
+      const { data: adminMsgs } = await supabase
+        .from('admin_messages')
+        .select(`*, user:user_id(email)`)
+        .order('created_at', { ascending: false })
+      
+      // Fetch Reports
       const { data: reportsData } = await supabase
         .from('reports')
         .select(`
@@ -109,12 +115,29 @@ export default function AdminPage() {
               !r.target_username?.startsWith("CONTACT_ADMIN:")
           )
           
-          setInboxMessages(messages)
+          // Normalize admin messages to match report structure for display
+          const normalizedAdminMsgs = (adminMsgs || []).map((m: any) => ({
+              id: m.id,
+              created_at: m.created_at,
+              reporter: m.user,
+              target_username: "CONTACT_ADMIN: " + m.content,
+              status: m.status === 'read' ? 'resolved' : 'pending' // Map 'read' to 'resolved'
+          }))
+
+          setInboxMessages([...normalizedAdminMsgs, ...messages])
           setReports(realReports)
        } else {
-         setReports([])
-         setInboxMessages([])
-      }
+          // Even if no reports, we might have admin messages
+          const normalizedAdminMsgs = (adminMsgs || []).map((m: any) => ({
+              id: m.id,
+              created_at: m.created_at,
+              reporter: m.user,
+              target_username: "CONTACT_ADMIN: " + m.content,
+              status: m.status === 'read' ? 'resolved' : 'pending'
+          }))
+          setInboxMessages(normalizedAdminMsgs)
+          setReports([])
+       }
 
       // Fetch Boost Windows
       const { data: boostData } = await supabase

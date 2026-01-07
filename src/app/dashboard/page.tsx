@@ -840,8 +840,23 @@ export default function DashboardPage() {
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) return
 
-        // Insert into reports table as a fallback (since admin_messages might not exist yet)
-        // We use a special target_username to distinguish it
+        // 1. Try inserting into dedicated admin_messages table
+        const { error: msgError } = await supabase.from('admin_messages').insert({
+            user_id: user.id,
+            subject: "Contact Dashboard",
+            content: contactMessage
+        })
+
+        if (!msgError) {
+            toast.success("Message envoyé au QG", { description: "L'administrateur vous répondra bientôt." })
+            setContactMessage("")
+            setIsContactOpen(false)
+            return
+        }
+
+        // 2. Fallback: Insert into reports table if admin_messages table doesn't exist yet
+        console.warn("Fallback to reports table:", msgError)
+        
         const { error } = await supabase.from('reports').insert({
             reporter_id: user.id,
             target_user_id: user.id, // Self-report technically
