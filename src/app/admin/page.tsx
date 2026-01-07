@@ -94,14 +94,23 @@ export default function AdminPage() {
           if (reportsData || adminMsgs) {
              // Split into Discipline Reports and Contact Messages
              // Logic: If reporter == target, it's a contact message (Self-report) OR if username starts with CONTACT_ADMIN
+             // DEBUG LOG FOR FILTERING
+             console.log("Filtering Logic Check:", (reportsData || []).map((r: any) => ({
+                 id: r.id,
+                 reporter: r.reporter_id,
+                 target: r.target_user_id,
+                 username: r.target_username,
+                 isContact: r.reporter_id === r.target_user_id || r.target_username?.startsWith("CONTACT_ADMIN:")
+             })))
+
              const messages = (reportsData || []).filter((r: any) => 
                  r.reporter_id === r.target_user_id || 
-                 r.target_username?.startsWith("CONTACT_ADMIN:")
+                 r.target_username?.includes("ADMIN")
              )
              
+             // Show EVERYTHING else in reports tab to be safe
              const realReports = (reportsData || []).filter((r: any) => 
-                 r.reporter_id !== r.target_user_id && 
-                 !r.target_username?.startsWith("CONTACT_ADMIN:")
+                 !messages.includes(r)
              )
              
              // Normalize admin messages
