@@ -30,6 +30,8 @@ export default function AdminPage() {
 
   const [buddyPairs, setBuddyPairs] = useState<any[]>([])
 
+  const [inboxMessages, setInboxMessages] = useState<any[]>([])
+
   useEffect(() => {
     // Safety timeout to prevent infinite loading
     const safetyTimer = setTimeout(() => {
@@ -82,7 +84,7 @@ export default function AdminPage() {
 
       setUsers(profiles || [])
 
-      // Fetch Reports
+      // Fetch Reports & Inbox
       const { data: reportsData } = await supabase
         .from('reports')
         .select(`
@@ -92,7 +94,17 @@ export default function AdminPage() {
         `)
         .order('created_at', { ascending: false })
       
-      setReports(reportsData || [])
+      if (reportsData) {
+         // Split into Discipline Reports and Contact Messages
+         const messages = reportsData.filter((r: any) => r.target_username?.startsWith("CONTACT_ADMIN:"))
+         const realReports = reportsData.filter((r: any) => !r.target_username?.startsWith("CONTACT_ADMIN:"))
+         
+         setInboxMessages(messages)
+         setReports(realReports)
+      } else {
+         setReports([])
+         setInboxMessages([])
+      }
 
       // Fetch Boost Windows
       const { data: boostData } = await supabase
@@ -367,6 +379,15 @@ export default function AdminPage() {
               <Users className="h-4 w-4" />
               Parrainage
             </TabsTrigger>
+            <TabsTrigger value="inbox" className="flex items-center gap-2">
+              <Mail className="h-4 w-4" />
+              Inbox QG
+              {inboxMessages.filter(m => m.status !== 'resolved').length > 0 && (
+                <span className="bg-indigo-500 text-white text-[10px] px-1.5 rounded-full">
+                  {inboxMessages.filter(m => m.status !== 'resolved').length}
+                </span>
+              )}
+            </TabsTrigger>
             <TabsTrigger value="reports" className="flex items-center gap-2">
               Signalements
               {reports.filter(r => r.status !== 'resolved').length > 0 && (
@@ -376,6 +397,48 @@ export default function AdminPage() {
               )}
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="inbox">
+            {inboxMessages.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground">
+                <Mail className="h-12 w-12 mx-auto text-slate-300 mb-4" />
+                Boîte de réception vide.
+              </div>
+            ) : (
+              <div className="space-y-4">
+                  {inboxMessages.map((msg) => (
+                    <div key={msg.id} className={`p-4 rounded-xl border ${msg.status === 'resolved' ? 'bg-slate-50 border-slate-200' : 'bg-white border-indigo-200 shadow-sm'}`}>
+                        <div className="flex items-start justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                                <span className="font-bold text-slate-900">{msg.reporter?.email || "Utilisateur"}</span>
+                                <span className="text-xs text-slate-400">{new Date(msg.created_at).toLocaleString()}</span>
+                            </div>
+                            {msg.status === 'resolved' ? (
+                                <Badge variant="outline">Lu & Traité</Badge>
+                            ) : (
+                                <Badge className="bg-indigo-500">Nouveau</Badge>
+                            )}
+                        </div>
+                        <div className="bg-slate-50 p-3 rounded-lg text-sm text-slate-700 mb-4 whitespace-pre-wrap">
+                            {msg.target_username?.replace("CONTACT_ADMIN: ", "")}
+                        </div>
+                        <div className="flex justify-end gap-2">
+                            <Button size="sm" variant="outline" asChild>
+                                <a href={`mailto:${msg.reporter?.email}?subject=Réponse QG Troupers&body=Bonjour, suite à votre message...`}>
+                                    <Mail className="mr-2 h-4 w-4" /> Répondre
+                                </a>
+                            </Button>
+                            {msg.status !== 'resolved' && (
+                                <Button size="sm" variant="ghost" onClick={() => handleResolveReport(msg.id)}>
+                                    Marquer comme lu
+                                </Button>
+                            )}
+                        </div>
+                    </div>
+                  ))}
+              </div>
+            )}
+          </TabsContent>
 
           <TabsContent value="users">
             <Table>
