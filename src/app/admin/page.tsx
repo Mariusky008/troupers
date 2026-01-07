@@ -423,7 +423,7 @@ export default function AdminPage() {
           </TabsList>
 
           <TabsContent value="inbox">
-            <div className="mb-4">
+            <div className="mb-4 flex gap-2">
                 <Button 
                     variant="outline" 
                     size="sm" 
@@ -434,6 +434,20 @@ export default function AdminPage() {
                     }}
                 >
                     🐞 Debug: Voir Raw Data
+                </Button>
+                <Button 
+                    variant="destructive" 
+                    size="sm" 
+                    onClick={() => {
+                        // FORCE SHOW ALL REPORTS AS MESSAGES
+                        const allReports = [...inboxMessages, ...reports].map(r => ({
+                            ...r,
+                            target_username: "FORCE_SHOW: " + (r.target_username || "No content")
+                        }))
+                        setInboxMessages(allReports)
+                    }}
+                >
+                    🔓 Force: Tout Afficher
                 </Button>
             </div>
             {inboxMessages.length === 0 ? (
