@@ -94,14 +94,24 @@ export default function AdminPage() {
         `)
         .order('created_at', { ascending: false })
       
+      console.log("Raw Reports Data:", reportsData) // DEBUG LOG
+
       if (reportsData) {
-         // Split into Discipline Reports and Contact Messages
-         const messages = reportsData.filter((r: any) => r.target_username?.startsWith("CONTACT_ADMIN:"))
-         const realReports = reportsData.filter((r: any) => !r.target_username?.startsWith("CONTACT_ADMIN:"))
-         
-         setInboxMessages(messages)
-         setReports(realReports)
-      } else {
+          // Split into Discipline Reports and Contact Messages
+          // Logic: If reporter == target, it's a contact message (Self-report) OR if username starts with CONTACT_ADMIN
+          const messages = reportsData.filter((r: any) => 
+              r.reporter_id === r.target_user_id || 
+              r.target_username?.startsWith("CONTACT_ADMIN:")
+          )
+          
+          const realReports = reportsData.filter((r: any) => 
+              r.reporter_id !== r.target_user_id && 
+              !r.target_username?.startsWith("CONTACT_ADMIN:")
+          )
+          
+          setInboxMessages(messages)
+          setReports(realReports)
+       } else {
          setReports([])
          setInboxMessages([])
       }
