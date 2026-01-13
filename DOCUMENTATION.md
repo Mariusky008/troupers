@@ -2,7 +2,7 @@
 
 Ce document sert de référence complète pour comprendre le fonctionnement de l'application Troupers, ses fonctionnalités clés et son implémentation technique.
 
-*Dernière mise à jour : 03 Janvier 2026*
+*Dernière mise à jour : 07 Janvier 2026*
 
 ---
 
@@ -251,3 +251,76 @@ Pour garantir la synchronisation parfaite lors d'une vague :
 *   Elles ne se débloquent qu'à l'heure de publication prévue (45 min avant le début de la vague).
 *   **Avantage :** Empêche les soldats de chercher une vidéo qui n'existe pas encore.
 *   **Alternative :** Les membres voulant agir le matin peuvent toujours réaliser les missions "Mercenaires" ou "Bruit" non verrouillées.
+
+---
+
+## 13. Mise à jour V3.4 - Expérience de Combat & Stabilité (Janvier 2026)
+
+Mise à jour majeure de l'interface et du moteur de mission pour fluidifier l'expérience utilisateur.
+
+### A. Flux de Mission Automatique (Auto Flow)
+Suppression de la pagination manuelle "Suivant / Précédent" qui était source de confusion et de bugs.
+*   **Logique :** Le Dashboard affiche désormais *toujours* la **première mission non terminée**.
+*   **Action :** Dès que l'utilisateur clique sur "J'AI TERMINÉ", la mission est validée, un toast de succès apparaît, et l'écran bascule **instantanément** sur la mission suivante.
+*   **Avantage :** Réduit les clics inutiles et empêche les erreurs d'indexation (missions vides).
+
+### B. Interface de Tir (Wave Module UX)
+Refonte complète de la carte "Vague Imminente" pour la rendre interactive et pédagogique.
+*   **Module de Tir :** Un champ de saisie dédié ("Colle ton lien TikTok") remplace l'ancien champ générique du profil.
+*   **Verrouillage Temporel :** Le champ est désactivé le matin ("Attends 17h45"). Il s'active automatiquement et devient lumineux (Violet/Vert) quand la fenêtre de tir s'ouvre.
+*   **Feedback Immédiat :** Validation visuelle "PRÊT AU COMBAT" avec icône verte dès la soumission.
+*   **Clarté :** Explication visible du "Pourquoi" ("Toute l'escouade va converger vers toi pendant 2h").
+
+### C. Hiérarchie Visuelle & Nettoyage
+Réorganisation de la page d'accueil pour suivre la logique opérationnelle :
+1.  **Vague Imminente (Priorité Absolue) :** En haut.
+2.  **Missions du Jour (Devoir) :** Au centre.
+3.  **Protocole Mercenaire (Bonus) :** Tout en bas.
+*   **Suppression :** Le champ "Ma Vidéo du Jour" redondant a été retiré de la barre latérale pour éviter les erreurs de saisie. Seul le "Profil TikTok" (identité) reste permanent.
+
+### D. Corrections Techniques (Admin & Data)
+*   **Admin Planning :** Contournement des restrictions RLS (Row Level Security) via une API Route dédiée (`/api/admin/get-planning`) utilisant le `Service Role`, permettant à l'administrateur de voir les profils de tous les soldats sans erreur.
+*   **Robustesse :** Correction des crashs React liés à l'hydratation des dates (SSR vs Client) en utilisant des imports dynamiques et une gestion sécurisée des objets `Date`.
+*   **SQL Fix :** Ajout automatique des tables manquantes (`buddy_pairs`, `boost_windows`) via migration pour éliminer les erreurs 406 dans la console.
+
+### E. Navigation Tactique (Smart Traffic V2)
+Amélioration de la sécurité contre la détection de "trafic invalide" par TikTok.
+*   **Missions Mercenaires :** Suppression totale du lien direct "Voir la vidéo". Remplacement par un protocole "Search & Find" obligatoire :
+    *   Affichage du pseudo `@cible`.
+    *   Bouton "COPIER" + Bouton "OUVRIR APP" (neutre, ouvre l'accueil).
+*   **Missions du Jour (Bouton Intelligent) :** Le bouton "LANCER LA MISSION" adapte son comportement selon la consigne algorithmique :
+    *   Si **Search** : Copie le pseudo et ouvre l'accueil TikTok.
+    *   Si **Profile** : Ouvre la page de profil du membre.
+    *   Si **Direct** : Ouvre la vidéo directement (seulement 20% des cas).
+
+---
+
+## 14. Mise à jour V3.5 - Communication & Planification (Janvier 2026)
+
+Amélioration de la visibilité pour les soldats et mise en place d'un canal de communication direct avec le QG.
+
+### A. Widget "Ordres de Présence" (Planning)
+Nouveau module dans la barre latérale du Dashboard pour donner une visibilité à 72h.
+*   **Design Hiérarchique :**
+    *   **Carte Prioritaire :** Le prochain créneau (Aujourd'hui ou Demain) est affiché en grand avec un code couleur d'intensité (Bleu/Ambre/Rouge).
+    *   **Liste Compacte :** Les jours suivants sont listés en dessous.
+    *   **Agrégation :** Tous les créneaux d'une même journée sont fusionnés en une seule plage horaire (ex: "18:00 - 20:30") pour simplifier la lecture.
+*   **Statut Repos :** Si aucune mission n'est prévue aujourd'hui, un statut "✅ REPOS ACCORDÉ" (Vert) s'affiche clairement.
+
+### B. Système de Messagerie QG (Dual-Channel)
+Remplacement du système de "Signalement" (délation) par un canal d'assistance directe.
+*   **Dashboard :** Le bouton "SURVEILLANCE" devient **"SIGNALER UN PROBLÈME"**. Il ouvre un formulaire intégré (Dialog) au lieu de sortir vers une boite mail externe.
+*   **Architecture Robuste (Fallback) :**
+    *   Tente d'abord d'écrire dans la table dédiée `admin_messages`.
+    *   Si échec (table inexistante), bascule automatiquement sur la table `reports` en mode "Self-Report" (target = reporter).
+    *   Garantit que le message arrive toujours à destination.
+
+### C. Console Admin & Inbox QG
+Refonte de l'interface d'administration pour gérer ces communications.
+*   **API Bypass RLS :** Création d'une route API sécurisée (`/api/admin/get-messages`) utilisant la clé `SERVICE_ROLE` pour contourner les restrictions de lecture (Row Level Security) de Supabase. Cela permet à l'admin de voir tous les messages, même ceux masqués par des règles de confidentialité strictes.
+*   **Inbox Centralisée :** Un nouvel onglet "Inbox QG" fusionne les messages venant des deux canaux (`admin_messages` et `reports`).
+*   **Récupération Hybride :** Pour éviter les erreurs 400 (Jointures interdites sur `auth.users`), l'admin récupère d'abord les IDs bruts, puis "hydrate" les données avec les pseudos publics via une requête parallèle sur `profiles`.
+
+### D. UX Sécurité
+*   **Verrouillage Mission :** Si une mission est verrouillée temporellement, l'interface affiche désormais un grand Cadenas 🔒 et masque totalement le bouton d'action pour empêcher les réalisations prématurées (Ghost Missions).
+*   **Bilan Opérationnel :** L'ancienne page "Surveillance" a été pacifiée. Elle n'affiche plus de bouton "Signaler" mais sert uniquement de "Bilan de Transparence" (Qui a fait ses missions hier ?).

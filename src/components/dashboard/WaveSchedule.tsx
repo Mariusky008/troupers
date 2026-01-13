@@ -105,7 +105,7 @@ export function WaveSchedule({ squadId }: { squadId: string | null }) {
             <div className="bg-indigo-900 p-3 flex items-center justify-between text-white">
                 <div className="flex items-center gap-2">
                     <ShieldAlert className="h-4 w-4 text-indigo-300" />
-                    <h3 className="text-xs font-black uppercase tracking-wider">Ordres de Présence</h3>
+                    <h3 className="text-xs font-black uppercase tracking-wider">Planning des missions à venir</h3>
                 </div>
             </div>
             

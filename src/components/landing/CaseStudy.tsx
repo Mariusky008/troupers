@@ -31,11 +31,11 @@ export function CaseStudy() {
                  <div className="grid grid-cols-2 gap-4">
                     <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
                        <div className="text-sm text-slate-500 mb-1">Abonnés</div>
-                       <div className="text-2xl font-black text-slate-900">600</div>
+                       <div className="text-2xl font-black text-slate-900">300 à 1000</div>
                     </div>
                     <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
                        <div className="text-sm text-slate-500 mb-1">Vues Moyennes</div>
-                       <div className="text-2xl font-black text-slate-900">300-800</div>
+                       <div className="text-2xl font-black text-slate-900">200-1000</div>
                     </div>
                  </div>
                  <div className="mt-4 pt-4 border-t border-slate-200">
