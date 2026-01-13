@@ -67,18 +67,18 @@ export function MissionBriefing({
     useEffect(() => {
         setIsTyping(true)
         setDisplayedText("")
-        let i = 0
+        let charIndex = 0
         const fullText = currentStep.text
         
         const timer = setInterval(() => {
-            if (i < fullText.length) {
-                setDisplayedText((prev) => prev + fullText.charAt(i))
-                i++
-            } else {
+            charIndex++
+            setDisplayedText(fullText.slice(0, charIndex))
+            
+            if (charIndex >= fullText.length) {
                 setIsTyping(false)
                 clearInterval(timer)
             }
-        }, 20) // Speed of typing
+        }, 20)
 
         return () => clearInterval(timer)
     }, [step])
