@@ -16,6 +16,7 @@ import { createClient } from "@/lib/supabase/client"
 import { WelcomePopup } from "@/components/welcome-popup"
 import { MercenaryBoard } from "@/components/dashboard/mercenary-board"
 import { MissionPlan } from "@/components/dashboard/MissionPlan"
+import { MissionBriefing } from "@/components/dashboard/MissionBriefing"
 import { WaveSchedule } from "@/components/dashboard/WaveSchedule"
 import dynamic from "next/dynamic"
 
@@ -110,6 +111,14 @@ export default function DashboardPage() {
   const [contactMessage, setContactMessage] = useState("")
   const [isContactOpen, setIsContactOpen] = useState(false)
   const [sendingContact, setSendingContact] = useState(false)
+  
+  // UX State
+  const [briefingCompleted, setBriefingCompleted] = useState(false)
+
+  // Auto Flow Logic: Reset briefing when task changes
+  useEffect(() => {
+     setBriefingCompleted(false)
+  }, [activeTask?.id])
 
   // Load from session storage on mount with DATE CHECK
   useEffect(() => {
@@ -1250,66 +1259,88 @@ export default function DashboardPage() {
                                 </div>
                             </div>
                         ) : (
-                        <div className="space-y-6">
-                           <MissionPlan 
-                              type={activeTask.type}
-                              scenario={activeTask.scenario}
-                              delayMinutes={activeTask.delayMinutes}
-                              trafficSource={activeTask.trafficSource}
-                              targetUsername={activeTask.targetUsername}
-                              shouldFollow={activeTask.shouldFollow}
-                           />
-                           
-                           <div className="flex flex-col gap-3 pt-4 border-t">
-                                 {!viewedVideos.has(activeTask.targetUserId) ? (
-                                    <Button 
-                                       size="lg" 
-                                       className="w-full h-14 text-lg font-bold bg-indigo-600 hover:bg-indigo-700 shadow-xl shadow-indigo-200"
-                                       onClick={() => {
-                                          handleViewVideo(activeTask.targetUserId)
-                                          
-                                          // SMART TRAFFIC LOGIC
-                                          if (activeTask.trafficSource === 'search') {
-                                             // Copy username and open homepage
-                                             const handle = activeTask.targetUsername || ""
-                                             navigator.clipboard.writeText(handle)
-                                             toast.success("Pseudo copié !", { description: "Colle-le dans la recherche TikTok." })
-                                             window.open('https://www.tiktok.com', '_blank')
-                                          } else if (activeTask.trafficSource === 'profile') {
-                                             // Open profile page (need to construct it or use main_platform if available)
-                                             // For now, let's use a safe profile link construction
-                                             const profileUrl = `https://www.tiktok.com/@${activeTask.targetUsername}`
-                                             window.open(profileUrl, '_blank')
-                                          } else {
-                                             // Direct link
-                                             window.open(activeTask.actionUrl, '_blank')
-                                          }
-                                       }}
-                                    >
-                                       <Play className="mr-2 h-5 w-5 fill-white" />
-                                       LANCER LA MISSION (Ouvrir TikTok)
-                                    </Button>
-                                 ) : (
-                                    <Button 
-                                       size="lg" 
-                                       className="w-full h-14 text-lg font-bold bg-green-600 hover:bg-green-700 shadow-xl shadow-green-200 animate-in zoom-in"
-                                       onClick={async () => {
-                                          await toggleTask(activeTask.id)
-                                          // Auto flow handles next task automatically
-                                       }}
-                                    >
-                                       <CheckCircle className="mr-2 h-5 w-5" />
-                                       J'AI TERMINÉ LA MISSION
-                                    </Button>
-                                 )}
-                              
-                              {viewedVideos.has(activeTask.targetUserId) && (
-                                <p className="text-xs text-center text-muted-foreground">
-                                   En validant, tu confirmes avoir respecté le protocole ci-dessus.
-                                </p>
-                              )}
-                           </div>
-                        </div>
+                            // ACTIVE TASK
+                            !briefingCompleted ? (
+                                // STEP 1: BRIEFING MODE
+                                <MissionBriefing 
+                                    type={activeTask.type}
+                                    scenario={activeTask.scenario}
+                                    delayMinutes={activeTask.delayMinutes}
+                                    trafficSource={activeTask.trafficSource}
+                                    targetUsername={activeTask.targetUsername}
+                                    onBriefingComplete={() => setBriefingCompleted(true)}
+                                />
+                            ) : (
+                                // STEP 2: ACTION MODE
+                                <div className="space-y-6 animate-in slide-in-from-right duration-500">
+                                    {/* Compact Recap Card */}
+                                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-lg">
+                                                {activeTask.targetUsername?.charAt(0).toUpperCase()}
+                                            </div>
+                                            <div>
+                                                <p className="text-xs font-bold text-slate-400 uppercase">Cible Confirmée</p>
+                                                <p className="text-sm font-black text-slate-900">@{activeTask.targetUsername}</p>
+                                            </div>
+                                        </div>
+                                        <Button variant="ghost" size="sm" onClick={() => setBriefingCompleted(false)}>
+                                            Relire le Briefing
+                                        </Button>
+                                    </div>
+
+                                    {/* Action Buttons */}
+                                    <div className="flex flex-col gap-3 pt-4 border-t">
+                                            {!viewedVideos.has(activeTask.targetUserId) ? (
+                                                <Button 
+                                                size="lg" 
+                                                className="w-full h-14 text-lg font-bold bg-indigo-600 hover:bg-indigo-700 shadow-xl shadow-indigo-200"
+                                                onClick={() => {
+                                                    handleViewVideo(activeTask.targetUserId)
+                                                    
+                                                    // SMART TRAFFIC LOGIC
+                                                    if (activeTask.trafficSource === 'search') {
+                                                        // Copy username and open homepage
+                                                        const handle = activeTask.targetUsername || ""
+                                                        navigator.clipboard.writeText(handle)
+                                                        toast.success("Pseudo copié !", { description: "Colle-le dans la recherche TikTok." })
+                                                        window.open('https://www.tiktok.com', '_blank')
+                                                    } else if (activeTask.trafficSource === 'profile') {
+                                                        // Open profile page (need to construct it or use main_platform if available)
+                                                        // For now, let's use a safe profile link construction
+                                                        const profileUrl = `https://www.tiktok.com/@${activeTask.targetUsername}`
+                                                        window.open(profileUrl, '_blank')
+                                                    } else {
+                                                        // Direct link
+                                                        window.open(activeTask.actionUrl, '_blank')
+                                                    }
+                                                }}
+                                                >
+                                                <Play className="mr-2 h-5 w-5 fill-white" />
+                                                LANCER LA MISSION (Ouvrir TikTok)
+                                                </Button>
+                                            ) : (
+                                                <Button 
+                                                size="lg" 
+                                                className="w-full h-14 text-lg font-bold bg-green-600 hover:bg-green-700 shadow-xl shadow-green-200 animate-in zoom-in"
+                                                onClick={async () => {
+                                                    await toggleTask(activeTask.id)
+                                                    // Auto flow handles next task automatically
+                                                }}
+                                                >
+                                                <CheckCircle className="mr-2 h-5 w-5" />
+                                                J'AI TERMINÉ LA MISSION
+                                                </Button>
+                                            )}
+                                        
+                                        {viewedVideos.has(activeTask.targetUserId) && (
+                                            <p className="text-xs text-center text-muted-foreground">
+                                            En validant, tu confirmes avoir respecté le protocole.
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                            )
                         )
                     ) : (
                         <div className="py-12 text-center text-slate-400">Chargement de la mission...</div>
