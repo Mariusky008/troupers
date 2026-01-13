@@ -1274,25 +1274,28 @@ export default function DashboardPage() {
                                 // STEP 2: ACTION MODE
                                 <div className="space-y-6 animate-in slide-in-from-right duration-500">
                                     
-                                    <div className="flex items-center justify-between">
-                                        <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
                                             <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
-                                            MISSION ACTIVE
+                                            MISSION EN COURS
                                         </h3>
-                                        <Button variant="ghost" size="xs" onClick={() => setBriefingCompleted(false)} className="text-xs text-indigo-600">
-                                            Rejouer le Briefing
+                                        <Button variant="outline" size="sm" onClick={() => setBriefingCompleted(false)} className="text-xs h-7 px-2">
+                                            Revoir le Briefing
                                         </Button>
                                     </div>
 
                                     {/* FULL MISSION PLAN (RECAP) */}
-                                    <MissionPlan 
-                                        type={activeTask.type}
-                                        scenario={activeTask.scenario}
-                                        delayMinutes={activeTask.delayMinutes}
-                                        trafficSource={activeTask.trafficSource}
-                                        targetUsername={activeTask.targetUsername}
-                                        shouldFollow={activeTask.shouldFollow}
-                                    />
+                                    <div className="border-t border-slate-100 pt-4">
+                                        <p className="text-xs font-bold text-slate-400 mb-2 uppercase tracking-widest">Dossier Tactique (Rappel)</p>
+                                        <MissionPlan 
+                                            type={activeTask.type}
+                                            scenario={activeTask.scenario}
+                                            delayMinutes={activeTask.delayMinutes}
+                                            trafficSource={activeTask.trafficSource}
+                                            targetUsername={activeTask.targetUsername}
+                                            shouldFollow={activeTask.shouldFollow}
+                                        />
+                                    </div>
 
                                     {/* Action Buttons */}
                                     <div className="flex flex-col gap-3 pt-4 border-t">
