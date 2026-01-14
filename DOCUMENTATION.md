@@ -436,3 +436,29 @@ Amélioration de l'accessibilité sur tous les appareils.
 Correction des problèmes d'affichage sur les petits écrans d'ordinateur portable.
 *   **Scroll Intelligent :** La fenêtre modale "Mission Boost" est désormais limitée à 85% de la hauteur de l'écran avec une barre de défilement interne automatique.
 *   **Avantage :** Garantit que le bouton "J'AI TERMINÉ" reste toujours accessible, même sur les résolutions 1366x768.
+
+---
+
+## 21. Mise à jour V3.13 - Cockpit Tactique & Règles d'Engagement (Janvier 2026)
+
+Refonte complète de l'interface Dashboard pour une immersion totale et clarification des protocoles.
+
+### A. Le Cockpit Tactique (UX)
+Transformation du Dashboard en une interface de pilotage épurée, éliminant les distractions.
+*   **Tactical HUD (Sticky) :** Nouvelle barre supérieure fixe affichant en permanence le Grade et la Progression XP.
+*   **Mode Focus :** L'écran central n'affiche désormais qu'une seule information prioritaire à la fois :
+    1.  **Urgence Vague :** Si une vague est active, elle prend tout l'écran.
+    2.  **Mission Boost :** Si un boost apparaît, il se superpose.
+    3.  **Flux Mission :** Sinon, les missions s'affichent une par une.
+*   **Design Immersif :** Suppression des widgets secondaires (Rang gamifié, Tableaux complexes) pour focaliser l'attention sur l'action immédiate.
+
+### B. Briefing Boost (Consistance)
+Intégration du système "Avatar Tactique" dans les Missions Boost.
+*   Avant : Un bloc de texte statique.
+*   Après : Un briefing interactif étape par étape avec l'avatar, identique aux missions quotidiennes, pour maintenir l'immersion.
+
+### C. Règles d'Engagement (Contenu)
+Mise à jour des textes d'onboarding (`WelcomePopup`) et de la page Règles (`/dashboard/rules`) pour refléter la stratégie V3.
+*   **Timing Critique :** Ajout de la règle explicite "Publier 30-60 min avant l'heure H".
+*   **Discipline :** Clarification du lien "Pas de mission = Pas de vague".
+*   **Vocabulaire :** Adoption définitive des termes "Escouade Tactique", "Protocole de Tir" et "Rendez-vous Tactique".
