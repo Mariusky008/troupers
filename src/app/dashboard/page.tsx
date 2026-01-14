@@ -1369,7 +1369,7 @@ export default function DashboardPage() {
         <div className="lg:col-span-4 space-y-6" id="sidebar-config">
            
            {/* OPERATIONAL SCHEDULE (NEW V3.5) */}
-           <WaveSchedule squadId={mySquadId} />
+           <WaveSchedule squadId={mySquadId} userId={userProfile?.id} />
 
            {/* MY CONFIGURATION CARD */}
            <div className="rounded-xl border bg-white shadow-sm overflow-hidden">

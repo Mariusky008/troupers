@@ -13,8 +13,9 @@ interface WaveSlot {
     missionCount: number
 }
 
-export function WaveSchedule({ squadId }: { squadId: string | null }) {
+export function WaveSchedule({ squadId, userId }: { squadId: string | null, userId?: string }) {
     const [slots, setSlots] = useState<WaveSlot[]>([])
+    const [myNextWave, setMyNextWave] = useState<any>(null)
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
@@ -29,7 +30,7 @@ export function WaveSchedule({ squadId }: { squadId: string | null }) {
             limitDate.setDate(limitDate.getDate() + 3)
             const limitStr = limitDate.toISOString().split('T')[0]
 
-            // Fetch all waves for the squad in range
+            // 1. Fetch Squad Schedule
             const { data: waves } = await supabase
                 .from('daily_waves')
                 .select('scheduled_date, start_time, end_time')
@@ -38,6 +39,20 @@ export function WaveSchedule({ squadId }: { squadId: string | null }) {
                 .lte('scheduled_date', limitStr)
                 .order('scheduled_date', { ascending: true })
                 .order('start_time', { ascending: true })
+
+            // 2. Fetch MY Next Wave (if userId provided)
+            if (userId) {
+                const { data: myWave } = await supabase
+                    .from('daily_waves')
+                    .select('scheduled_date, start_time, end_time')
+                    .eq('creator_id', userId)
+                    .gte('scheduled_date', today)
+                    .order('scheduled_date', { ascending: true })
+                    .limit(1)
+                    .single()
+                
+                if (myWave) setMyNextWave(myWave)
+            }
 
             if (waves) {
                 // Group by Date ONLY
@@ -145,7 +160,7 @@ export function WaveSchedule({ squadId }: { squadId: string | null }) {
                                         </div>
                                         <div>
                                             <p className="text-[10px] font-bold uppercase text-slate-500">Opérations Courantes</p>
-                                            <p className="text-xs font-bold">~10 Missions Standards</p>
+                                            <p className="text-xs font-bold">~10 Missions • Toute la journée</p>
                                         </div>
                                     </div>
                                 ) : (
@@ -191,11 +206,33 @@ export function WaveSchedule({ squadId }: { squadId: string | null }) {
                 })}
             </div>
             
-            <div className="bg-slate-50 p-2 text-center border-t border-slate-100">
-                <p className="text-[10px] text-slate-400 flex items-center justify-center gap-1">
-                    <MapPin className="h-3 w-3" />
-                    Présence obligatoire au rapport
-                </p>
+            <div className="bg-slate-50 p-3 border-t border-slate-100">
+                <div className="flex items-center justify-between mb-1">
+                    <span className="text-[10px] font-bold uppercase text-slate-500 flex items-center gap-1">
+                        <MapPin className="h-3 w-3" />
+                        Mon Tour
+                    </span>
+                    {myNextWave ? (
+                        <span className="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full border border-green-100">Confirmé</span>
+                    ) : (
+                        <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">En attente</span>
+                    )}
+                </div>
+                
+                {myNextWave ? (
+                    <div>
+                        <p className="text-sm font-black text-slate-900">
+                            {format(parseISO(myNextWave.scheduled_date), 'EEEE d MMMM', { locale: fr })}
+                        </p>
+                        <p className="text-xs font-medium text-slate-600">
+                            Créneau : {myNextWave.start_time.slice(0, 5)} - {myNextWave.end_time.slice(0, 5)}
+                        </p>
+                    </div>
+                ) : (
+                    <p className="text-xs text-slate-500 italic leading-tight">
+                        Aucune vague programmée pour toi cette semaine.
+                    </p>
+                )}
             </div>
         </div>
     )
