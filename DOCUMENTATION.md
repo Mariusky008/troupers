@@ -2,7 +2,7 @@
 
 Ce document sert de référence complète pour comprendre le fonctionnement de l'application Troupers, ses fonctionnalités clés et son implémentation technique.
 
-*Dernière mise à jour : 07 Janvier 2026*
+*Dernière mise à jour : 14 Janvier 2026*
 
 ---
 
@@ -34,6 +34,7 @@ C'est le cœur de l'application où l'utilisateur progresse dans ses tâches quo
 ## 2. Protocole Mercenaire (Pénalités & Rattrapage)
 **Doc détaillée :** `docs/PROTOCOLE_MERCENAIRE.md`
 **Composant :** `src/components/dashboard/mercenary-board.tsx`
+**État :** *Masqué temporairement en V3.7 pour simplification*
 
 Système qui garantit que tout le monde reçoit du soutien, même si un membre déserte.
 
@@ -80,6 +81,7 @@ Permet aux soldats de se reposer sans être pénalisés par le Protocole Mercena
 
 ## 5. Binôme (Buddy System)
 **Widget :** Sidebar Dashboard
+**État :** *Masqué temporairement en V3.7 pour simplification*
 
 Chaque utilisateur se voit attribuer un binôme pour se motiver mutuellement.
 
@@ -220,7 +222,7 @@ Cela signifie que pour une même vidéo, certains membres devront liker, et d'au
 
 ### C. Stabilisation Technique
 *   **Correction API Bounties :** Résolution des erreurs 500 liées à des colonnes manquantes (`type`) et ajout d'une gestion d'erreur robuste.
-*   **Simulation Admin :** Le bouton "(Admin) Simuler Alerte" est désormais fiable, avec un fallback local si le Cron ne renvoie rien, permettant de tester l'interface à tout moment.
+*   **Simulatio Admin :** Le bouton "(Admin) Simuler Alerte" est désormais fiable, avec un fallback local si le Cron ne renvoie rien, permettant de tester l'interface à tout moment.
 *   **Affichage :** Augmentation du nombre de missions visibles simultanément de 2 à 4 pour une meilleure ergonomie.
 
 ---
@@ -324,3 +326,25 @@ Refonte de l'interface d'administration pour gérer ces communications.
 ### D. UX Sécurité
 *   **Verrouillage Mission :** Si une mission est verrouillée temporellement, l'interface affiche désormais un grand Cadenas 🔒 et masque totalement le bouton d'action pour empêcher les réalisations prématurées (Ghost Missions).
 *   **Bilan Opérationnel :** L'ancienne page "Surveillance" a été pacifiée. Elle n'affiche plus de bouton "Signaler" mais sert uniquement de "Bilan de Transparence" (Qui a fait ses missions hier ?).
+
+---
+
+## 15. Mise à jour V3.7 - Simplification Tactique & Gamification (Janvier 2026)
+
+Mise à jour majeure visant à simplifier l'expérience utilisateur (UX) en retirant les éléments superflus et en gamifiant l'exécution des ordres.
+
+### A. Nettoyage de l'Interface (Focus Mission)
+Pour réduire la charge cognitive et se concentrer sur l'essentiel (la mission active), plusieurs fonctionnalités "distrayantes" ont été désactivées temporairement :
+*   **Masquage du Widget Binôme :** Le système de buddy est mis en pause pour éviter la confusion.
+*   **Masquage du Protocole Mercenaire :** Les missions de rattrapage (Bounties) sont cachées pour focaliser l'attention sur les missions du jour (Waves).
+*   **Suppression des "Posts TikTok" :** L'onglet d'analytique personnelle a été retiré du menu.
+
+### B. Nouveau Système de Briefing (Tactical Avatar)
+Remplacement des blocs de texte statiques par une expérience interactive immersive :
+*   **Avatar Animé :** Un cercle lumineux (Bot/Shield/Star) change d'expression selon l'étape du briefing.
+*   **Dialogue Typewriter :** Les instructions s'affichent lettre par lettre (effet machine à écrire) pour forcer la lecture et créer un sentiment d'urgence.
+*   **Flux en 3 Étapes :**
+    1.  **Cible Identifiée :** Présentation du soldat à soutenir.
+    2.  **Protocole :** Instructions de sécurité (Recherche vs Profil).
+    3.  **Plan d'Action :** Ordres précis numérotés (1. Regarde, 2. Like...).
+*   **Mémoire Tactique :** Une fois le briefing terminé, le soldat passe en mode "Action", mais peut toujours consulter le **"Dossier Tactique (Rappel)"** (ancien MissionPlan) s'il a oublié les détails.
