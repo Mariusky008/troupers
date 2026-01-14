@@ -1138,7 +1138,7 @@ export default function DashboardPage() {
                              <Zap className="ml-2 h-4 w-4 fill-indigo-600" />
                           </Button>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-md">
+                        <DialogContent className="sm:max-w-md max-h-[85vh] overflow-y-auto">
                         <DialogHeader>
                           <DialogTitle className="text-2xl font-black flex items-center gap-2 text-indigo-900">
                             <Zap className="h-6 w-6 text-yellow-500 fill-yellow-500" />
