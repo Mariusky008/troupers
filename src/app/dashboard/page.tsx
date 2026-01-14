@@ -1513,6 +1513,15 @@ export default function DashboardPage() {
                  <Button size="sm" variant="outline" asChild>
                    <a href="https://whatsapp.com/channel/0029VbBcgs71iUxRPnXEdF1z" target="_blank">WhatsApp</a>
                  </Button>
+                 <Button size="sm" variant="outline" onClick={async () => {
+                    toast.promise(fetch('/api/cron/schedule-waves'), {
+                        loading: 'Génération du planning...',
+                        success: 'Planning mis à jour ! Rechargez la page.',
+                        error: 'Erreur planning'
+                    })
+                 }}>
+                    Simuler Planning
+                 </Button>
                </div>
              </div>
            )}

@@ -38,8 +38,8 @@ export async function GET(request: Request) {
             // Shuffle for demo purposes (since we don't have real queue history yet)
             const queue = members.sort(() => Math.random() - 0.5)
 
-            // Schedule for next X days
-            for (let d = 1; d <= CONFIG.PLANNING_HORIZON; d++) {
+            // Schedule for Today (0) and next X days
+            for (let d = 0; d <= CONFIG.PLANNING_HORIZON; d++) {
                 const targetDate = new Date()
                 targetDate.setDate(targetDate.getDate() + d)
                 const dateStr = targetDate.toISOString().split('T')[0]
