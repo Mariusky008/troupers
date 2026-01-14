@@ -24,19 +24,22 @@ export async function GET(request: Request) {
 
         // 3. Process each squad
         for (const squad of squads) {
-            // Get members ordered by priority (Simulated Queue)
-            // In real DB: .order('queue_priority', { ascending: false }).order('last_wave_date', { ascending: true })
+            // Get members with their last wave date
             const { data: members } = await supabaseAdmin
                 .from('squad_members')
                 .select('user_id, last_wave_date')
                 .eq('squad_id', squad.id)
-                // Random sort for simulation if columns don't exist yet
-                // In production, this MUST use the queue logic
             
             if (!members || members.length === 0) continue
 
-            // Shuffle for demo purposes (since we don't have real queue history yet)
-            const queue = members.sort(() => Math.random() - 0.5)
+            // QUEUE LOGIC: Sort by last_wave_date ASC (Nulls first)
+            // This ensures fairness: members who waited the longest go first
+            let queue = members.sort((a: any, b: any) => {
+                if (!a.last_wave_date && b.last_wave_date) return -1; // A (never) < B (date) -> A first
+                if (a.last_wave_date && !b.last_wave_date) return 1;  // A (date) > B (never) -> B first
+                if (!a.last_wave_date && !b.last_wave_date) return 0.5 - Math.random(); // Both never -> Random
+                return new Date(a.last_wave_date).getTime() - new Date(b.last_wave_date).getTime(); // Oldest date first
+            });
 
             // Schedule for Today (0) and next X days
             for (let d = 0; d <= CONFIG.PLANNING_HORIZON; d++) {
@@ -53,16 +56,17 @@ export async function GET(request: Request) {
                     .limit(1)
 
                 if (existing && existing.length > 0) {
-                    console.log(`Waves already scheduled for ${dateStr}, skipping...`)
+                    // console.log(`Waves already scheduled for ${dateStr}, skipping...`)
                     continue
                 }
 
-                // Pick top N members for this day
-                const selectedMembers = queue.slice(0, CONFIG.WAVES_PER_DAY)
-                
-                // Rotate queue (move selected to end) - conceptual
-                // In DB we would update 'last_wave_date' here
+                // Pick top N members from the front of the queue
+                // We use splice to remove them from the 'available' pool for subsequent days in this loop
+                // (But we will re-add them at the end for future loops if needed, though usually we only plan 1 slot per person per cycle)
+                if (queue.length === 0) break; // Should not happen unless squad empty
 
+                const selectedMembers = queue.splice(0, CONFIG.WAVES_PER_DAY)
+                
                 // Create Waves
                 const wavesToInsert = selectedMembers.map((member: any, index: number) => {
                     const isCore = index < (CONFIG.WAVES_PER_DAY * CONFIG.CORE_RATIO)
@@ -86,10 +90,25 @@ export async function GET(request: Request) {
 
                 if (wavesToInsert.length > 0) {
                     const { error } = await supabaseAdmin.from('daily_waves').insert(wavesToInsert)
-                    if (error) {
-                        console.error("Error scheduling waves:", error)
-                    } else {
+                    
+                    if (!error) {
                         totalScheduled += wavesToInsert.length
+
+                        // CRITICAL: Update 'last_wave_date' in DB for these users
+                        // This pushes them to the back of the line for the next execution
+                        const userIds = selectedMembers.map((m: any) => m.user_id)
+                        await supabaseAdmin
+                            .from('squad_members')
+                            .update({ last_wave_date: new Date().toISOString() }) // Use NOW or targetDate
+                            .in('user_id', userIds)
+                            .eq('squad_id', squad.id)
+
+                        // Update in-memory queue for next iteration (d+1)
+                        // Add them back to the end with a new fake date so they are last
+                        selectedMembers.forEach((m: any) => {
+                            m.last_wave_date = new Date().toISOString() // conceptually "just now"
+                        })
+                        queue.push(...selectedMembers)
                     }
                 }
             }
