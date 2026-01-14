@@ -1551,16 +1551,19 @@ export default function DashboardPage() {
                    <AlertTriangle className="h-3 w-3" /> Zone Maintenance
                </h4>
                <Button size="sm" variant="outline" className="w-full bg-white border-red-200 text-red-600 hover:bg-red-100" onClick={async () => {
-                    const supabase = createClient()
-                    const { data, error } = await supabase.rpc('clean_ghost_users')
-                    if (error) {
-                        toast.error("Erreur : " + error.message)
-                    } else {
-                        toast.success((data as any).message || "Nettoyage terminé !")
-                        setTimeout(() => window.location.reload(), 1500)
-                    }
+                    const promise = fetch('/api/admin/clean-ghosts', { method: 'POST' }).then(res => res.json())
+                    
+                    toast.promise(promise, {
+                        loading: 'Analyse des données...',
+                        success: (data: any) => {
+                            if (data.error) throw new Error(data.error)
+                            setTimeout(() => window.location.reload(), 2000)
+                            return data.message
+                        },
+                        error: (err) => `Erreur: ${err.message}`
+                    })
                  }}>
-                    🧹 Supprimer Fantômes
+                    🧹 Supprimer Fantômes (API)
                  </Button>
            </div>
 
