@@ -1513,18 +1513,23 @@ export default function DashboardPage() {
                  <Button size="sm" variant="outline" asChild>
                    <a href="https://whatsapp.com/channel/0029VbBcgs71iUxRPnXEdF1z" target="_blank">WhatsApp</a>
                  </Button>
-                 <Button size="sm" variant="outline" onClick={async () => {
+               </div>
+             </div>
+           )}
+
+           {/* DEBUG TOOLS (VISIBLE FOR ALL TEMPORARILY) */}
+           <div className="rounded-xl border border-dashed border-slate-300 p-4 bg-slate-50 mt-4 opacity-50 hover:opacity-100 transition-opacity">
+               <h4 className="font-bold text-xs mb-2 text-slate-500 uppercase">Zone Debug</h4>
+               <Button size="sm" variant="outline" className="w-full" onClick={async () => {
                     toast.promise(fetch('/api/cron/schedule-waves'), {
                         loading: 'Génération du planning...',
                         success: 'Planning mis à jour ! Rechargez la page.',
                         error: 'Erreur planning'
                     })
                  }}>
-                    Simuler Planning
+                    Simuler Planning (Force Update)
                  </Button>
-               </div>
-             </div>
-           )}
+           </div>
 
         </div>
 
