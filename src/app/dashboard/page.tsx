@@ -1545,6 +1545,25 @@ export default function DashboardPage() {
              </div>
            )}
 
+           {/* GHOST CLEANER (DEBUG - VISIBLE ALL) */}
+           <div className="rounded-xl border border-red-200 bg-red-50 p-4 mt-4 opacity-70 hover:opacity-100 transition-opacity">
+               <h4 className="font-bold text-xs mb-2 text-red-800 uppercase flex items-center gap-2">
+                   <AlertTriangle className="h-3 w-3" /> Zone Maintenance
+               </h4>
+               <Button size="sm" variant="outline" className="w-full bg-white border-red-200 text-red-600 hover:bg-red-100" onClick={async () => {
+                    const supabase = createClient()
+                    const { data, error } = await supabase.rpc('clean_ghost_users')
+                    if (error) {
+                        toast.error("Erreur : " + error.message)
+                    } else {
+                        toast.success((data as any).message || "Nettoyage terminé !")
+                        setTimeout(() => window.location.reload(), 1500)
+                    }
+                 }}>
+                    🧹 Supprimer Fantômes
+                 </Button>
+           </div>
+
         </div>
 
       </div>
