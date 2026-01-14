@@ -30,34 +30,28 @@ export function WelcomePopup({ userId }: { userId?: string }) {
 
   const steps = [
     {
-      icon: Rocket,
-      title: "1️⃣ Lance ta journée",
-      desc: "Colle l’URL de ta vidéo ou post du jour. C’est sur ce contenu que la troupe va agir.",
+      icon: Target,
+      title: "1️⃣ Missions Quotidiennes (Devoir)",
+      desc: "Chaque jour, tu recevras 8 à 12 missions ciblées. Tu dois les accomplir pour maintenir ton rang et ton éligibilité.",
       color: "text-blue-500"
     },
     {
-      icon: Target,
-      title: "2️⃣ Rejoins ton escouade",
-      desc: "Abonne-toi à tous les créateurs de ton groupe. Ils s’abonneront à toi en retour.",
+      icon: Rocket,
+      title: "2️⃣ Ton Tour de Gloire (Récompense)",
+      desc: "Une fois par semaine, une 'Vague Stratégique' sera déclenchée sur TA vidéo. Toute l'escouade convergera vers toi en même temps.",
       color: "text-purple-500"
     },
     {
-      icon: CheckCircle,
-      title: "3️⃣ Exécute tes missions",
-      desc: "Likes, commentaires, partages. Avance jusqu’à 100% de complétion. Discipline pure.",
-      color: "text-green-500"
-    },
-    {
       icon: Shield,
-      title: "4️⃣ Le groupe agit pour toi",
-      desc: "Ce que tu donnes, tu le reçois. Vérifie ton bilan chaque jour.",
-      color: "text-orange-500"
+      title: "3️⃣ Discipline de Fer",
+      desc: "Pas de missions = Pas de vague. Le système détecte les déserteurs. Si tu ne donnes pas, tu ne reçois rien.",
+      color: "text-red-500"
     },
     {
       icon: TrendingUp,
-      title: "5️⃣ La traction s’installe",
-      desc: "Jour après jour, ton engagement augmente et ton compte commence à décoller.",
-      color: "text-red-500"
+      title: "4️⃣ Impact Algorithmique",
+      desc: "Nos actions sont calibrées pour tromper l'algorithme : Recherche manuelle, visionnage complet, favoris. Joue le jeu à fond.",
+      color: "text-green-500"
     }
   ]
 
