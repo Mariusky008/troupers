@@ -1052,8 +1052,8 @@ export default function DashboardPage() {
               </div>
            </div>
 
-           {/* DISCIPLINE WARNING */}
-           {disciplineScore < 50 && (
+           {/* DISCIPLINE WARNING (HIDDEN V3.7) */}
+           {/* {disciplineScore < 50 && (
              <div className="mt-6 rounded-xl border border-red-200 bg-red-50 p-6 flex flex-col items-center text-center gap-3 shadow-sm animate-pulse-slow">
                 <div className="h-12 w-12 rounded-full bg-red-100 flex items-center justify-center">
                    <AlertTriangle className="h-6 w-6 text-red-600" />
@@ -1067,7 +1067,7 @@ export default function DashboardPage() {
                    ACCÈS MERCENAIRE RESTREINT
                 </Button>
              </div>
-           )}
+           )} */}
            
            {/* BOOST BANNER */}
            {activeBoostWindow ? (
