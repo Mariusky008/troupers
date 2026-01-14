@@ -54,6 +54,9 @@ export default function PerformancePage() {
                         </Button>
                         <h1 className="text-2xl font-black text-slate-900 tracking-tight">Analyse de Performance</h1>
                     </div>
+                    <Button variant="outline" size="sm" onClick={() => window.open('/api/admin/debug-performance', '_blank')}>
+                        🔍 Debug Data
+                    </Button>
                 </div>
 
                 <div className="grid gap-4">
