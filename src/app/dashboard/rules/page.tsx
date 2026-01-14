@@ -17,7 +17,7 @@ export default function RulesPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        {/* 1. L'ESCOUADE */}
+        {/* 1. L'ESCOUADE TACTIQUE */}
         <Card className="border-l-4 border-l-blue-500 shadow-md">
           <CardHeader>
             <div className="flex items-center gap-3">
@@ -25,24 +25,55 @@ export default function RulesPage() {
                 <Users className="h-6 w-6 text-blue-600" />
               </div>
               <div>
-                <CardTitle className="text-xl">1. L'Escouade</CardTitle>
-                <CardDescription>Votre famille de combat</CardDescription>
+                <CardTitle className="text-xl">1. L'Escouade Tactique</CardTitle>
+                <CardDescription>Une armée de 70 soldats</CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent className="space-y-3 text-slate-700">
             <p>
-              Vous êtes assigné à une <strong>Escouade de 5 soldats</strong>.
+              Vous faites partie d'une division de <strong>70 soldats d'élite</strong>.
             </p>
             <ul className="list-disc pl-5 space-y-1">
-              <li>Vous ne changez pas d'escouade tant que vous restez actif.</li>
-              <li>Votre succès dépend de celui de vos camarades.</li>
-              <li>Si un membre quitte, un nouveau est recruté automatiquement.</li>
+              <li>Le but n'est pas le "Follow for Follow" passif.</li>
+              <li>Le but est de créer des <strong>pics d'engagement massifs</strong> (Vagues) sur une cible précise à une heure précise.</li>
+              <li>La puissance du groupe fait percer l'individu.</li>
             </ul>
           </CardContent>
         </Card>
 
-        {/* 2. LA MISSION QUOTIDIENNE */}
+        {/* 2. LE PROTOCOLE DE TIR (VAGUE) */}
+        <Card className="border-l-4 border-l-purple-500 shadow-md">
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
+                <Clock className="h-6 w-6 text-purple-600" />
+              </div>
+              <div>
+                <CardTitle className="text-xl">2. Le Protocole de Tir (Vague)</CardTitle>
+                <CardDescription>Votre moment de gloire</CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-3 text-slate-700">
+            <p>
+              Environ une fois par semaine, vous êtes désigné <strong>Cible Prioritaire</strong>.
+            </p>
+            <div className="space-y-2 text-sm bg-purple-50 p-3 rounded-lg border border-purple-100">
+               <p className="font-bold text-purple-900">LA RÈGLE D'OR (TIMING) :</p>
+               <ol className="list-decimal pl-5 space-y-1">
+                 <li>Vous recevez une alerte 72h avant ("Vague Imminente").</li>
+                 <li>Le jour J, publiez votre vidéo sur TikTok <strong>30 à 60 min AVANT</strong> l'heure de la vague.</li>
+                 <li>Collez immédiatement le lien dans votre Dashboard.</li>
+               </ol>
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              ⚠️ Si vous ratez le timing, l'escouade tirera à blanc et vous perdrez votre tour.
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* 3. LE DEVOIR QUOTIDIEN */}
         <Card className="border-l-4 border-l-green-500 shadow-md">
           <CardHeader>
             <div className="flex items-center gap-3">
@@ -50,72 +81,54 @@ export default function RulesPage() {
                 <CheckCircle className="h-6 w-6 text-green-600" />
               </div>
               <div>
-                <CardTitle className="text-xl">2. La Mission Quotidienne</CardTitle>
-                <CardDescription>Action requise avant minuit</CardDescription>
+                <CardTitle className="text-xl">3. Le Devoir Quotidien</CardTitle>
+                <CardDescription>Donnant - Donnant</CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent className="space-y-3 text-slate-700">
             <p>
-              Chaque jour, vous recevez les vidéos de vos camarades. Vous devez :
+              Chaque jour, vous recevez entre <strong>8 et 12 missions</strong> de soutien.
             </p>
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm bg-slate-50 p-2 rounded border">
                 <span className="font-bold text-red-500">❤️ Like</span>
-                <span>Aimer la vidéo</span>
+                <span>Signal d'intérêt basique</span>
               </div>
               <div className="flex items-center gap-2 text-sm bg-slate-50 p-2 rounded border">
                 <span className="font-bold text-blue-500">💬 Commentaire</span>
-                <span>4 mots minimum (pertinent)</span>
+                <span>Pertinent (4 mots min) pour le SEO</span>
               </div>
               <div className="flex items-center gap-2 text-sm bg-slate-50 p-2 rounded border">
                 <span className="font-bold text-yellow-500">⭐ Favori</span>
-                <span>Ajouter aux favoris</span>
+                <span>Signal de qualité ultime pour TikTok</span>
               </div>
             </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              ⚠️ Si vous n'avez pas de vidéo à poster ce jour-là, soutenez quand même les autres !
-            </p>
           </CardContent>
         </Card>
 
-        {/* 3. LE PROTOCOLE MERCENAIRE */}
-        <Card className="border-l-4 border-l-red-600 bg-red-50/10 shadow-md md:col-span-2">
+        {/* 4. DISCIPLINE & SANCTIONS */}
+        <Card className="border-l-4 border-l-red-600 bg-red-50/10 shadow-md">
           <CardHeader>
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center animate-pulse">
                 <Skull className="h-6 w-6 text-red-600" />
               </div>
               <div>
-                <CardTitle className="text-xl text-red-700">3. Le Protocole Mercenaire</CardTitle>
-                <CardDescription>Tolérance Zéro pour les déserteurs</CardDescription>
+                <CardTitle className="text-xl text-red-700">4. Discipline & Sanctions</CardTitle>
+                <CardDescription>Tolérance Zéro</CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent className="space-y-4 text-slate-700">
             <p className="font-medium">
-              Si vous oubliez de soutenir un camarade avant minuit, vous devenez un <span className="text-red-600 font-bold uppercase">Déserteur</span>.
+              Le système est automatisé. Si vous ne soutenez pas les autres :
             </p>
-            <div className="grid md:grid-cols-3 gap-4">
-               <div className="bg-white p-4 rounded border border-red-200">
-                  <h4 className="font-bold text-red-800 mb-2 flex items-center gap-2">
-                     <AlertTriangle className="h-4 w-4" /> Sanction Immédiate
-                  </h4>
-                  <p className="text-sm">Une "Prime" est placée sur votre tête. Votre mission est offerte à tous les autres utilisateurs du site (les Mercenaires).</p>
-               </div>
-               <div className="bg-white p-4 rounded border border-red-200">
-                  <h4 className="font-bold text-red-800 mb-2 flex items-center gap-2">
-                     <Sword className="h-4 w-4" /> Le Vol
-                  </h4>
-                  <p className="text-sm">Le premier Mercenaire qui fait votre travail <strong>vole vos crédits</strong> et gagne de l'XP de Gloire à votre place.</p>
-               </div>
-               <div className="bg-white p-4 rounded border border-red-200">
-                  <h4 className="font-bold text-red-800 mb-2 flex items-center gap-2">
-                     <Shield className="h-4 w-4" /> 3 Strikes
-                  </h4>
-                  <p className="text-sm">Au bout de 3 défaillances (Strikes), vous êtes <strong>banni de l'escouade</strong> et remplacé définitivement.</p>
-               </div>
-            </div>
+            <ul className="list-disc pl-5 space-y-2 text-sm">
+               <li><span className="font-bold text-red-700">Pas de Vague :</span> Votre prochain tour sera annulé ou reporté.</li>
+               <li><span className="font-bold text-red-700">Strikes :</span> Au bout de 3 avertissements (jours manqués), vous êtes banni.</li>
+               <li><span className="font-bold text-red-700">Mode Mercenaire :</span> Vos missions ratées sont offertes aux autres pour voler vos crédits.</li>
+            </ul>
           </CardContent>
         </Card>
 
