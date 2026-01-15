@@ -48,6 +48,28 @@ export async function GET(request: Request) {
                 return new Date(a.last_wave_date).getTime() - new Date(b.last_wave_date).getTime();
             });
 
+            // 3. FALLBACK / BOOTCAMP FILLER (Hybrid Mode)
+            // If not enough ready users to reach target (10), fill with waiting users to ensure daily activity.
+            // This handles "Cold Start" for new squads where no one has points yet.
+            if (queue.length < CONFIG.WAVES_PER_DAY) {
+                const needed = CONFIG.WAVES_PER_DAY - queue.length
+                
+                // Get non-ready members
+                let nonReady = members.filter((m: any) => !m.profiles?.wave_ready)
+                
+                // Sort by waiting time (Oldest First)
+                nonReady.sort((a: any, b: any) => {
+                    if (!a.last_wave_date && b.last_wave_date) return -1;
+                    if (a.last_wave_date && !b.last_wave_date) return 1;
+                    if (!a.last_wave_date && !b.last_wave_date) return 0.5 - Math.random();
+                    return new Date(a.last_wave_date).getTime() - new Date(b.last_wave_date).getTime();
+                });
+
+                // Take fillers
+                const fillers = nonReady.slice(0, needed)
+                queue.push(...fillers)
+            }
+
             // Schedule Loop
             for (let d = 0; d <= CONFIG.PLANNING_HORIZON; d++) {
                 const targetDate = new Date()
