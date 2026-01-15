@@ -165,7 +165,12 @@ export function WaveNotification({ userId }: { userId: string }) {
                         Vague imminente détectée
                     </h3>
                     <p className="text-amber-800 text-xs font-medium mt-1 leading-snug max-w-[500px]">
-                        Tu as été sélectionné par l'algorithme. Pendant 2 heures, toute l'escouade va converger vers ta vidéo pour maximiser ton impact sur TikTok.
+                        Tu as été sélectionné par l'algorithme. Pendant 2 heures, toute l'escouade va converger vers ta vidéo pour maximiser ton impact.
+                        <br/><br/>
+                        <strong>STRATÉGIE DE TIR :</strong><br/>
+                        1. Regarde l'heure d'ouverture du canal ci-dessous.<br/>
+                        2. Publie ta vidéo sur TikTok <strong>30 à 60 minutes AVANT</strong> cette heure.<br/>
+                        3. À l'ouverture du canal : Colle ton lien ici immédiatement.
                     </p>
                 </div>
             </div>
