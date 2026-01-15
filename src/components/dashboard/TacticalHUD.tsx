@@ -1,4 +1,4 @@
-import { Shield, Star, Trophy, Medal, Zap, Info } from 'lucide-react'
+import { Shield, Star, Trophy, Medal, Zap, Info, HelpCircle } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface TacticalHUDProps {
@@ -35,7 +35,7 @@ export function TacticalHUD({ progress, rank, points }: TacticalHUDProps) {
                 {/* PROGRESS BAR (CENTER) */}
                 <div className="flex-1 max-w-md mx-2">
                     <div className="flex justify-between items-end mb-1 px-1">
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-2">
                             <span className="text-[10px] font-bold text-slate-400 tracking-wider">
                                 {points !== undefined ? 'CHARGE VAGUE' : 'PROGRESSION'}
                             </span>
@@ -43,7 +43,9 @@ export function TacticalHUD({ progress, rank, points }: TacticalHUDProps) {
                                 <TooltipProvider>
                                     <Tooltip>
                                         <TooltipTrigger asChild>
-                                            <Info className="h-3 w-3 text-slate-400 hover:text-indigo-500 cursor-help" />
+                                            <div className="cursor-help flex items-center justify-center bg-indigo-100 hover:bg-indigo-200 rounded-full h-5 w-5 transition-colors animate-pulse">
+                                                <HelpCircle className="h-3 w-3 text-indigo-600" />
+                                            </div>
                                         </TooltipTrigger>
                                         <TooltipContent className="max-w-xs p-3 bg-slate-900 text-white border-slate-800">
                                             <p className="font-bold mb-1 text-indigo-400">⚡️ Comment obtenir ma vague ?</p>
