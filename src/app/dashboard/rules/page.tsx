@@ -132,7 +132,7 @@ export default function RulesPage() {
           </CardContent>
         </Card>
 
-        {/* 4. CRÉDITS & BOOSTS */}
+        {/* 5. L'ARME ULTIME (LE BOOST) */}
         <Card className="border-l-4 border-l-yellow-500 shadow-md">
           <CardHeader>
             <div className="flex items-center gap-3">
@@ -140,25 +140,26 @@ export default function RulesPage() {
                 <Zap className="h-6 w-6 text-yellow-600" />
               </div>
               <div>
-                <CardTitle className="text-xl">4. Crédits & Boosts</CardTitle>
-                <CardDescription>La monnaie de la guerre</CardDescription>
+                <CardTitle className="text-xl">5. L'Arme Ultime (Le Boost)</CardTitle>
+                <CardDescription>Frappe Nucléaire</CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent className="space-y-3 text-slate-700">
             <p>
-              Chaque action validée vous rapporte des <strong>Crédits Boost</strong>.
+              Les Crédits Boost permettent de déclencher une arme dévastatrice : le <strong>WINDOW BOOST</strong>.
             </p>
             <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-100">
-               <p className="text-sm font-bold text-yellow-800 mb-1">À quoi servent-ils ?</p>
-               <p className="text-sm">
-                 À acheter des <strong>Fenêtres de Boost</strong> : pendant 15 minutes, votre vidéo est mise en avant auprès de TOUTE la communauté Troupers, pas seulement votre escouade.
-               </p>
+               <ul className="list-disc pl-5 space-y-2 text-sm">
+                 <li><strong>Puissance Maximale :</strong> Ce n'est pas juste votre escouade qui agit, c'est <strong>TOUTES les escouades de Troupers</strong> en même temps. Une communauté massive.</li>
+                 <li><strong>Comment l'obtenir ?</strong> Accumulez un maximum de crédits en participant aux missions bonus.</li>
+                 <li><strong>Vigilance :</strong> De temps en temps, une fenêtre de tir ("Mission Boost") apparaîtra aléatoirement sur votre Dashboard. Ne la ratez pas !</li>
+               </ul>
             </div>
           </CardContent>
         </Card>
 
-        {/* 5. GLOIRE & RANGS */}
+        {/* 6. GLOIRE & RANGS */}
         <Card className="border-l-4 border-l-purple-500 shadow-md">
           <CardHeader>
             <div className="flex items-center gap-3">
@@ -166,7 +167,7 @@ export default function RulesPage() {
                 <Flame className="h-6 w-6 text-purple-600" />
               </div>
               <div>
-                <CardTitle className="text-xl">5. Gloire & Rangs</CardTitle>
+                <CardTitle className="text-xl">6. Gloire & Rangs</CardTitle>
                 <CardDescription>Votre légende</CardDescription>
               </div>
             </div>
