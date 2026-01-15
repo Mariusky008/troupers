@@ -989,6 +989,8 @@ export default function DashboardPage() {
           progress={progressPercentage} 
           rank={currentRank}
           points={userProfile?.wave_points}
+          userId={userProfile?.id}
+          squadId={mySquadId}
       />
 
       <div className="space-y-6 max-w-5xl mx-auto pb-12 px-4 pt-6">

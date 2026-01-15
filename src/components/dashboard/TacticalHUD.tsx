@@ -1,5 +1,8 @@
-import { Shield, Star, Trophy, Medal, Zap, Info, HelpCircle } from 'lucide-react'
+import { Shield, Star, Trophy, Medal, Zap, Info, HelpCircle, CalendarDays } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { WaveSchedule } from "@/components/dashboard/WaveSchedule"
 
 interface TacticalHUDProps {
     progress: number
@@ -9,9 +12,11 @@ interface TacticalHUDProps {
         color: string
     }
     points?: number
+    userId?: string
+    squadId?: string | null
 }
 
-export function TacticalHUD({ progress, rank, points }: TacticalHUDProps) {
+export function TacticalHUD({ progress, rank, points, userId, squadId }: TacticalHUDProps) {
     // Gamification V4: Use Wave Points if available (Target 60)
     const waveProgress = points !== undefined ? (Math.min(points, 60) / 60) * 100 : progress
     const waveLabel = points !== undefined ? `${points}/60` : `${Math.round(progress)}%`
@@ -76,11 +81,31 @@ export function TacticalHUD({ progress, rank, points }: TacticalHUDProps) {
                 </div>
 
                 {/* STATUS (RIGHT) */}
-                <div className="flex items-center">
+                <div className="flex items-center gap-2">
+                    {/* Planning Button */}
+                    {userId && squadId && (
+                        <Dialog>
+                            <DialogTrigger asChild>
+                                <Button variant="outline" size="sm" className="h-9 px-2 sm:px-3 border-slate-200 bg-white hover:bg-slate-50 text-slate-600 gap-2 shadow-sm">
+                                    <CalendarDays className="h-4 w-4 text-indigo-600" />
+                                    <span className="hidden sm:inline font-bold text-xs text-slate-700">PLANNING</span>
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-md">
+                                <DialogHeader>
+                                    <DialogTitle>Ordres de Présence</DialogTitle>
+                                </DialogHeader>
+                                <div className="mt-2">
+                                    <WaveSchedule squadId={squadId} userId={userId} />
+                                </div>
+                            </DialogContent>
+                        </Dialog>
+                    )}
+
                     <div className={`px-3 py-1.5 rounded-lg border flex items-center gap-2 ${isReady ? 'bg-green-50 border-green-200' : 'bg-slate-50 border-slate-200'}`}>
                          <div className={`h-2 w-2 rounded-full ${isReady ? 'bg-green-500 animate-pulse' : 'bg-indigo-500 animate-pulse'}`} />
                          <span className={`text-xs font-bold ${isReady ? 'text-green-700' : 'text-slate-600'}`}>
-                            {isReady ? 'CHARGE 100%' : 'EN CHARGE'}
+                            {isReady ? '100%' : 'EN COURS'}
                          </span>
                     </div>
                 </div>
