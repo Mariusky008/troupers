@@ -1497,8 +1497,8 @@ export default function DashboardPage() {
         {/* === RIGHT COLUMN (SIDEBAR) === */}
         <div className="lg:col-span-4 space-y-6" id="sidebar-config">
            
-           {/* OPERATIONAL SCHEDULE (NEW V3.5) */}
-           <WaveSchedule squadId={mySquadId} userId={userProfile?.id} />
+           {/* OPERATIONAL SCHEDULE (MOVED TO HUD BUTTON V4) */}
+           {/* <WaveSchedule squadId={mySquadId} userId={userProfile?.id} /> */}
 
            {/* MY CONFIGURATION CARD */}
            <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
