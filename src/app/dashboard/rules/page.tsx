@@ -1,6 +1,6 @@
 "use client"
 
-import { BookOpen, Shield, Sword, Zap, Clock, Users, AlertTriangle, CheckCircle, Skull, Flame } from "lucide-react"
+import { BookOpen, Shield, Sword, Zap, Clock, Users, AlertTriangle, CheckCircle, Skull, Flame, Swords } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 
@@ -160,30 +160,34 @@ export default function RulesPage() {
           </CardContent>
         </Card>
 
-        {/* 6. GLOIRE & RANGS */}
-        <Card className="border-l-4 border-l-purple-500 shadow-md">
+        {/* 6. CARRIÈRE & ALLIANCES */}
+        <Card className="border-l-4 border-l-orange-500 shadow-md">
           <CardHeader>
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
-                <Flame className="h-6 w-6 text-purple-600" />
+              <div className="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center">
+                <Swords className="h-6 w-6 text-orange-600" />
               </div>
               <div>
-                <CardTitle className="text-xl">6. Gloire & Rangs</CardTitle>
-                <CardDescription>Votre légende</CardDescription>
+                <CardTitle className="text-xl">6. Carrière & Alliances</CardTitle>
+                <CardDescription>Devenez un Leader</CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent className="space-y-3 text-slate-700">
             <p>
-              Les meilleurs soldats montent en grade. L'XP de Gloire s'obtient en :
+              Troupers n'est pas qu'un boost, c'est un réseau. Grimpez les <strong>11 Grades</strong> pour débloquer des pouvoirs de collaboration.
             </p>
-            <ul className="list-disc pl-5 space-y-1 text-sm">
-              <li>Accomplissant des missions Mercenaires (+50 XP)</li>
-              <li>Validant une semaine parfaite (+100 XP)</li>
-              <li>Parrainant de nouveaux soldats (+200 XP)</li>
-            </ul>
-            <p className="text-sm mt-2 font-medium text-purple-700">
-              Les hauts gradés auront accès à des fonctionnalités exclusives (Live Training, Accès Influenceurs...).
+            <div className="bg-orange-50 p-3 rounded-lg border border-orange-100 space-y-2">
+               <p className="text-sm font-bold text-orange-800">Hiérarchie (1 Mission = 1 XP Infini)</p>
+               <ul className="list-disc pl-5 space-y-1 text-sm">
+                 <li><strong>G1 à G5 (Soldat → Major) :</strong> Apprenez les bases. Accès spectateur au Fil d'Actu.</li>
+                 <li><strong>G6 (Lieutenant - 300 XP) :</strong> Débloque la création de <strong>DUOS</strong> (1 Invité).</li>
+                 <li><strong>G7 à G9 :</strong> Débloque Trios, Tables Rondes et Raids.</li>
+                 <li><strong>G10 (Général) :</strong> Débloque les Documentaires (5 Invités).</li>
+               </ul>
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              Les officiers (G6+) peuvent recruter des soldats via le "Fil d'Actualité" pour créer des contenus viraux ensemble.
             </p>
           </CardContent>
         </Card>
